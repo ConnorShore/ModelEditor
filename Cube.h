@@ -15,16 +15,28 @@ public:
     virtual void render();
 
 private:
-    float verts[56] = {
-        -1.0f, -1.0f, 1.0f,        1.0f, 1.0f, 1.0f, 1.0f, //front bottom left  [0]
-        1.0f, -1.0f, 1.0f,         1.0f, 1.0f, 0.0f, 1.0f, //front bottom right [1]
-        1.0f, 1.0f, 1.0f,          1.0f, 0.0f, 1.0f, 1.0f, //front top right    [2]
-        -1.0f, 1.0f, 1.0f,         0.0f, 1.0f, 1.0f, 1.0f, //front top left     [3]
+    float verts[24] = {
+        -1.0f, -1.0f, 1.0f,  //front bottom left  [0]
+        1.0f, -1.0f, 1.0f,   //front bottom right [1]
+        1.0f, 1.0f, 1.0f,    //front top right    [2]
+        -1.0f, 1.0f, 1.0f,   //front top left     [3]
 
-        -1.0f, -1.0f, -1.0f,       1.0f, 0.0f, 0.0f, 1.0f, //back bottom left   [4]
-        1.0f, -1.0f, -1.0f,        0.0f, 1.0f, 0.0f, 1.0f, //back bottom right  [5]
-        1.0f, 1.0f, -1.0f,         0.0f, 0.0f, 1.0f, 1.0f, //back top right     [6]
-        -1.0f, 1.0f, -1.0f,        0.5f, 1.0f, 0.5f, 1.0f //back top left       [7]
+        -1.0f, -1.0f, -1.0f, //back bottom left   [4]
+        1.0f, -1.0f, -1.0f,  //back bottom right  [5]
+        1.0f, 1.0f, -1.0f,   //back top right     [6]
+        -1.0f, 1.0f, -1.0f,  //back top left      [7]
+    };
+
+    GLubyte cols[32] = {
+        255, 255, 255, 255,
+        255, 255, 0, 255,
+        255, 0, 255, 255,
+        0, 255, 255, 255,
+
+        255, 0, 0, 255,
+        0, 255, 0, 255,
+        0, 0, 255, 255,
+        140, 255, 140, 255
     };
 
     unsigned int inds[24] = {

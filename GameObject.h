@@ -5,6 +5,8 @@
 #include <GL/glew.h>
 #include <vector>
 
+#include "Vertex.h"
+
 class GameObject {
 public:
     GameObject();
@@ -18,7 +20,7 @@ public:
 
 protected:
     glm::vec3 position, rotation, scale;
-    std::vector<float> vertices;
+    std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     
     void createIDs();
