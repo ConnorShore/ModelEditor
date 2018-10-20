@@ -9,15 +9,24 @@ GLuint vboID = 0;
 GLuint vioID = 0;
 
 float vertices[] = {
-    -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,  //bl
-    0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f,  //br
-    0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f,  //tr
-    -0.5f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f, 1.0f   //tl
+    -1.0f, -1.0f, 1.0f,        1.0f, 1.0f, 1.0f, 1.0f, //front bottom left  [0]
+    1.0f, -1.0f, 1.0f,         1.0f, 1.0f, 0.0f, 1.0f, //front bottom right [1]
+    1.0f, 1.0f, 1.0f,          1.0f, 0.0f, 1.0f, 1.0f, //front top right    [2]
+    -1.0f, 1.0f, 1.0f,         0.0f, 1.0f, 1.0f, 1.0f, //front top left     [3]
+
+    -1.0f, -1.0f, -1.0f,       1.0f, 0.0f, 0.0f, 1.0f, //back bottom left   [4]
+    1.0f, -1.0f, -1.0f,        0.0f, 1.0f, 0.0f, 1.0f, //back bottom right  [5]
+    1.0f, 1.0f, -1.0f,         0.0f, 0.0f, 1.0f, 1.0f, //back top right     [6]
+    -1.0f, 1.0f, -1.0f,        0.5f, 1.0f, 0.5f, 1.0f //back top left      [7]
 };
 
 unsigned int indices[] = {
-    0, 3, 2,
-    2, 1, 0 
+    0,1,2,3,    //front
+    1,5,6,2,    //right
+    4,5,6,7,     //back
+    4,0,3,7,     //left
+    3,2,6,7,     //top
+    0,1,5,4     //bottom
 };
 
 void MainEditor::init()
@@ -110,7 +119,7 @@ void MainEditor::render()
     staticShader.loadMVPMatrix(mvp);
 
     glBindVertexArray(vaoID);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_QUADS, 24, GL_UNSIGNED_INT, 0);
 
     staticShader.stop();
     
