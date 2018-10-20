@@ -10,6 +10,7 @@
 
 #include "StaticShader.h"
 #include "Camera.h"
+#include "Cube.h"
 
 class MainEditor
 {
@@ -23,6 +24,8 @@ private:
     SDL_Window* window;
     StaticShader staticShader;
     Camera camera;
+
+    std::vector<Cube*> _objects;
 
     int screenWidth = 1600;
     int screenHeight = 900;
