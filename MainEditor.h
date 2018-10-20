@@ -25,7 +25,7 @@ private:
     StaticShader staticShader;
     Camera camera;
 
-    std::vector<Cube*> _objects;
+    std::vector<GameObject*> _objects;
 
     int screenWidth = 1600;
     int screenHeight = 900;

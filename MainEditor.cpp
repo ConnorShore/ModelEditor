@@ -4,31 +4,6 @@
 #include <glm/glm.hpp>
 #include "Math.h"
 
-// GLuint vaoID = 0;
-// GLuint vboID = 0;
-// GLuint vioID = 0;
-
-// float vertices[] = {
-//     -1.0f, -1.0f, 1.0f,        1.0f, 1.0f, 1.0f, 1.0f, //front bottom left  [0]
-//     1.0f, -1.0f, 1.0f,         1.0f, 1.0f, 0.0f, 1.0f, //front bottom right [1]
-//     1.0f, 1.0f, 1.0f,          1.0f, 0.0f, 1.0f, 1.0f, //front top right    [2]
-//     -1.0f, 1.0f, 1.0f,         0.0f, 1.0f, 1.0f, 1.0f, //front top left     [3]
-
-//     -1.0f, -1.0f, -1.0f,       1.0f, 0.0f, 0.0f, 1.0f, //back bottom left   [4]
-//     1.0f, -1.0f, -1.0f,        0.0f, 1.0f, 0.0f, 1.0f, //back bottom right  [5]
-//     1.0f, 1.0f, -1.0f,         0.0f, 0.0f, 1.0f, 1.0f, //back top right     [6]
-//     -1.0f, 1.0f, -1.0f,        0.5f, 1.0f, 0.5f, 1.0f //back top left      [7]
-// };
-
-// unsigned int indices[] = {
-//     0,1,2,3,    //front
-//     1,5,6,2,    //right
-//     4,5,6,7,     //back
-//     4,0,3,7,     //left
-//     3,2,6,7,     //top
-//     0,1,5,4     //bottom
-// };
-
 void MainEditor::init()
 {
     isRunning = true;
@@ -69,27 +44,6 @@ void MainEditor::init()
 
     Cube* c = new Cube(0,0,-3,0,25,45,1.5,1.5,1.5);
     _objects.push_back(c);
-
-    // glGenVertexArrays(1, &vaoID);
-    // glGenBuffers(1, &vboID);
-    // glGenBuffers(1, &vioID);
-
-    // glBindVertexArray(vaoID);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vioID);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
-    // glEnableVertexAttribArray(0);
-
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
-    // glEnableVertexAttribArray(1);
-
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
 }
 
 void MainEditor::update()
@@ -114,16 +68,13 @@ void MainEditor::render()
 	staticShader.start();
 	staticShader.getUniformLocations();
 
-    for(Cube* c : _objects) {
-        glm::mat4 model = Math::createTransformationMatrix(c->getPosition(), c->getRotation(), c->getScale());
+    for(GameObject* obj : _objects) {
+        glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
         glm::mat4 mvp = proj * view * model;
 
         staticShader.loadMVPMatrix(mvp);
 
-        c->render();
-
-        // glBindVertexArray(vaoID);
-        // glDrawElements(GL_QUADS, 24, GL_UNSIGNED_INT, 0);
+        obj->render();
     }
 
     staticShader.stop();
