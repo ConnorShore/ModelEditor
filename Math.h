@@ -4,7 +4,7 @@
 class Math {
 public:
 
-    static glm::mat4 createTransformationMatrix(glm::vec3& position, glm::vec3& rotation, glm::vec3& scale)
+    static glm::mat4 createTransformationMatrix(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
     {
         glm::mat4 transform(1.0f);
         transform = glm::translate(transform, position);
