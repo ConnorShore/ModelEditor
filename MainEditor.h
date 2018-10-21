@@ -12,6 +12,7 @@
 #include "Camera.h"
 #include "Renderer.h"
 #include "Cube.h"
+#include "InputManager.h"
 
 class MainEditor
 {
@@ -26,6 +27,9 @@ private:
     StaticShader staticShader;
     Camera camera;
     Renderer renderer;
+    InputManager inputManager;
+
+    float cameraSpeed = 0.015f;
 
     int screenWidth = 1600;
     int screenHeight = 900;

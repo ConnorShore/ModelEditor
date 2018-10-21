@@ -29,7 +29,6 @@ protected:
 
 private:
     GLuint vaoID, vboID, vioID;
-
 };
 
 #endif

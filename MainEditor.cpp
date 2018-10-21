@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <glm/glm.hpp>
+
 #include "Math.h"
 
 void MainEditor::init()
@@ -55,7 +56,26 @@ void MainEditor::update()
             case SDL_QUIT:
                 exit(0);
                 break;
+            case SDL_KEYDOWN:
+                inputManager.keyPressed(evnt.key.keysym.sym);
+                break;
+            case SDL_KEYUP:
+                inputManager.keyReleased(evnt.key.keysym.sym);
+                break;
         }
+    }
+
+    if(inputManager.isKeyDown(SDLK_w)) {
+        camera.moveForward(cameraSpeed);
+    }
+    if(inputManager.isKeyDown(SDLK_s)) {
+        camera.moveBackward(cameraSpeed);
+    }
+    if(inputManager.isKeyDown(SDLK_a)) {
+        camera.moveLeft(cameraSpeed);
+    }
+    if(inputManager.isKeyDown(SDLK_d)) {
+        camera.moveRight(cameraSpeed);
     }
 }
 

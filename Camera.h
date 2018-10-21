@@ -10,6 +10,11 @@ public:
 
     void init(int screenWidth, int screenHeight);
 
+    void moveForward(float speed);
+    void moveBackward(float speed);
+    void moveRight(float speed);
+    void moveLeft(float speed);
+
     glm::mat4 createProjectionMatrix();
     glm::mat4 getProjectionMatrix();
     glm::mat4 getViewMatrix();
