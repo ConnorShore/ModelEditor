@@ -10,7 +10,7 @@
 class GameObject {
 public:
     GameObject();
-    ~GameObject();
+    virtual ~GameObject();
 
     glm::vec3 getPosition() {return position;}
     glm::vec3 getRotation() {return rotation;}

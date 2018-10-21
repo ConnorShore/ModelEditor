@@ -12,7 +12,7 @@ public:
     Cube();
     ~Cube();
 
-    virtual void render();
+    void render() override;
 
 private:
     float verts[24] = {

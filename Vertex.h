@@ -1,6 +1,8 @@
 #ifndef VERTEX
 #define VERTEX
 
+#include <GL/glew.h>
+
 struct Position
 {
     float x,y,z;

@@ -38,12 +38,13 @@ void MainEditor::init()
 
     staticShader.init("Shaders/shader.vert", "Shaders/shader.frag");
     staticShader.bindAttributes();
+    
+    renderer.init(&staticShader);
 
     camera.init(screenWidth, screenHeight);
     camera.setPosition(-1.0f, 0.0f, 2.0f);
 
-    Cube* c = new Cube(0,0,-3,0,25,45,1.5,1.5,1.5);
-    _objects.push_back(c);
+    renderer.addCube(0,0,-3,0,25,45,1.5,1.5,1.5);
 }
 
 void MainEditor::update()
@@ -60,26 +61,9 @@ void MainEditor::update()
 
 void MainEditor::render()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glm::mat4 view = camera.getViewMatrix();
-    glm::mat4 proj = camera.getProjectionMatrix();
-
-	staticShader.start();
-	staticShader.getUniformLocations();
-
-    for(GameObject* obj : _objects) {
-        glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
-        glm::mat4 mvp = proj * view * model;
-
-        staticShader.loadMVPMatrix(mvp);
-
-        obj->render();
-    }
-
-    staticShader.stop();
-    
-    SDL_GL_SwapWindow(window);
+    renderer.beginRender();
+    renderer.renderObjects(camera);
+    renderer.endRender(window);
 }
 
 void MainEditor::gameLoop()

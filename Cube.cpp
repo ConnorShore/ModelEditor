@@ -18,7 +18,7 @@ Cube::Cube(float x, float y, float z, float rx, float ry, float rz, float sx, fl
         vert.color.b = cols[i+2+offset];           
         vert.color.a = cols[i+3+offset];
         vertices.push_back(vert);
-        indices.push_back(indices[i]);  indices.push_back(indices[i+1]);    indices.push_back(indices[i+2]);
+        indices.push_back(inds[i]);  indices.push_back(inds[i+1]);    indices.push_back(inds[i+2]);
         offset++;
     }
 
