@@ -46,6 +46,7 @@ void MainEditor::init()
     camera.setPosition(-1.0f, 0.0f, 2.0f);
 
     renderer.addCube(0,0,-3,0,25,45,1.5,1.5,1.5);
+    renderer.addCube(-10,-3,-8,0,0,0,1.0, 4.0, 1.5);
 }
 
 void MainEditor::update()
@@ -56,6 +57,10 @@ void MainEditor::update()
             case SDL_QUIT:
                 exit(0);
                 break;
+            case SDL_MOUSEMOTION:
+            //TODO: Add mouselook
+                inputManager.setMouseCoords(evnt.motion.xrel, evnt.motion.yrel);
+                break;
             case SDL_KEYDOWN:
                 inputManager.keyPressed(evnt.key.keysym.sym);
                 break;
@@ -64,6 +69,8 @@ void MainEditor::update()
                 break;
         }
     }
+
+    camera.update();
 
     if(inputManager.isKeyDown(SDLK_w)) {
         camera.moveForward(cameraSpeed);
@@ -76,6 +83,12 @@ void MainEditor::update()
     }
     if(inputManager.isKeyDown(SDLK_d)) {
         camera.moveRight(cameraSpeed);
+    }
+    if(inputManager.isKeyDown(SDLK_e)) {
+        camera.moveUp(cameraSpeed);
+    }
+    if(inputManager.isKeyDown(SDLK_q)) {
+        camera.moveDown(cameraSpeed);
     }
 }
 

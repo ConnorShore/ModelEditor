@@ -2,6 +2,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <cstdio>
 
+#define PI 3.1415926535
+
 void Camera::init(int screenWidth, int screenHeight)
 {
     _screenWidth = screenWidth;
@@ -10,11 +12,32 @@ void Camera::init(int screenWidth, int screenHeight)
     _zNear = 1.0f;
     _zFar = 150.0f;
 
+    _pitch = _yaw = _roll = 0;
+
+    _sensitivity = 0.002f;
+
     _position = glm::vec3(0.0f, 0.0f, 0.0f);
     _direction = glm::vec3(0.0f, 0.0f, -1.0f);
     _up = glm::vec3(0.0f, 1.0f, 0.0f);
 
     _projectionMatrix = createProjectionMatrix();
+}
+
+void Camera::update()
+{
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(_pitch)) * sin(glm::radians(_yaw));
+    direction.y = sin(glm::radians(_yaw));
+    direction.z = -(cos(glm::radians(_pitch)) * cos(glm::radians(_yaw)));
+    _direction = glm::normalize(direction);
+
+    glm::vec3 right;
+    right.x = -sin(glm::radians(_yaw) - PI/2.0f);
+    right.y = 0.0f;
+    right.z = cos(glm::radians(_yaw) - PI/2.0f);
+    _right = right;
+
+    _up = glm::normalize(glm::cross(_right, _direction));
 }
 
 void Camera::moveForward(float speed)
@@ -29,12 +52,22 @@ void Camera::moveBackward(float speed)
 
 void Camera::moveRight(float speed)
 {
-    _position += speed * glm::normalize(glm::cross(_direction, _up));
+    _position += speed * _right;
 }
 
 void Camera::moveLeft(float speed)
 {
-    _position -= speed * glm::normalize(glm::cross(_direction, _up));
+    _position -= speed * _right;
+}
+
+void Camera::moveUp(float speed)
+{
+    _position += speed * _up;
+}
+
+void Camera::moveDown(float speed)
+{
+    _position -= speed * _up;
 }
 
 glm::mat4 Camera::createProjectionMatrix()
