@@ -47,6 +47,7 @@ void MainEditor::init()
 
     cube1 = renderer.addCube(0,0,-3,0,25,45,1.5,1.5,1.5);
     cube2 = renderer.addCube(-10,-3,-8,0,0,0,1.0, 4.0, 1.5);
+    light = renderer.addLight(0,0,0,1,0,0,1);
 }
 
 void MainEditor::update()

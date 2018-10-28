@@ -18,10 +18,12 @@ public:
 	void loadModelMatrix(glm::mat4 matrix);
 	void loadViewMatrix(glm::mat4 matrix);
 	void loadProjectionMatrix(glm::mat4 matrix);
-	void loadMVPMatrix(glm::mat4 matrix);
+	void loadLightPosition(glm::vec3 position);
+	void loadLightColor(glm::vec4 color);
 
 private:
 	GLuint _modelMatrixLoc, _viewMatrixLoc, _projectionMatrixLoc;
+	GLuint _lightPositionLoc, _lightColorLoc;
 };
 
 #endif  // STATIC_SHADER

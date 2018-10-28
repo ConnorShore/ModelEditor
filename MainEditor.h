@@ -31,7 +31,7 @@ private:
     InputManager inputManager;
     Timing _timer;
 
-    unsigned int cube1, cube2;
+    unsigned int cube1, cube2, light;
 
     float cameraSpeed = 0.015f;
 

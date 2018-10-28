@@ -94,6 +94,16 @@ GLuint ShaderProgram::getUniformLocation(std::string name)
 	return glGetUniformLocation(_programID, name.c_str());
 }
 
+void ShaderProgram::loadVector3f(int location, glm::vec3 vec)
+{
+	glUniform3f(location, vec.x, vec.y, vec.z);
+}
+
+void ShaderProgram::loadVector4f(int location, glm::vec4 vec)
+{
+	glUniform4f(location, vec.x, vec.y, vec.z, vec.w);
+}
+
 void ShaderProgram::loadMatrix4f(int location, glm::mat4 matrix)
 {
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
