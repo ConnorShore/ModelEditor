@@ -101,9 +101,14 @@ void MainEditor::render()
 
 void MainEditor::gameLoop()
 {
+    _timer.TimeInit();
     while(isRunning) {
+        _timer.FpsLimitInit();
+        _timer.calcDeltaTime();
         update();
         render();
+
+        _timer.CalculateFPS(true);
     }
 }
 

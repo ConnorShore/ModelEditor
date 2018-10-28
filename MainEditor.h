@@ -13,6 +13,7 @@
 #include "Renderer.h"
 #include "Cube.h"
 #include "InputManager.h"
+#include "Timing.h"
 
 class MainEditor
 {
@@ -28,6 +29,7 @@ private:
     Camera camera;
     Renderer renderer;
     InputManager inputManager;
+    Timing _timer;
 
     float cameraSpeed = 0.015f;
 
