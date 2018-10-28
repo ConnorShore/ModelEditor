@@ -27,7 +27,7 @@ void Camera::update()
 {
     glm::vec3 direction;
     direction.x = cos(glm::radians(_pitch)) * sin(glm::radians(_yaw));
-    direction.y = sin(glm::radians(_yaw));
+    direction.y = sin(glm::radians(_pitch));
     direction.z = -(cos(glm::radians(_pitch)) * cos(glm::radians(_yaw)));
     _direction = glm::normalize(direction);
 
@@ -68,6 +68,26 @@ void Camera::moveUp(float speed)
 void Camera::moveDown(float speed)
 {
     _position -= speed * _up;
+}
+
+void Camera::rotateUp(float speed)
+{
+    _pitch += speed;
+}
+
+void Camera::rotateDown(float speed)
+{
+    _pitch -= speed;
+}
+
+void Camera::rotateLeft(float speed)
+{
+    _yaw -= speed;
+}
+
+void Camera::rotateRight(float speed)
+{
+    _yaw += speed;
 }
 
 glm::mat4 Camera::createProjectionMatrix()

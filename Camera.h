@@ -17,6 +17,10 @@ public:
     void moveLeft(float speed);
     void moveUp(float speed);
     void moveDown(float speed);
+    void rotateUp(float speed);
+    void rotateDown(float speed);
+    void rotateLeft(float speed);
+    void rotateRight(float speed);
 
     float getPitch() { return _pitch; }
     float getYaw() { return _yaw; }

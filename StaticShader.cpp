@@ -19,10 +19,20 @@ void StaticShader::bindAttributes()
 
 void StaticShader::getUniformLocations()
 {
-	_mvpMatrix = getUniformLocation("mvp");
+	_modelMatrixLoc = getUniformLocation("model");
+	_viewMatrixLoc = getUniformLocation("view");
+	_projectionMatrixLoc = getUniformLocation("projection");
 }
 
-void StaticShader::loadMVPMatrix(glm::mat4 matrix)
+void StaticShader::loadModelMatrix(glm::mat4 matrix)
 {
-	loadMatrix4f(_mvpMatrix, matrix);
+	loadMatrix4f(_modelMatrixLoc, matrix);
+}
+void StaticShader::loadViewMatrix(glm::mat4 matrix)
+{
+	loadMatrix4f(_viewMatrixLoc, matrix);
+}
+void StaticShader::loadProjectionMatrix(glm::mat4 matrix)
+{
+	loadMatrix4f(_projectionMatrixLoc, matrix);
 }

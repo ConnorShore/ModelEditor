@@ -15,10 +15,13 @@ public:
 	void bindAttributes() override;
 	void getUniformLocations() override;
 
+	void loadModelMatrix(glm::mat4 matrix);
+	void loadViewMatrix(glm::mat4 matrix);
+	void loadProjectionMatrix(glm::mat4 matrix);
 	void loadMVPMatrix(glm::mat4 matrix);
 
 private:
-	GLuint _mvpMatrix;
+	GLuint _modelMatrixLoc, _viewMatrixLoc, _projectionMatrixLoc;
 };
 
 #endif  // STATIC_SHADER

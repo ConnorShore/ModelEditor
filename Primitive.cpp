@@ -1,30 +1,30 @@
-#include "GameObject.h"
+#include "Primitive.h"
 
-GameObject::GameObject() : vaoID(0), vboID(0), vioID(0)
+Primitive::Primitive() : vaoID(0), vboID(0), vioID(0)
 {
     position = glm::vec3(0.0f);
     rotation = glm::vec3(0.0f);
     scale = glm::vec3(1.0f);
 }
 
-GameObject::~GameObject()
+Primitive::~Primitive()
 {
     glDeleteVertexArrays(1, &vaoID);
     glDeleteBuffers(1, &vboID);
     glDeleteBuffers(1, &vioID);
 }
 
-void GameObject::bindVertexArray()
+void Primitive::bindVertexArray()
 {
     glBindVertexArray(vaoID);
 }
 
-void GameObject::unbindVertexArray()
+void Primitive::unbindVertexArray()
 {
     glBindVertexArray(0);
 }
 
-void GameObject::createIDs()
+void Primitive::createIDs()
 {
     glGenVertexArrays(1, &vaoID);
     glGenBuffers(1, &vboID);

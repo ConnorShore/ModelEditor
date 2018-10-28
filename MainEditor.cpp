@@ -45,8 +45,8 @@ void MainEditor::init()
     camera.init(screenWidth, screenHeight);
     camera.setPosition(-1.0f, 0.0f, 2.0f);
 
-    renderer.addCube(0,0,-3,0,25,45,1.5,1.5,1.5);
-    renderer.addCube(-10,-3,-8,0,0,0,1.0, 4.0, 1.5);
+    cube1 = renderer.addCube(0,0,-3,0,25,45,1.5,1.5,1.5);
+    cube2 = renderer.addCube(-10,-3,-8,0,0,0,1.0, 4.0, 1.5);
 }
 
 void MainEditor::update()
@@ -89,6 +89,18 @@ void MainEditor::update()
     }
     if(inputManager.isKeyDown(SDLK_q)) {
         camera.moveDown(cameraSpeed);
+    }
+       if(inputManager.isKeyDown(SDLK_UP)) {
+        camera.rotateUp(0.5f);
+    }
+    if(inputManager.isKeyDown(SDLK_DOWN)) {
+        camera.rotateDown(0.5f);
+    }
+    if(inputManager.isKeyDown(SDLK_LEFT)) {
+        camera.rotateLeft(0.5f);
+    }
+    if(inputManager.isKeyDown(SDLK_RIGHT)) {
+        camera.rotateRight(0.5f);
     }
 }
 

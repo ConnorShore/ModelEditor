@@ -1,7 +1,7 @@
 #ifndef RENDERER
 #define RENDERER
 
-#include "GameObject.h"
+#include "Primitive.h"
 #include "StaticShader.h"
 #include "Camera.h"
 
@@ -19,11 +19,13 @@ public:
     void renderObjects(Camera& camera);
     void endRender(SDL_Window* window);
 
-    void addCube(float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz);
+    unsigned int addCube(float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz);
 
 private:
-    std::vector<GameObject*> _objects;
+    std::vector<Primitive*> _objects;
     StaticShader* _staticShader;
+
+    unsigned int current_id = 0;
 };
 
 #endif

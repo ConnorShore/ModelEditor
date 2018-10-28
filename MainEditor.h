@@ -31,6 +31,8 @@ private:
     InputManager inputManager;
     Timing _timer;
 
+    unsigned int cube1, cube2;
+
     float cameraSpeed = 0.015f;
 
     int screenWidth = 1600;

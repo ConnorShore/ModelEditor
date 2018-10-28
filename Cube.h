@@ -4,9 +4,9 @@
 #include <glm/glm.hpp>
 #include <GL/glew.h>
 
-#include "GameObject.h"
+#include "Primitive.h"
 
-class Cube : public GameObject {
+class Cube : public Primitive {
 public:
     Cube(float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz);
     Cube();
