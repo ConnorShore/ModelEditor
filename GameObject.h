@@ -1,34 +1,17 @@
 #ifndef GAME_OBJECT
 #define GAME_OBJECT
 
-#include <glm/glm.hpp>
-#include <GL/glew.h>
-#include <vector>
-
-#include "Vertex.h"
-
 class GameObject {
 public:
-    GameObject();
-    virtual ~GameObject();
+    GameObject() {}
+    ~GameObject() {}
 
-    glm::vec3 getPosition() {return position;}
-    glm::vec3 getRotation() {return rotation;}
-    glm::vec3 getScale() {return scale;}
+    unsigned int getID() {return id;}
 
-    virtual void render() = 0;
+    void setID(unsigned int id) {this->id = id;}
 
 protected:
-    glm::vec3 position, rotation, scale;
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
-    
-    void createIDs();
-    void bindVertexArray();
-    void unbindVertexArray();
-
-private:
-    GLuint vaoID, vboID, vioID;
+    unsigned int id;
 };
 
 #endif

@@ -37,6 +37,9 @@ void MainEditor::init()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
     staticShader.init("Shaders/shader.vert", "Shaders/shader.frag");
     staticShader.bindAttributes();
     
@@ -45,7 +48,11 @@ void MainEditor::init()
     camera.init(screenWidth, screenHeight);
     camera.setPosition(-1.0f, 0.0f, 2.0f);
 
-    renderer.addCube(0,0,-3,0,25,45,1.5,1.5,1.5);
+    // cube1 = renderer.addCube(0,0,-3,0,25,45,1.5,1.5,1.5, 1.0, 0.0, 0.0, 1.0);
+    // cube2 = renderer.addCube(-10,-3,-8,0,0,0,1.0, 4.0, 1.5, 0.0, 1.0, 0.0, 1.0);
+    //TODO: Redraw out cube
+    cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1,  1,0,0,1);
+    light = renderer.addLight(-5,1,2,   1,1,1);
 }
 
 void MainEditor::update()
@@ -56,6 +63,10 @@ void MainEditor::update()
             case SDL_QUIT:
                 exit(0);
                 break;
+            case SDL_MOUSEMOTION:
+            //TODO: Add mouselook
+                inputManager.setMouseCoords(evnt.motion.xrel, evnt.motion.yrel);
+                break;
             case SDL_KEYDOWN:
                 inputManager.keyPressed(evnt.key.keysym.sym);
                 break;
@@ -64,6 +75,8 @@ void MainEditor::update()
                 break;
         }
     }
+
+    camera.update();
 
     if(inputManager.isKeyDown(SDLK_w)) {
         camera.moveForward(cameraSpeed);
@@ -77,6 +90,24 @@ void MainEditor::update()
     if(inputManager.isKeyDown(SDLK_d)) {
         camera.moveRight(cameraSpeed);
     }
+    if(inputManager.isKeyDown(SDLK_e)) {
+        camera.moveUp(cameraSpeed);
+    }
+    if(inputManager.isKeyDown(SDLK_q)) {
+        camera.moveDown(cameraSpeed);
+    }
+       if(inputManager.isKeyDown(SDLK_UP)) {
+        camera.rotateUp(0.5f);
+    }
+    if(inputManager.isKeyDown(SDLK_DOWN)) {
+        camera.rotateDown(0.5f);
+    }
+    if(inputManager.isKeyDown(SDLK_LEFT)) {
+        camera.rotateLeft(0.5f);
+    }
+    if(inputManager.isKeyDown(SDLK_RIGHT)) {
+        camera.rotateRight(0.5f);
+    }
 }
 
 void MainEditor::render()
@@ -88,9 +119,14 @@ void MainEditor::render()
 
 void MainEditor::gameLoop()
 {
+    _timer.TimeInit();
     while(isRunning) {
+        _timer.FpsLimitInit();
+        _timer.calcDeltaTime();
         update();
         render();
+
+        _timer.CalculateFPS(true);
     }
 }
 

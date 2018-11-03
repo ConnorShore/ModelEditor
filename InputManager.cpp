@@ -25,3 +25,9 @@ bool InputManager::isKeyDown(unsigned int keyID)
 	else
 		return false;
 }
+
+void InputManager::setMouseCoords(float x, float y)
+{
+	_mouseX = x;
+	_mouseY = y;
+}

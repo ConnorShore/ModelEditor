@@ -8,13 +8,19 @@ struct Position
     float x,y,z;
 };
 
+struct Normal 
+{
+    float x,y,z;
+};
+
 struct Color 
 {
-    GLubyte r,g,b,a;
+    float r,g,b,a;
 };
 
 struct Vertex {
     Position position;
+    Normal normal;
     Color color;
 };
 
