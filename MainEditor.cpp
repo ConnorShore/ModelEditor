@@ -37,6 +37,9 @@ void MainEditor::init()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
     staticShader.init("Shaders/shader.vert", "Shaders/shader.frag");
     staticShader.bindAttributes();
     
@@ -45,9 +48,11 @@ void MainEditor::init()
     camera.init(screenWidth, screenHeight);
     camera.setPosition(-1.0f, 0.0f, 2.0f);
 
-    cube1 = renderer.addCube(0,0,-3,0,25,45,1.5,1.5,1.5);
-    cube2 = renderer.addCube(-10,-3,-8,0,0,0,1.0, 4.0, 1.5);
-    light = renderer.addLight(0,0,0,1,0,0,1);
+    // cube1 = renderer.addCube(0,0,-3,0,25,45,1.5,1.5,1.5, 1.0, 0.0, 0.0, 1.0);
+    // cube2 = renderer.addCube(-10,-3,-8,0,0,0,1.0, 4.0, 1.5, 0.0, 1.0, 0.0, 1.0);
+    //TODO: Redraw out cube
+    cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1,  1,0,0,1);
+    light = renderer.addLight(-5,1,2,   1,1,1);
 }
 
 void MainEditor::update()

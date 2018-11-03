@@ -14,7 +14,8 @@ StaticShader::~StaticShader()
 void StaticShader::bindAttributes()
 {
 	bindAttribute(0, "vertexPosition");
-	bindAttribute(1, "vertexColor");
+	bindAttribute(1, "vertexNormal");
+	bindAttribute(2, "vertexColor");
 }
 
 void StaticShader::getUniformLocations()
@@ -44,7 +45,7 @@ void StaticShader::loadLightPosition(glm::vec3 position)
 	loadVector3f(_lightPositionLoc, position);
 }
 
-void StaticShader::loadLightColor(glm::vec4 color)
+void StaticShader::loadLightColor(glm::vec3 color)
 {
-	loadVector4f(_lightColorLoc, color);
+	loadVector3f(_lightColorLoc, color);
 }

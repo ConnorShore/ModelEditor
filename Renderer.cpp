@@ -46,7 +46,7 @@ void Renderer::renderObjects(Camera& camera)
         glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
 
         _staticShader->loadModelMatrix(model);
-
+        
         obj->render();
     }
 }
@@ -78,18 +78,19 @@ GameObject* Renderer::getGameObject(unsigned int id)
     return temp;
 }
 
-unsigned int Renderer::addCube(float x, float y, float z, float rx, float ry, float rz, float sx, float sy, float sz)
+unsigned int Renderer::addCube(float x, float y, float z, float rx, float ry, float rz, 
+                               float sx, float sy, float sz, float r, float g, float b, float a)
 {
-    Cube* cube = new Cube(x,y,z,rx,ry,rz,sx,sy,sz);
+    Cube* cube = new Cube(x,y,z,rx,ry,rz,sx,sy,sz,r,g,b,a);
     cube->setID(currentID++);
     _objects.push_back(cube);
 
     return cube->getID();
 }
 
-unsigned int Renderer::addLight(float x, float y, float z, float r, float g, float b, float a)
+unsigned int Renderer::addLight(float x, float y, float z, float r, float g, float b)
 {
-    Light* light = new Light(x,y,z,r,g,b,a);
+    Light* light = new Light(x,y,z,r,g,b);
     light->setID(currentID++);
     _lights.push_back(light);
     return light->getID();
