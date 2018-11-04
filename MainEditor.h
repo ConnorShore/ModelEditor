@@ -14,6 +14,7 @@
 #include "Cube.h"
 #include "InputManager.h"
 #include "Timing.h"
+#include "Material.h"
 
 class MainEditor
 {

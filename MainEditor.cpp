@@ -46,13 +46,18 @@ void MainEditor::init()
     renderer.init(&staticShader);
 
     camera.init(screenWidth, screenHeight);
-    camera.setPosition(-1.0f, 0.0f, 2.0f);
+    camera.setPosition(0.0f, 0.0f, 3.0f);
 
     // cube1 = renderer.addCube(0,0,-3,0,25,45,1.5,1.5,1.5, 1.0, 0.0, 0.0, 1.0);
     // cube2 = renderer.addCube(-10,-3,-8,0,0,0,1.0, 4.0, 1.5, 0.0, 1.0, 0.0, 1.0);
     //TODO: Redraw out cube
-    cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1,  1,0,0,1);
-    light = renderer.addLight(-5,1,2,   1,1,1);
+    Material mat;
+    mat.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
+    mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
+    mat.specular = glm::vec3(0.5f);
+    mat.shininess = 32.0f;
+    cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1, mat);
+    light = renderer.addLight(1.2f,1.0f,2.0f,   1,1,1);
 }
 
 void MainEditor::update()
@@ -96,7 +101,7 @@ void MainEditor::update()
     if(inputManager.isKeyDown(SDLK_q)) {
         camera.moveDown(cameraSpeed);
     }
-       if(inputManager.isKeyDown(SDLK_UP)) {
+    if(inputManager.isKeyDown(SDLK_UP)) {
         camera.rotateUp(0.5f);
     }
     if(inputManager.isKeyDown(SDLK_DOWN)) {

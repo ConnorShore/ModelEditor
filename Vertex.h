@@ -13,15 +13,9 @@ struct Normal
     float x,y,z;
 };
 
-struct Color 
-{
-    float r,g,b,a;
-};
-
 struct Vertex {
     Position position;
     Normal normal;
-    Color color;
 };
 
 #endif

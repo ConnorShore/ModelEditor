@@ -29,7 +29,7 @@ void Timing::CalculateFPS(bool printFPS)
 		_fpsCurrent = _fpsFrames;
 
 		if (printFPS)
-			printf("%u\n", _fpsCurrent);
+			printf("FPS: %u\n", _fpsCurrent);
 
 		_deltaTime = float(_fpsCurrent - _fpsLastTime);
 
