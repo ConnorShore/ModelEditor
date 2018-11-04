@@ -56,8 +56,8 @@ void MainEditor::init()
     mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
     mat.specular = glm::vec3(0.5f);
     mat.shininess = 32.0f;
-    cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1, mat);
-    light = renderer.addLight(1.2f,1.0f,2.0f,   1,1,1);
+    cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1,  mat);
+    light = renderer.addLight(1.2f,1.0f,2.0f,  0.5f,0.5f,0.5f,  0.2f,  1,1,1);
 }
 
 void MainEditor::update()

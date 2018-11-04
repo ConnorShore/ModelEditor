@@ -23,7 +23,8 @@ public:
 
     unsigned int addCube(float x, float y, float z, float rx, float ry, float rz, 
                          float sx, float sy, float sz, Material& material);
-    unsigned int addLight(float x, float y, float z, float r=1.0f, float g=1.0f, float b=1.0f);
+    unsigned int addLight(float x, float y, float z, float r, float g, float b,
+                          float intensity, float specX, float specY, float specZ);
 
 private:
     std::vector<Primitive*> _objects;

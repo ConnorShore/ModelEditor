@@ -23,8 +23,11 @@ void StaticShader::getUniformLocations()
 	_viewMatrixLoc = getUniformLocation("view");
 	_projectionMatrixLoc = getUniformLocation("projection");
 	_viewPositionLoc = getUniformLocation("viewPosition");
-	_lightPositionLoc = getUniformLocation("lightPosition");
-	_lightColorLoc = getUniformLocation("lightColor");
+
+	_lightPositionLoc = getUniformLocation("light.position");
+	_lightColorLoc = getUniformLocation("light.color");
+	_lightSpecularLoc = getUniformLocation("light.specular");
+	_lightIntensityLoc = getUniformLocation("light.intensity");
 
 	_materialAmbientLoc = getUniformLocation("material.ambient");
 	_materialDiffuseLoc = getUniformLocation("material.diffuse");
@@ -50,20 +53,18 @@ void StaticShader::loadViewPosition(glm::vec3 position)
 	loadVector3f(_viewPositionLoc, position);
 }
 
-void StaticShader::loadLightPosition(glm::vec3 position)
-{
-	loadVector3f(_lightPositionLoc, position);
-}
-
-void StaticShader::loadLightColor(glm::vec3 color)
-{
-	loadVector3f(_lightColorLoc, color);
-}
-
 void StaticShader::loadMaterial(Material material)
 {
 	loadVector3f(_materialAmbientLoc, material.ambient); 
 	loadVector3f(_materialDiffuseLoc, material.diffuse);
 	loadVector3f(_materialSpecularLoc, material.specular);
 	loadFloat(_materialShininessLoc, material.shininess);
+}
+
+void StaticShader::loadLight(Light light)
+{
+	loadVector3f(_lightPositionLoc, light.getPosition());
+	loadVector3f(_lightColorLoc, light.getColor());
+	loadVector3f(_lightSpecularLoc, light.getSpecular());
+	loadFloat(_lightIntensityLoc, light.getIntensity());
 }

@@ -39,8 +39,7 @@ void Renderer::renderObjects(Camera& camera)
 
     for(Light* light : _lights) {
         //Will only render props for the last light in _lights
-        _staticShader->loadLightPosition(light->getPosition());
-        _staticShader->loadLightColor(light->getColor());
+        _staticShader->loadLight(*light);
     }
 
     for(Primitive* obj : _objects) {
@@ -89,9 +88,10 @@ unsigned int Renderer::addCube(float x, float y, float z, float rx, float ry, fl
     return cube->getID();
 }
 
-unsigned int Renderer::addLight(float x, float y, float z, float r, float g, float b)
+unsigned int Renderer::addLight(float x, float y, float z, float r, float g, float b, 
+                                float intensity, float specX, float specY, float specZ)
 {
-    Light* light = new Light(x,y,z,r,g,b);
+    Light* light = new Light(x,y,z,r,g,b,intensity,specX,specY,specZ);
     light->setID(currentID++);
     _lights.push_back(light);
     return light->getID();
