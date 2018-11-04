@@ -1,19 +1,17 @@
 #include "Light.h"
 
-Light::Light(float x, float y, float z, float r, float g, float b, float intensity, float specX, float specY, float specZ)
+Light::Light(float x, float y, float z, float r, float g, float b, float intensity)
 {
-    _position = glm::vec3(x,y,z);
-    _color = glm::vec3(r,g,b);
-    _intensity = intensity;
-    _specular = glm::vec3(specX, specY, specZ);
+    position = glm::vec3(x,y,z);
+    color = glm::vec3(r,g,b);
+    intensity = intensity;
 }
 
 Light::Light()
 {
-    _position = glm::vec3(0.0f);
-    _color = glm::vec3(1.0f);
-    _intensity = 0.5f;
-    _specular = glm::vec3(1.0f);
+    position = glm::vec3(0.0f);
+    color = glm::vec3(1.0f);
+    intensity = 0.5f;
 }
 
 Light::~Light()

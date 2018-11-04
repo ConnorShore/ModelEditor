@@ -15,7 +15,7 @@ LIBS=-lSDL2 -lGLEW -lGL -lm
 CLEAN=rm -f $(EXE) *.o *.a
 endif
 
-FILES=main.cpp MainEditor.h MainEditor.cpp ShaderProgram.h ShaderProgram.cpp StaticShader.h StaticShader.cpp Math.h Camera.h Camera.cpp GameObject.h Primitive.h Primitive.cpp Cube.h Cube.cpp Vertex.h Renderer.h Renderer.cpp InputManager.h InputManager.cpp Timing.h Timing.cpp Light.h Light.cpp
+FILES=main.cpp MainEditor.h MainEditor.cpp ShaderProgram.h ShaderProgram.cpp StaticShader.h StaticShader.cpp Math.h Camera.h Camera.cpp GameObject.h Primitive.h Primitive.cpp Cube.h Cube.cpp Vertex.h Renderer.h Renderer.cpp InputManager.h InputManager.cpp Timing.h Timing.cpp Light.h Light.cpp PointLight.h PointLight.cpp
 
 
 # Link

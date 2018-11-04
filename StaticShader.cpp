@@ -1,6 +1,6 @@
 #include "StaticShader.h"
 
-
+#include "PointLight.h"
 
 StaticShader::StaticShader()
 {
@@ -24,10 +24,26 @@ void StaticShader::getUniformLocations()
 	_projectionMatrixLoc = getUniformLocation("projection");
 	_viewPositionLoc = getUniformLocation("viewPosition");
 
-	_lightPositionLoc = getUniformLocation("light.position");
-	_lightColorLoc = getUniformLocation("light.color");
-	_lightSpecularLoc = getUniformLocation("light.specular");
-	_lightIntensityLoc = getUniformLocation("light.intensity");
+	for(int i =0 ; i < MAX_LIGHTS; i++) {
+		std::string pos = std::string("pointLights[") + std::to_string(i) + std::string("].position");
+		printf("POS: %s\n", pos.c_str());
+		_pLightPositionLoc[i] = getUniformLocation(pos);
+
+		std::string col = std::string("pointLights[") + std::to_string(i) + std::string("].color");
+		_pLightColorLoc[i] = getUniformLocation(col);
+
+		std::string intensity = std::string("pointLights[") + std::to_string(i) + std::string("].intensity");
+		_pLightIntensityLoc[i] = getUniformLocation(intensity);
+
+		std::string constant = std::string("pointLights[") + std::to_string(i) + std::string("].constant");
+		_pLightConstLoc[i] = getUniformLocation(constant);
+
+		std::string linear = std::string("pointLights[") + std::to_string(i) + std::string("].linear");
+		_pLightLinearLoc[i] = getUniformLocation(linear);
+
+		std::string quad = std::string("pointLights[") + std::to_string(i) + std::string("].quadratic");
+		_pLightQuadLoc[i] = getUniformLocation(quad);
+	}
 
 	_materialAmbientLoc = getUniformLocation("material.ambient");
 	_materialDiffuseLoc = getUniformLocation("material.diffuse");
@@ -61,10 +77,32 @@ void StaticShader::loadMaterial(Material material)
 	loadFloat(_materialShininessLoc, material.shininess);
 }
 
-void StaticShader::loadLight(Light light)
+void StaticShader::loadLights(std::vector<Light*> lights)
 {
-	loadVector3f(_lightPositionLoc, light.getPosition());
-	loadVector3f(_lightColorLoc, light.getColor());
-	loadVector3f(_lightSpecularLoc, light.getSpecular());
-	loadFloat(_lightIntensityLoc, light.getIntensity());
+	unsigned int count = 0;
+	for(unsigned int i = 0; i < MAX_LIGHTS; i++) {
+		printf("Loading light[%d]\n", i);
+		if(count < lights.size()) {
+			if(PointLight* light = static_cast<PointLight*>(lights[i])) {
+				count++;
+				printf("Color: %f,%f,%f\n", light->getColor().x, light->getColor().y, light->getColor().z);
+				loadVector3f(_pLightPositionLoc[i], light->getPosition());
+				loadVector3f(_pLightColorLoc[i], light->getColor());
+				loadFloat(_pLightIntensityLoc[i], light->getIntensity());
+				loadFloat(_pLightConstLoc[i], light->getConstant());
+				loadFloat(_pLightLinearLoc[i], light->getLinear());
+				loadFloat(_pLightQuadLoc[i], light->getQuadratic());
+			}
+		} 
+		else {
+			printf("Loading default light\n");
+			loadVector3f(_pLightPositionLoc[i], glm::vec3(0.0f));
+			loadVector3f(_pLightColorLoc[i], glm::vec3(0.0f));
+			loadFloat(_pLightIntensityLoc[i], 1.0f);
+			loadFloat(_pLightConstLoc[i], 1.0f);
+			loadFloat(_pLightLinearLoc[i], 0.0f);
+			loadFloat(_pLightQuadLoc[i], 0.0f);
+		}
+		printf("Loaded light[%d]\n", i);
+	}
 }

@@ -1,10 +1,10 @@
 #include "Renderer.h"
 #include "Math.h"
 #include "Cube.h"
+#include "PointLight.h"
 
 Renderer::Renderer()
 {
-
 }
 
 Renderer::~Renderer()
@@ -37,10 +37,7 @@ void Renderer::renderObjects(Camera& camera)
     _staticShader->loadProjectionMatrix(proj);
     _staticShader->loadViewPosition(camera.getPosition());
 
-    for(Light* light : _lights) {
-        //Will only render props for the last light in _lights
-        _staticShader->loadLight(*light);
-    }
+    _staticShader->loadLights(_lights);
 
     for(Primitive* obj : _objects) {
         glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
@@ -88,10 +85,14 @@ unsigned int Renderer::addCube(float x, float y, float z, float rx, float ry, fl
     return cube->getID();
 }
 
-unsigned int Renderer::addLight(float x, float y, float z, float r, float g, float b, 
-                                float intensity, float specX, float specY, float specZ)
+unsigned int Renderer::addPointLight(float x, float y, float z, float r, float g, float b, float intensity,
+                                float constant, float linear, float quadratic)
 {
-    Light* light = new Light(x,y,z,r,g,b,intensity,specX,specY,specZ);
+    glm::vec3 pos(x,y,z);
+    glm::vec3 color(r,g,b);
+    glm::vec3 attenuation(constant,linear,quadratic);
+    PointLight* light = new PointLight(pos,color,intensity,attenuation);
+
     light->setID(currentID++);
     _lights.push_back(light);
     return light->getID();
