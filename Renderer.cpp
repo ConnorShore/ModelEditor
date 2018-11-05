@@ -2,6 +2,7 @@
 #include "Math.h"
 #include "Cube.h"
 #include "PointLight.h"
+#include "DirectionalLight.h"
 
 Renderer::Renderer()
 {
@@ -92,6 +93,18 @@ unsigned int Renderer::addPointLight(float x, float y, float z, float r, float g
     glm::vec3 color(r,g,b);
     glm::vec3 attenuation(constant,linear,quadratic);
     PointLight* light = new PointLight(pos,color,intensity,attenuation);
+
+    light->setID(currentID++);
+    _lights.push_back(light);
+    return light->getID();
+}
+
+
+unsigned int Renderer::addDirectionalLight(float dx, float dy, float dz, float r, float g, float b, float intensity)
+{
+    glm::vec3 direction(dx,dy,dz);
+    glm::vec3 color(r,g,b);
+    DirectionalLight* light = new DirectionalLight(direction,color,intensity);
 
     light->setID(currentID++);
     _lights.push_back(light);

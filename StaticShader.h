@@ -1,5 +1,5 @@
-#ifndef STATIC_SHADER_H
-#define STATIC_SHADER_H
+#ifndef STATIC_SHADER
+#define STATIC_SHADER
 
 #include "ShaderProgram.h"
 #include "Material.h"
@@ -33,6 +33,8 @@ private:
 
 	GLuint _pLightPositionLoc[MAX_LIGHTS], _pLightColorLoc[MAX_LIGHTS], _pLightIntensityLoc[MAX_LIGHTS];
 	GLuint _pLightConstLoc[MAX_LIGHTS], _pLightLinearLoc[MAX_LIGHTS], _pLightQuadLoc[MAX_LIGHTS];
+
+	GLuint _dLightDirectionLoc, _dLightColorLoc, _dLightIntensityLoc;
 };
 
 #endif  // STATIC_SHADER

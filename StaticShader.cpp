@@ -1,6 +1,7 @@
 #include "StaticShader.h"
 
 #include "PointLight.h"
+#include "DirectionalLight.h"
 
 StaticShader::StaticShader()
 {
@@ -26,7 +27,6 @@ void StaticShader::getUniformLocations()
 
 	for(int i =0 ; i < MAX_LIGHTS; i++) {
 		std::string pos = std::string("pointLights[") + std::to_string(i) + std::string("].position");
-		printf("POS: %s\n", pos.c_str());
 		_pLightPositionLoc[i] = getUniformLocation(pos);
 
 		std::string col = std::string("pointLights[") + std::to_string(i) + std::string("].color");
@@ -44,6 +44,10 @@ void StaticShader::getUniformLocations()
 		std::string quad = std::string("pointLights[") + std::to_string(i) + std::string("].quadratic");
 		_pLightQuadLoc[i] = getUniformLocation(quad);
 	}
+
+	_dLightDirectionLoc = getUniformLocation("directionLight.direction");
+	_dLightColorLoc = getUniformLocation("directionLight.color");
+	_dLightIntensityLoc = getUniformLocation("directionLight.intensity");
 
 	_materialAmbientLoc = getUniformLocation("material.ambient");
 	_materialDiffuseLoc = getUniformLocation("material.diffuse");
@@ -79,13 +83,29 @@ void StaticShader::loadMaterial(Material material)
 
 void StaticShader::loadLights(std::vector<Light*> lights)
 {
+	//Direcitonal Light
+	bool foundDirectionLight = false;
+	for(unsigned int i = 0; i < lights.size(); i++) {
+		if(DirectionalLight* light = static_cast<DirectionalLight*>(lights[i])) {
+			foundDirectionLight = true;
+			loadVector3f(_dLightDirectionLoc, light->getDirection());
+			loadVector3f(_dLightColorLoc, light->getColor());
+			loadFloat(_dLightIntensityLoc, light->getIntensity());
+		}
+	}
+
+	if(!foundDirectionLight) {
+		loadVector3f(_dLightDirectionLoc, glm::vec3(0.0f));
+		loadVector3f(_dLightColorLoc, glm::vec3(0.0f));
+		loadFloat(_dLightIntensityLoc, 0.0f);
+	}
+
+	//Point Lights
 	unsigned int count = 0;
 	for(unsigned int i = 0; i < MAX_LIGHTS; i++) {
-		printf("Loading light[%d]\n", i);
 		if(count < lights.size()) {
 			if(PointLight* light = static_cast<PointLight*>(lights[i])) {
 				count++;
-				printf("Color: %f,%f,%f\n", light->getColor().x, light->getColor().y, light->getColor().z);
 				loadVector3f(_pLightPositionLoc[i], light->getPosition());
 				loadVector3f(_pLightColorLoc[i], light->getColor());
 				loadFloat(_pLightIntensityLoc[i], light->getIntensity());
@@ -95,7 +115,6 @@ void StaticShader::loadLights(std::vector<Light*> lights)
 			}
 		} 
 		else {
-			printf("Loading default light\n");
 			loadVector3f(_pLightPositionLoc[i], glm::vec3(0.0f));
 			loadVector3f(_pLightColorLoc[i], glm::vec3(0.0f));
 			loadFloat(_pLightIntensityLoc[i], 1.0f);
@@ -103,6 +122,5 @@ void StaticShader::loadLights(std::vector<Light*> lights)
 			loadFloat(_pLightLinearLoc[i], 0.0f);
 			loadFloat(_pLightQuadLoc[i], 0.0f);
 		}
-		printf("Loaded light[%d]\n", i);
 	}
 }

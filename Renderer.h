@@ -26,6 +26,8 @@ public:
     unsigned int addPointLight(float x, float y, float z, float r, float g, float b,
                           float intensity, float constant, float linear, float quadratic);
 
+    unsigned int addDirectionalLight(float dx, float dy, float dz, float r, float g, float b, float instensity);
+
 private:
     std::vector<Primitive*> _objects;
     std::vector<Light*> _lights;

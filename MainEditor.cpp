@@ -55,9 +55,10 @@ void MainEditor::init()
     mat.shininess = 32.0f;
     cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1,  mat);
     
-    light = renderer.addPointLight(1.2f,1.0f,2.0f,  0.5f,0.5f,0.5f,  0.2f,  1.0f,0.09f,0.032f);
-    light1 = renderer.addPointLight(-1.2f,-0.5,-0.8f,  0.0f,0.0f,1.0f,  0.6f,  1.0f,0.09f,0.032f);
-    light2 = renderer.addPointLight(0.0,1.5f,-0.2f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
+    light = renderer.addPointLight(1.2f,1.0f,2.0f,  0.15f,0.5f,1.0f,  0.2f,  1.0f,0.09f,0.032f);
+    // light1 = renderer.addPointLight(-1.2f,-0.5,-0.8f,  0.0f,0.0f,1.0f,  0.6f,  1.0f,0.09f,0.032f);
+    // light2 = renderer.addPointLight(0.0,1.5f,-0.2f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
+    light3 = renderer.addDirectionalLight(1.0f,0.0f,0.0f,   1.0f,1.0f,1.0f,     0.2f);
 }
 
 void MainEditor::update()
