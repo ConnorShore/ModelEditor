@@ -9,7 +9,7 @@ void Camera::init(int screenWidth, int screenHeight)
     _screenWidth = screenWidth;
     _screenHeight = screenHeight;
     _fov = 70.0f;
-    _zNear = 1.0f;
+    _zNear = 0.2f;
     _zFar = 150.0f;
 
     _pitch = _yaw = _roll = 0;

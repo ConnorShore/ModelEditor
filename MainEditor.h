@@ -14,6 +14,7 @@
 #include "Cube.h"
 #include "InputManager.h"
 #include "Timing.h"
+#include "Material.h"
 
 class MainEditor
 {
@@ -31,7 +32,7 @@ private:
     InputManager inputManager;
     Timing _timer;
 
-    unsigned int cube1, cube2, light;
+    unsigned int cube1, cube2, light, light1, light2, light3;
 
     float cameraSpeed = 0.015f;
 

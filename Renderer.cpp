@@ -1,10 +1,11 @@
 #include "Renderer.h"
 #include "Math.h"
 #include "Cube.h"
+#include "PointLight.h"
+#include "DirectionalLight.h"
 
 Renderer::Renderer()
 {
-
 }
 
 Renderer::~Renderer()
@@ -35,17 +36,14 @@ void Renderer::renderObjects(Camera& camera)
 
     _staticShader->loadViewMatrix(view);
     _staticShader->loadProjectionMatrix(proj);
+    _staticShader->loadViewPosition(camera.getPosition());
 
-    for(Light* light : _lights) {
-        //Will only render props for the last light in _lights
-        _staticShader->loadLightPosition(light->getPosition());
-        _staticShader->loadLightColor(light->getColor());
-    }
+    _staticShader->loadLights(_lights);
 
     for(Primitive* obj : _objects) {
         glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
-
         _staticShader->loadModelMatrix(model);
+        _staticShader->loadMaterial(obj->getMaterial());
         
         obj->render();
     }
@@ -79,18 +77,35 @@ GameObject* Renderer::getGameObject(unsigned int id)
 }
 
 unsigned int Renderer::addCube(float x, float y, float z, float rx, float ry, float rz, 
-                               float sx, float sy, float sz, float r, float g, float b, float a)
+                               float sx, float sy, float sz, Material& material)
 {
-    Cube* cube = new Cube(x,y,z,rx,ry,rz,sx,sy,sz,r,g,b,a);
+    Cube* cube = new Cube(x,y,z,rx,ry,rz,sx,sy,sz,material);
     cube->setID(currentID++);
     _objects.push_back(cube);
 
     return cube->getID();
 }
 
-unsigned int Renderer::addLight(float x, float y, float z, float r, float g, float b)
+unsigned int Renderer::addPointLight(float x, float y, float z, float r, float g, float b, float intensity,
+                                float constant, float linear, float quadratic)
 {
-    Light* light = new Light(x,y,z,r,g,b);
+    glm::vec3 pos(x,y,z);
+    glm::vec3 color(r,g,b);
+    glm::vec3 attenuation(constant,linear,quadratic);
+    PointLight* light = new PointLight(pos,color,intensity,attenuation);
+
+    light->setID(currentID++);
+    _lights.push_back(light);
+    return light->getID();
+}
+
+
+unsigned int Renderer::addDirectionalLight(float dx, float dy, float dz, float r, float g, float b, float intensity)
+{
+    glm::vec3 direction(dx,dy,dz);
+    glm::vec3 color(r,g,b);
+    DirectionalLight* light = new DirectionalLight(direction,color,intensity);
+
     light->setID(currentID++);
     _lights.push_back(light);
     return light->getID();
