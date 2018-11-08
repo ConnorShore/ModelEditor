@@ -38,8 +38,6 @@ uniform vec3 viewPosition;
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
 {
-    vec3 ambient = light.intensity * material.ambient;
-
     //diffuse
     vec3 lightDirection = normalize(-light.direction);
     float dotRes = max(dot(normal, lightDirection), 0.0);
@@ -50,7 +48,7 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
     float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.color * specularFactor * material.specular;
 
-    vec3 result = ambient + diffuse + specular;
+    vec3 result = light.intensity * (diffuse + specular);
 
     return result;
 }
@@ -85,9 +83,12 @@ void main()
     vec3 viewDir = normalize(viewPosition - fragmentPosition);
 
     vec3 result = vec3(globalAmbient * material.ambient);
-    result += calculateDirectionalLight(directionLight, normal, viewDir);
+
+    if(directionLight.direction.x != 0.0)
+        result += calculateDirectionalLight(directionLight, normal, viewDir);
 
     for(int i = 0; i < MAX_LIGHTS; i++) {
+            
         result += calculatePointLight(pointLights[i], normal, viewDir);
     }
 

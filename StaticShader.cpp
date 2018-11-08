@@ -86,25 +86,28 @@ void StaticShader::loadLights(std::vector<Light*> lights)
 	//Direcitonal Light
 	bool foundDirectionLight = false;
 	for(unsigned int i = 0; i < lights.size(); i++) {
-		if(DirectionalLight* light = static_cast<DirectionalLight*>(lights[i])) {
+		if(lights[i]->getLightType() == LightType::DIRECTIONAL) {
+			DirectionalLight* light = static_cast<DirectionalLight*>(lights[i]);
 			foundDirectionLight = true;
 			loadVector3f(_dLightDirectionLoc, light->getDirection());
 			loadVector3f(_dLightColorLoc, light->getColor());
 			loadFloat(_dLightIntensityLoc, light->getIntensity());
+			break;
 		}
 	}
 
 	if(!foundDirectionLight) {
-		loadVector3f(_dLightDirectionLoc, glm::vec3(0.0f));
-		loadVector3f(_dLightColorLoc, glm::vec3(0.0f));
+		loadVector3f(_dLightDirectionLoc, glm::vec3(0.0f,0.0f,0.0f));
+		loadVector3f(_dLightColorLoc, glm::vec3(0.0f,0.0f,0.0f));
 		loadFloat(_dLightIntensityLoc, 0.0f);
 	}
 
 	//Point Lights
 	unsigned int count = 0;
 	for(unsigned int i = 0; i < MAX_LIGHTS; i++) {
-		if(count < lights.size()) {
-			if(PointLight* light = static_cast<PointLight*>(lights[i])) {
+		if(count < lights.size() && i < lights.size()) {
+			if(lights[i]->getLightType() == LightType::POINT) {
+				PointLight* light = static_cast<PointLight*>(lights[i]);
 				count++;
 				loadVector3f(_pLightPositionLoc[i], light->getPosition());
 				loadVector3f(_pLightColorLoc[i], light->getColor());
@@ -113,11 +116,19 @@ void StaticShader::loadLights(std::vector<Light*> lights)
 				loadFloat(_pLightLinearLoc[i], light->getLinear());
 				loadFloat(_pLightQuadLoc[i], light->getQuadratic());
 			}
-		} 
+			else {
+				loadVector3f(_pLightPositionLoc[i], glm::vec3(0.0f));
+				loadVector3f(_pLightColorLoc[i], glm::vec3(0.0f));
+				loadFloat(_pLightIntensityLoc[i], 0.0f);
+				loadFloat(_pLightConstLoc[i], 1.0f);
+				loadFloat(_pLightLinearLoc[i], 0.0f);
+				loadFloat(_pLightQuadLoc[i], 0.0f);
+			}
+		}
 		else {
 			loadVector3f(_pLightPositionLoc[i], glm::vec3(0.0f));
 			loadVector3f(_pLightColorLoc[i], glm::vec3(0.0f));
-			loadFloat(_pLightIntensityLoc[i], 1.0f);
+			loadFloat(_pLightIntensityLoc[i], 0.0f);
 			loadFloat(_pLightConstLoc[i], 1.0f);
 			loadFloat(_pLightLinearLoc[i], 0.0f);
 			loadFloat(_pLightQuadLoc[i], 0.0f);
