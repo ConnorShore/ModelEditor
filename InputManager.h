@@ -8,6 +8,8 @@ public:
     InputManager();
     ~InputManager();
 
+    void update();
+
     void keyPressed(unsigned int keyID);
     void keyReleased(unsigned int keyID);
     bool isKeyDown(unsigned int keyID);

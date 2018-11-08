@@ -32,13 +32,18 @@ public:
     void setRoll(float roll) { _roll = roll; }
     void setSensitivity(float sensitivity) { _sensitivity = sensitivity; }
 
+    float getScreenWidth() {return _screenWidth;}
+    float getScreenHeight() {return _screenHeight;}
+
     glm::mat4 createProjectionMatrix();
     glm::mat4 getProjectionMatrix();
     glm::mat4 getViewMatrix();
 
     glm::vec3 getPosition() { return _position; }
+    glm::vec2 getMouseCoords() {return _mouseCoords;}
 
     void setPosition(float x, float y, float z) { _position = glm::vec3(x,y,z); }
+    void setMouseCords(float x, float y) {_mouseCoords = glm::vec2(x,y);}
 
 private:
     int _screenWidth, _screenHeight;
@@ -49,6 +54,8 @@ private:
 
     glm::vec3 _position, _direction, _up, _right;
     glm::mat4 _projectionMatrix;
+
+    glm::vec2 _mouseCoords;
 };
 
 #endif
