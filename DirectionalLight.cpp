@@ -5,4 +5,5 @@ DirectionalLight::DirectionalLight(glm::vec3& direction, glm::vec3& col, float s
     _direction = direction;
     color = col;
     intensity = strength;
+    lightType = LightType::DIRECTIONAL;
 }

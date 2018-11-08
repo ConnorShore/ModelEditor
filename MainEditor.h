@@ -35,6 +35,7 @@ private:
     unsigned int cube1, cube2, light, light1, light2, light3;
 
     float cameraSpeed = 0.015f;
+    float intensity = 0.1f;
 
     int screenWidth = 1600;
     int screenHeight = 900;
