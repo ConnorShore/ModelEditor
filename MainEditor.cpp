@@ -67,7 +67,7 @@ void MainEditor::init()
     light = renderer.addPointLight(1.2f,1.0f,2.0f,  0.15f,0.5f,1.0f,  1.0f,  1.0f,0.09f,0.032f);
     light1 = renderer.addPointLight(-1.2f,-0.5,-0.8f,  0.0f,0.0f,1.0f,  0.6f,  1.0f,0.09f,0.032f);
     light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
-    light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,     intensity);
+    light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
 
     picker = Picker(&camera, camera.getProjectionMatrix());
 }
@@ -78,8 +78,9 @@ void MainEditor::update()
     inputManager.update();
     camera.setMouseCords(inputManager.getMouseX(), inputManager.getMouseY());
     camera.update();
-    picker.update();
+    picker.update(renderer.getPrimitives());
 
+    // KEYBOARD //
     if(inputManager.isKeyDown(SDLK_w)) {
         camera.moveForward(cameraSpeed);
     }
@@ -122,9 +123,8 @@ void MainEditor::update()
         d->setIntensity(intensity);
     }
 
-    //MOUSE//
+    // MOUSE //
     if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
-        // printf("Mouse (x,y): %f,%f\n", camera.getMouseCoords().x, camera.getMouseCoords().y);
         printf("Ray: %f,%f,%f\n", picker.getCurrentRay().x, picker.getCurrentRay().y, picker.getCurrentRay().z);
     }
 }

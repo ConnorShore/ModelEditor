@@ -20,6 +20,8 @@ public:
     void renderObjects(Camera& camera);
     void endRender(SDL_Window* window);
     GameObject* getGameObject(unsigned int id);
+    std::vector<Primitive*> getPrimitives() {return _objects;}
+
 
     unsigned int addCube(float x, float y, float z, float rx, float ry, float rz, 
                          float sx, float sy, float sz, Material& material);

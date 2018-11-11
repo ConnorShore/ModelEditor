@@ -34,6 +34,12 @@ void Renderer::renderObjects(Camera& camera)
     glm::mat4 view = camera.getViewMatrix();
     glm::mat4 proj = camera.getProjectionMatrix();
 
+    Material mat;
+    mat.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+    mat.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+    mat.specular = glm::vec3(1.0f);
+    mat.shininess = 52.0f;
+
     _staticShader->loadViewMatrix(view);
     _staticShader->loadProjectionMatrix(proj);
     _staticShader->loadViewPosition(camera.getPosition());
@@ -41,9 +47,13 @@ void Renderer::renderObjects(Camera& camera)
     _staticShader->loadLights(_lights);
 
     for(Primitive* obj : _objects) {
-        glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
+        // glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
+        glm::mat4 model = obj->getModelMatrix();
         _staticShader->loadModelMatrix(model);
-        _staticShader->loadMaterial(obj->getMaterial());
+        if(obj->isColliding)
+            _staticShader->loadMaterial(mat);
+        else
+            _staticShader->loadMaterial(obj->getMaterial());
         
         obj->render();
     }
