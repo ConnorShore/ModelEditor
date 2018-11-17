@@ -20,14 +20,12 @@ void Renderer::init(StaticShader* shader, OutlineShader* outline)
 {
     _staticShader = shader;
     _outlineShader = outline;
-
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 }
 
 void Renderer::beginRender()
 {
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	_staticShader->start();
@@ -39,46 +37,37 @@ void Renderer::renderObjects(Camera& camera)
     glm::mat4 view = camera.getViewMatrix();
     glm::mat4 proj = camera.getProjectionMatrix();
 
-    Material mat;
-    mat.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
-    mat.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-    mat.specular = glm::vec3(1.0f);
-    mat.shininess = 52.0f;
-
     _staticShader->loadViewMatrix(view);
     _staticShader->loadProjectionMatrix(proj);
     _staticShader->loadViewPosition(camera.getPosition());
 
     _staticShader->loadLights(_lights);
 
-    glStencilFunc(GL_ALWAYS, 1, 0xFF);
-    glStencilMask(0xFF);
+    glStencilFunc(GL_ALWAYS, 1, 0x1);
+    glStencilMask(0x1);
 
     for(Primitive* obj : _objects) {
         // glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
         glm::mat4 model = obj->getModelMatrix();
         _staticShader->loadModelMatrix(model);
-        if(obj->isSelected)
-            _staticShader->loadMaterial(mat);
-        else
-            _staticShader->loadMaterial(obj->getMaterial());
+        _staticShader->loadMaterial(obj->getMaterial());
         
         obj->render();
     }
 
     _staticShader->stop();
 
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    glStencilMask(0x00);
-    glDisable(GL_DEPTH_TEST);
-
     _outlineShader->start();
     _outlineShader->getUniformLocations();
     _outlineShader->loadProjectionMatrix(proj);
     _outlineShader->loadViewMatrix(view);
 
+    glStencilFunc(GL_NOTEQUAL, 0x1, 0x1);
+    glStencilMask(0x0);
+    glDisable(GL_DEPTH_TEST);
+
      for(Primitive* obj : _objects) {
-        float factor = 1.3f;
+        float factor = 1.05f;
         glm::vec3 scale = obj->getScale() * factor;
         glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), scale);
 
@@ -88,16 +77,17 @@ void Renderer::renderObjects(Camera& camera)
         obj->render();
     }
 
-    _outlineShader->stop();
-
-    glStencilMask(0xFF);
     glEnable(GL_DEPTH_TEST);
+
+    _outlineShader->stop();
 }
 
 void Renderer::endRender(SDL_Window* window)
 {
     // _outlineShader->stop();
     // _staticShader->stop();
+
+    glDisable(GL_STENCIL_TEST);
 
     SDL_GL_SwapWindow(window);
 }

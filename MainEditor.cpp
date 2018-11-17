@@ -11,6 +11,7 @@ void MainEditor::init()
     isRunning = true;
 
     SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
     window = SDL_CreateWindow("Editor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenWidth,screenHeight, SDL_WINDOW_OPENGL);
 
@@ -60,13 +61,12 @@ void MainEditor::init()
     mat.shininess = 32.0f;
     cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1,  mat);
 
-
-    // Material mat2;
-    // mat2.ambient = glm::vec3(0.2f, 0.95f, 0.45f);
-    // mat2.diffuse = glm::vec3(0.2f, 0.95f, 0.45f);
-    // mat2.specular = glm::vec3(1.0f);
-    // mat2.shininess = 13.0f;
-    // renderer.addCube(2, -0.74, -3,      0,25,56, 1.25,1.75,1.25, mat2);
+    Material mat2;
+    mat2.ambient = glm::vec3(0.2f, 0.95f, 0.45f);
+    mat2.diffuse = glm::vec3(0.2f, 0.95f, 0.45f);
+    mat2.specular = glm::vec3(1.0f);
+    mat2.shininess = 13.0f;
+    renderer.addCube(2, -0.74, -3,      0,25,56, 1.25,1.75,1.25, mat2);
     
     light = renderer.addPointLight(1.2f,1.0f,2.0f,  0.15f,0.5f,1.0f,  1.0f,  1.0f,0.09f,0.032f);
     light1 = renderer.addPointLight(-1.2f,-0.5,-0.8f,  0.0f,0.0f,1.0f,  0.6f,  1.0f,0.09f,0.032f);
