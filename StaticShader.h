@@ -24,9 +24,11 @@ public:
 	void loadViewPosition(glm::vec3 position);
 	void loadMaterial(Material material);
 	void loadLights(std::vector<Light*> lights);
+	void loadSelected(bool selected);
 
 	static const int MAX_LIGHTS = 4;
 private:
+	bool _isSelectedLoc;
 	GLuint _modelMatrixLoc, _viewMatrixLoc, _projectionMatrixLoc;
 	GLuint _viewPositionLoc;
 	GLuint _materialAmbientLoc, _materialDiffuseLoc, _materialSpecularLoc, _materialShininessLoc;

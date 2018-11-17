@@ -36,6 +36,8 @@ uniform PointLight pointLights[MAX_LIGHTS];
 
 uniform vec3 viewPosition;
 
+uniform bool isSelected;
+
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
 {
     //diffuse
@@ -82,15 +84,16 @@ void main()
     vec3 normal = normalize(fragmentNormal);
     vec3 viewDir = normalize(viewPosition - fragmentPosition);
 
+    float alpha = 1.0;
     vec3 result = vec3(globalAmbient * material.ambient);
 
-    if(directionLight.direction.x != 0.0)
+    if(directionLight.direction.x != 0.0 && directionLight.direction.y != 0.0 && directionLight.direction.z != 0.0)
         result += calculateDirectionalLight(directionLight, normal, viewDir);
 
     for(int i = 0; i < MAX_LIGHTS; i++) {
-            
         result += calculatePointLight(pointLights[i], normal, viewDir);
     }
 
-    outColor = vec4(result, 1.0);
+    vec4 finalResult = vec4(result, alpha);
+    outColor = finalResult;
 }

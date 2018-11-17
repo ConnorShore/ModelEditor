@@ -3,6 +3,7 @@
 
 #include "Primitive.h"
 #include "StaticShader.h"
+#include "OutlineShader.h"
 #include "Camera.h"
 #include "Light.h"
 
@@ -14,7 +15,7 @@ public:
     Renderer();
     ~Renderer();
 
-    void init(StaticShader* shader);
+    void init(StaticShader* shader, OutlineShader* outline);
 
     void beginRender();
     void renderObjects(Camera& camera);
@@ -34,6 +35,7 @@ private:
     std::vector<Primitive*> _objects;
     std::vector<Light*> _lights;
     StaticShader* _staticShader;
+    OutlineShader* _outlineShader;
 
     unsigned int currentID = 0;
 };

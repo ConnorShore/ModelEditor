@@ -94,6 +94,11 @@ GLuint ShaderProgram::getUniformLocation(std::string name)
 	return glGetUniformLocation(_programID, name.c_str());
 }
 
+void ShaderProgram::loadBool(int location, bool val)
+{
+	glUniform1i(location, val);
+}
+
 void ShaderProgram::loadFloat(int location, float val)
 {
 	glUniform1f(location, val);

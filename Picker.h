@@ -8,16 +8,13 @@
 
 class Picker {
 public:
-    Picker(Camera* camera, glm::mat4 projectionMatrix);
+    Picker(Camera* camera);
     Picker();
     ~Picker();
 
     void update(std::vector<Primitive*> primitives);
 
-    glm::vec3 getCurrentRay() {return _currentRay;}
-
-private:
-    glm::vec3 _currentRay;
+private:;
     glm::mat4 _viewMatrix, _projectionMatrix;
 
     Camera* _camera;

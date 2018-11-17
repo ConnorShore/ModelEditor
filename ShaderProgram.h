@@ -22,6 +22,7 @@ public:
 protected:
 	GLuint getUniformLocation(std::string name);
 	void bindAttribute(int attrib, std::string name);
+	void loadBool(int location, bool val);
 	void loadFloat(int location, float val);
 	void loadVector3f(int location, glm::vec3 vec);
 	void loadVector4f(int location, glm::vec4 vec);

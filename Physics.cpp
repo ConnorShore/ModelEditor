@@ -7,11 +7,7 @@ bool Physics::TestIntersectionRayAABB(glm::vec3 rayPos, glm::vec3 rayDirection, 
     float tMin = 0.0f;
     float tMax = 9999999.9f;
 
-    printf("aabbMin: %f,%f,%f\n", aabbMin.x, aabbMin.y, aabbMin.z);
-    printf("aabbMax: %f,%f,%f\n", aabbMax.x, aabbMax.y, aabbMax.z);
-
     glm::vec3 bbPosWorldSpace(modelMatrix[3].x, modelMatrix[3].y, modelMatrix[3].z);
-    printf("bbWorldPos: %f,%f,%f\n", bbPosWorldSpace.x, bbPosWorldSpace.y, bbPosWorldSpace.z);
     glm::vec3 delta = bbPosWorldSpace - rayPos;
 
     //X AXIS

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "StaticShader.h"
+#include "OutlineShader.h"
 #include "Camera.h"
 #include "Renderer.h"
 #include "Cube.h"
@@ -28,6 +29,7 @@ private:
 
     SDL_Window* window;
     StaticShader staticShader;
+    OutlineShader outlineShader;
     Camera camera;
     Renderer renderer;
     InputManager inputManager;
