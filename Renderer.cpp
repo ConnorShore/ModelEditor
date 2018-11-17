@@ -78,6 +78,7 @@ void Renderer::renderObjects(Camera& camera)
     }
 
     glEnable(GL_DEPTH_TEST);
+    glStencilMask(0x1);
 
     _outlineShader->stop();
 }
