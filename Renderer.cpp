@@ -22,11 +22,12 @@ void Renderer::init(StaticShader* shader, OutlineShader* outline)
     _outlineShader = outline;
 }
 
-void Renderer::beginRender()
+void Renderer::beginObjectRender()
 {
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClear(GL_STENCIL_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	_staticShader->start();
 	_staticShader->getUniformLocations();
@@ -79,14 +80,19 @@ void Renderer::renderObjects(Camera& camera)
 
     _outlineShader->stop();
 
-    glDisable(GL_STENCIL_TEST);
     glEnable(GL_DEPTH_TEST);
+    glStencilMask(0x1);
+    // glDisable(GL_STENCIL_TEST);
+}
+
+void Renderer::endObjectRender()
+{
+    //maybe move up right under glStencilMask or right after glEnable(DEPTHTEST)
+    glDisable(GL_STENCIL_TEST);
 }
 
 void Renderer::endRender(SDL_Window* window)
 {
-    // glDisable(GL_STENCIL_TEST);
-
     SDL_GL_SwapWindow(window);
 }
 

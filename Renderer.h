@@ -16,9 +16,9 @@ public:
     ~Renderer();
 
     void init(StaticShader* shader, OutlineShader* outline);
-
-    void beginRender();
+    void beginObjectRender();
     void renderObjects(Camera& camera);
+    void endObjectRender();
     void endRender(SDL_Window* window);
     GameObject* getGameObject(unsigned int id);
     std::vector<Primitive*> getPrimitives() {return _objects;}
