@@ -22,7 +22,7 @@ Picker::~Picker()
 
 }
 
-void Picker::update(std::vector<Primitive*> primitives, TransformControler& tControl)
+void Picker::update(std::vector<Primitive*> primitives)
 {
     _viewMatrix = _camera->getViewMatrix();
 

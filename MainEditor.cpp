@@ -48,30 +48,36 @@ void MainEditor::init()
 
     outlineShader.init("Shaders/outlineShader.vert", "Shaders/outlineShader.frag");
     outlineShader.bindAttributes();
+
+    transformShader.init("Shaders/transformShader.vert", "Shaders/transformShader.frag");
+    transformShader.bindAttributes();
     
     renderer.init(&staticShader, &outlineShader);
 
     camera.init(screenWidth, screenHeight);
     camera.setPosition(0.0f, 0.0f, 3.0f);
 
-    Material mat;
-    mat.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
-    mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
-    mat.specular = glm::vec3(0.5f);
-    mat.shininess = 32.0f;
-    cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1,  mat);
+    transformController = new TransformController;
+    transformController->setVisible(true);
 
-    Material mat2;
-    mat2.ambient = glm::vec3(0.2f, 0.95f, 0.45f);
-    mat2.diffuse = glm::vec3(0.2f, 0.95f, 0.45f);
-    mat2.specular = glm::vec3(1.0f);
-    mat2.shininess = 13.0f;
-    renderer.addCube(2, -0.74, -3,      0,25,56, 1.25,1.75,1.25, mat2);
+    // Material mat;
+    // mat.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
+    // mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
+    // mat.specular = glm::vec3(0.5f);
+    // mat.shininess = 32.0f;
+    // cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1,  mat);
+
+    // Material mat2;
+    // mat2.ambient = glm::vec3(0.2f, 0.95f, 0.45f);
+    // mat2.diffuse = glm::vec3(0.2f, 0.95f, 0.45f);
+    // mat2.specular = glm::vec3(1.0f);
+    // mat2.shininess = 13.0f;
+    // renderer.addCube(2, -0.74, -3,      0,25,56, 1.25,1.75,1.25, mat2);
     
-    light = renderer.addPointLight(1.2f,1.0f,2.0f,  0.15f,0.5f,1.0f,  1.0f,  1.0f,0.09f,0.032f);
-    light1 = renderer.addPointLight(-1.2f,-0.5,-0.8f,  0.0f,0.0f,1.0f,  0.6f,  1.0f,0.09f,0.032f);
-    light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
-    light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
+    // light = renderer.addPointLight(1.2f,1.0f,2.0f,  0.15f,0.5f,1.0f,  1.0f,  1.0f,0.09f,0.032f);
+    // light1 = renderer.addPointLight(-1.2f,-0.5,-0.8f,  0.0f,0.0f,1.0f,  0.6f,  1.0f,0.09f,0.032f);
+    // light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
+    // light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
 
     picker = Picker(&camera);
 }
@@ -141,20 +147,25 @@ void MainEditor::update()
 void MainEditor::render()
 {
     renderer.beginRender();
+
     renderer.renderObjects(camera);
+
+    transformController->render(camera, transformShader);
+
     renderer.endRender(window);
+
 }
 
 void MainEditor::gameLoop()
 {
-    _timer.TimeInit();
+    timer.TimeInit();
     while(isRunning) {
-        _timer.FpsLimitInit();
-        _timer.calcDeltaTime();
+        timer.FpsLimitInit();
+        timer.calcDeltaTime();
         update();
         render();
 
-        _timer.CalculateFPS(true);
+        timer.CalculateFPS(true);
     }
 }
 

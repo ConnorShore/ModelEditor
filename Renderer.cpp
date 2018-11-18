@@ -79,13 +79,13 @@ void Renderer::renderObjects(Camera& camera)
 
     _outlineShader->stop();
 
+    glDisable(GL_STENCIL_TEST);
     glEnable(GL_DEPTH_TEST);
-    glStencilMask(0x1);
 }
 
 void Renderer::endRender(SDL_Window* window)
 {
-    glDisable(GL_STENCIL_TEST);
+    // glDisable(GL_STENCIL_TEST);
 
     SDL_GL_SwapWindow(window);
 }
