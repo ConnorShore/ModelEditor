@@ -3,6 +3,7 @@
 
 #include "Camera.h"
 #include "Primitive.h"
+#include "TransformController.h"
 
 #include <glm/glm.hpp>
 
@@ -12,7 +13,7 @@ public:
     Picker();
     ~Picker();
 
-    void update(std::vector<Primitive*> primitives);
+    void update(std::vector<Primitive*> primitives, TransformControler& tControl);
 
 private:;
     glm::mat4 _viewMatrix, _projectionMatrix;

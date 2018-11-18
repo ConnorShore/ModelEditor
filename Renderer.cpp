@@ -43,7 +43,7 @@ void Renderer::renderObjects(Camera& camera)
 
     _staticShader->loadLights(_lights);
 
-    glStencilFunc(GL_ALWAYS, 1, 0x1);
+    glStencilFunc(GL_ALWAYS, 0x1, 0x1);
     glStencilMask(0x1);
 
     for(Primitive* obj : _objects) {
@@ -77,17 +77,14 @@ void Renderer::renderObjects(Camera& camera)
         obj->render();
     }
 
+    _outlineShader->stop();
+
     glEnable(GL_DEPTH_TEST);
     glStencilMask(0x1);
-
-    _outlineShader->stop();
 }
 
 void Renderer::endRender(SDL_Window* window)
 {
-    // _outlineShader->stop();
-    // _staticShader->stop();
-
     glDisable(GL_STENCIL_TEST);
 
     SDL_GL_SwapWindow(window);
