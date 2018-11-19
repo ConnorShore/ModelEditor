@@ -49,8 +49,10 @@ private:
     int screenHeight = 900;
     bool isRunning = false;
 
+    glm::vec2 prevMouseCoords;
+
     void init();
-    void updateSelections();
+    void updateSelections(std::vector<int>& selectedIds);
     bool updateTransformSelection();
     void update();
     void render();

@@ -22,6 +22,25 @@ Picker::~Picker()
 
 }
 
+glm::vec3 Picker::screenToWorldCoords(float mouseX, float mouseY)
+{
+    glm::vec2 ndCoords = getNDCoords(mouseX,mouseY);
+    glm::vec4 rayStartNDC(ndCoords.x, ndCoords.y, -1.0f, 1.0f);
+
+    // glm::mat4 inverseProjMat = glm::inverse(_camera->getProjectionMatrix());
+    // glm::mat4 inverseViewMat = glm::inverse(_camera->getViewMatrix());
+
+    // glm::vec4 rayStartCamera = inverseProjMat * rayStartNDC;
+    // rayStartCamera /= rayStartCamera.w;
+    
+    // glm::vec4 rayStartWorld = inverseViewMat * rayStartCamera;
+    // rayStartWorld /= rayStartWorld.w;
+    
+
+    // return glm::vec3(rayStartWorld);
+    return glm::vec3(rayStartNDC);
+}
+
 void Picker::update(std::vector<Primitive*> primitives, TransformController* controller)
 {
     _viewMatrix = _camera->getViewMatrix();
@@ -35,21 +54,18 @@ void Picker::update(std::vector<Primitive*> primitives, TransformController* con
     glm::mat4 model = Math::createTransformationMatrix(controller->getAxisPosition(TC_AXIS_X), xControl->getRotation(), xControl->getScale());
     bool colliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, xControl->getBoundingBox().aabbMin,
                                         xControl->getBoundingBox().aabbMax, model, dist);
-    printf("X Colliding: %d\n", colliding);
     xControl->isInSelectRange = colliding;
 
     Cube* yControl = controller->getYController();
     model = Math::createTransformationMatrix(controller->getAxisPosition(TC_AXIS_Y), yControl->getRotation(), yControl->getScale());
     colliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, yControl->getBoundingBox().aabbMin,
                                         yControl->getBoundingBox().aabbMax, model, dist);
-    printf("Y Colliding: %d\n", colliding);
     yControl->isInSelectRange = colliding;
 
     Cube* zControl = controller->getZController();
     model = Math::createTransformationMatrix(controller->getAxisPosition(TC_AXIS_Z), zControl->getRotation(), zControl->getScale());
     colliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, zControl->getBoundingBox().aabbMin,
                                         zControl->getBoundingBox().aabbMax, model, dist);
-    printf("Z Colliding: %d\n", colliding);
     zControl->isInSelectRange = colliding;
 
     //Check objects

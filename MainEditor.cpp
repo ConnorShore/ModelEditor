@@ -105,28 +105,35 @@ bool MainEditor::updateTransformSelection()
         transformController->getZController()->isSelected = false;
     }
 
+    transformController->setControlling(selected);
     return selected;
 }
 
-void MainEditor::updateSelections()
+void MainEditor::updateSelections(std::vector<int>& selectedIds)
 {
+    selectedIds.clear();
+
     if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
 
         if(updateTransformSelection())
             return;
 
+        int ct = 0;
         std::vector<glm::vec3> positions;
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isInSelectRange) {
                 obj->isSelected = true;
                 positions.push_back(obj->getPosition());
+                selectedIds.push_back(ct);
             } 
             else if((inputManager.isKeyDown(SDLK_LSHIFT) || inputManager.isKeyDown(SDLK_RSHIFT)) && obj->isSelected){
                 positions.push_back(obj->getPosition());
+                selectedIds.push_back(ct);
             }
             else {
                 obj->isSelected = false;
             }
+            ct++;
         }
         
         unsigned int size = positions.size();
@@ -198,39 +205,46 @@ void MainEditor::update()
         d->setIntensity(intensity);
     }
 
-    updateSelections();
+    //Releases
+    if(!inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
+        transformController->deselectAxis();
+    }
 
-    // if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
-    //     std::vector<glm::vec3> positions;
-    //     for(Primitive* obj : renderer.getPrimitives()) {
-    //         if(obj->isInSelectRange) {
-    //             obj->isSelected = true;
-    //             positions.push_back(obj->getPosition());
-    //         } 
-    //         else if((inputManager.isKeyDown(SDLK_LSHIFT) || inputManager.isKeyDown(SDLK_RSHIFT)) && obj->isSelected){
-    //             positions.push_back(obj->getPosition());
-    //         }
-    //         else {
-    //             obj->isSelected = false;
-    //         }
-    //     }
-        
-    //     unsigned int size = positions.size();
-    //     if(size == 0)
-    //         transformController->setVisible(false);
-    //     else {
-    //         glm::vec3 sumPosition(0.0f);
-    //         for(unsigned int i = 0; i < size; i++) {
-    //             printf("Position %d x: %f\n", i, positions[i].x);
-    //             sumPosition += positions[i];
-    //         }
+    std::vector<int> ids;
+    // printf("IDs size before: %d\n", ids.size());
+    updateSelections(ids);
+    // printf("IDs size after: %d\n", ids.size());
 
-    //         sumPosition /= size;
-    //         transformController->setPosition(sumPosition);
-    //         transformController->setVisible(true);
-    //         printf("Pos: %f,%f,%f\n", transformController->getPosition().x, transformController->getPosition().y, transformController->getPosition().z);
-    //     }
-    // }
+    //Move object and transform if needed
+    if(transformController->inControl()) {
+        glm::vec2 mouseCoords = glm::vec2(inputManager.getMouseX(), inputManager.getMouseY());
+        if(transformController->getXController()->isSelected) {
+            // float distance = mouseCoords.x - prevMouseCoords.x;
+            //May need to convert from screen to world coords here and get the x component
+            glm::vec3 coords = picker.screenToWorldCoords(mouseCoords.x, mouseCoords.y);
+            glm::vec3 prev = picker.screenToWorldCoords(prevMouseCoords.x, prevMouseCoords.y);
+            float distance = coords.x - prev.x;
+            transformController->moveX(distance);
+            printf("Controller new x: %f\n", transformController->getPosition().x);
+
+            for(Primitive* obj : renderer.getPrimitives()) {
+                if(obj->isSelected) {
+                    obj->setPosition(glm::vec3(obj->getPosition().x + distance, obj->getPosition().y, obj->getPosition().z));
+                    printf("object new x: %f\n", obj->getPosition().x);
+                }
+            }
+        }
+        // else if(transformController->getYController()->isSelected) {
+        //     moveDir = glm::vec3(0.0f, 1.0f, 0.0f);
+        // }
+        // else if(transformController->getZController()->isSelected) {
+        //     moveDir = glm::vec3(0.0f, 0.0f, 1.0f);
+        // } else {
+        //     printf("In control however no axis selected\n");
+        // }
+
+        prevMouseCoords = mouseCoords;
+    }
 }
 
 void MainEditor::render()

@@ -18,6 +18,7 @@ public:
     TransformController();
     ~TransformController();
 
+    void deselectAxis();
     void render(Camera& camera, TransformShader& shader);
 
     Cube* getXController() {return _xControl;}
@@ -38,9 +39,15 @@ public:
         return glm::vec3(0.0f);
     }
     bool isVisible() {return _visible;}
+    bool inControl() {return _inControl;}
 
     void setPosition(glm::vec3 position) {_controlPosition = position;}
     void setVisible(bool visible) {_visible = visible;}
+    void setControlling(bool control) {_inControl = control;}
+
+    void moveX(float amount) {_controlPosition.x += amount;}
+    void moveY(float amount) {_controlPosition.y += amount;}
+    void moveZ(float amount) {_controlPosition.z += amount;}
 
 private:
     Cube* _xControl;
@@ -49,6 +56,7 @@ private:
 
     glm::vec3 _controlPosition;
     bool _visible;
+    bool _inControl;
 };
 
 #endif

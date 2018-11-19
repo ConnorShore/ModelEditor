@@ -14,6 +14,7 @@ public:
     ~Picker();
 
     void update(std::vector<Primitive*> primitives, TransformController* controller);
+    glm::vec3 screenToWorldCoords(float mouseX, float mouseY);
 
 private:;
     glm::mat4 _viewMatrix, _projectionMatrix;

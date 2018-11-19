@@ -22,6 +22,7 @@ public:
     Material getMaterial() {return material;}
     BoundingBox getBoundingBox() {return boundingBox;}
 
+    void setPosition(glm::vec3 pos) {position = pos;}
     void setScale(glm::vec3 newScale) {scale = newScale;}
     void setMaterial(Material& mat) {material = mat;}
     void setModelMatrix(glm::mat4 model) {modelMatrix = model;}

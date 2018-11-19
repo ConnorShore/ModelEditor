@@ -15,6 +15,13 @@ TransformController::~TransformController()
 {
 }
 
+void TransformController::deselectAxis()
+{
+    _xControl->isSelected = false;
+    _yControl->isSelected = false;
+    _zControl->isSelected = false;
+}
+
 void TransformController::render(Camera& camera, TransformShader& shader)
 {
     if(_visible == false)
