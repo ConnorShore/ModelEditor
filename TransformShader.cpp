@@ -18,9 +18,15 @@ void TransformShader::bindAttributes()
 void TransformShader::getUniformLocations()
 {
 	_axisIdLoc = getUniformLocation("axisID");
+	_selectedLoc = getUniformLocation("selected");
 	_modelMatrixLoc = getUniformLocation("model");
 	_viewMatrixLoc = getUniformLocation("view");
 	_projectionMatrixLoc = getUniformLocation("projection");
+}
+
+void TransformShader::loadSelected(bool selected)
+{
+	loadBool(_selectedLoc, selected);
 }
 
 void TransformShader::loadAxisID(int id)

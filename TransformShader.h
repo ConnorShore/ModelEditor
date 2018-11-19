@@ -18,9 +18,10 @@ public:
     void loadProjectionMatrix(glm::mat4 matrix);
     void loadViewMatrix(glm::mat4 matrix);
     void loadAxisID(int id);
+    void loadSelected(bool selected);
 
 private:
-    GLuint _modelMatrixLoc, _projectionMatrixLoc, _viewMatrixLoc, _axisIdLoc;
+    GLuint _modelMatrixLoc, _projectionMatrixLoc, _viewMatrixLoc, _axisIdLoc, _selectedLoc;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #version 330 core
 
 uniform int axisID;
+uniform bool selected;
 
 out vec4 outColor;
 
@@ -14,6 +15,9 @@ void main()
     else if(axisID == 2)
         result = vec4(0,0,1,1);
     else
+        result = vec4(0,0,0,1);
+
+    if(selected)
         result = vec4(1,1,1,1);
     
     outColor = result;

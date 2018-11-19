@@ -13,7 +13,7 @@ public:
     Picker();
     ~Picker();
 
-    void update(std::vector<Primitive*> primitives);
+    void update(std::vector<Primitive*> primitives, TransformController* controller);
 
 private:;
     glm::mat4 _viewMatrix, _projectionMatrix;

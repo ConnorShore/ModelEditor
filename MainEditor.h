@@ -50,6 +50,8 @@ private:
     bool isRunning = false;
 
     void init();
+    void updateSelections();
+    bool updateTransformSelection();
     void update();
     void render();
     void gameLoop();

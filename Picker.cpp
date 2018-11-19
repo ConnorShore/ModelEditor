@@ -22,13 +22,37 @@ Picker::~Picker()
 
 }
 
-void Picker::update(std::vector<Primitive*> primitives)
+void Picker::update(std::vector<Primitive*> primitives, TransformController* controller)
 {
     _viewMatrix = _camera->getViewMatrix();
 
     glm::vec3 rayOrigin, rayDirection;
     calculateRay(&rayOrigin, &rayDirection);
 
+    //Check transform controller
+    float dist;
+    Cube* xControl = controller->getXController();
+    glm::mat4 model = Math::createTransformationMatrix(controller->getAxisPosition(TC_AXIS_X), xControl->getRotation(), xControl->getScale());
+    bool colliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, xControl->getBoundingBox().aabbMin,
+                                        xControl->getBoundingBox().aabbMax, model, dist);
+    printf("X Colliding: %d\n", colliding);
+    xControl->isInSelectRange = colliding;
+
+    Cube* yControl = controller->getYController();
+    model = Math::createTransformationMatrix(controller->getAxisPosition(TC_AXIS_Y), yControl->getRotation(), yControl->getScale());
+    colliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, yControl->getBoundingBox().aabbMin,
+                                        yControl->getBoundingBox().aabbMax, model, dist);
+    printf("Y Colliding: %d\n", colliding);
+    yControl->isInSelectRange = colliding;
+
+    Cube* zControl = controller->getZController();
+    model = Math::createTransformationMatrix(controller->getAxisPosition(TC_AXIS_Z), zControl->getRotation(), zControl->getScale());
+    colliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, zControl->getBoundingBox().aabbMin,
+                                        zControl->getBoundingBox().aabbMax, model, dist);
+    printf("Z Colliding: %d\n", colliding);
+    zControl->isInSelectRange = colliding;
+
+    //Check objects
     for(Primitive* obj : primitives) {
         glm::mat4 modelMatrix = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
         obj->setModelMatrix(modelMatrix);
