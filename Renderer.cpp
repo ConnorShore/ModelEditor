@@ -82,7 +82,6 @@ void Renderer::renderObjects(Camera& camera)
 
     glEnable(GL_DEPTH_TEST);
     glStencilMask(0x1);
-    // glDisable(GL_STENCIL_TEST);
 }
 
 void Renderer::endObjectRender()

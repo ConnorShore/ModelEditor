@@ -58,7 +58,7 @@ void MainEditor::init()
     camera.setPosition(0.0f, 0.0f, 3.0f);
 
     transformController = new TransformController;
-    transformController->setVisible(true);
+    // transformController->setVisible(true);
 
     Material mat;
     mat.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
@@ -134,12 +134,33 @@ void MainEditor::update()
     }
 
     if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
+        std::vector<glm::vec3> positions;
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isInSelectRange) {
                 obj->isSelected = true;
-            } else {
+                positions.push_back(obj->getPosition());
+            } 
+            else if((inputManager.isKeyDown(SDLK_LSHIFT) || inputManager.isKeyDown(SDLK_RSHIFT)) && obj->isSelected){
+                positions.push_back(obj->getPosition());
+            }
+            else {
                 obj->isSelected = false;
             }
+        }
+        
+        unsigned int size = positions.size();
+        if(size == 0)
+            transformController->setVisible(false);
+        else {
+            glm::vec3 sumPosition;
+            for(unsigned int i = 0; i < size; i++) {
+                sumPosition += positions[i];
+            }
+
+            sumPosition /= size;
+            transformController->setPosition(sumPosition);
+            transformController->setVisible(true);
+            printf("Pos: %f,%f,%f\n", transformController->getPosition().x, transformController->getPosition().y, transformController->getPosition().z);
         }
     }
 }

@@ -15,10 +15,6 @@ TransformController::~TransformController()
 {
 }
 
-void TransformController::init()
-{
-}
-
 void TransformController::render(Camera& camera, TransformShader& shader)
 {
     if(_visible == false)

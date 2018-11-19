@@ -14,7 +14,6 @@ public:
     TransformController();
     ~TransformController();
 
-    void init();
     void render(Camera& camera, TransformShader& shader);
 
     glm::vec3 getPosition() {return _controlPosition;}
