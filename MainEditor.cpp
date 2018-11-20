@@ -156,6 +156,7 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
             sumPosition /= size;
             transformController->setPosition(sumPosition);
             transformController->setVisible(true);
+            transformController->setControlling(true);
             prevMouseCoords = glm::vec2(inputManager.getMouseX(), inputManager.getMouseY());
             // printf("Pos: %f,%f,%f\n", transformController->getPosition().x, transformController->getPosition().y, transformController->getPosition().z);
         }
@@ -214,8 +215,9 @@ void MainEditor::update()
     }
 
     //Releases
-    if(!inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
+    if(transformController->inControl() && !inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
         transformController->deselectAxis();
+        transformController->setControlling(false);
     }
 
     std::vector<int> ids;
