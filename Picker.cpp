@@ -26,19 +26,27 @@ glm::vec3 Picker::screenToWorldCoords(float mouseX, float mouseY)
 {
     glm::vec2 ndCoords = getNDCoords(mouseX,mouseY);
     glm::vec4 rayStartNDC(ndCoords.x, ndCoords.y, -1.0f, 1.0f);
+    glm::vec4 rayEndNDC(ndCoords.x, ndCoords.y, 1.0f, 1.0f);
 
-    // glm::mat4 inverseProjMat = glm::inverse(_camera->getProjectionMatrix());
-    // glm::mat4 inverseViewMat = glm::inverse(_camera->getViewMatrix());
+    glm::mat4 inverseProjMat = glm::inverse(_camera->getProjectionMatrix());
+    glm::mat4 inverseViewMat = glm::inverse(_camera->getViewMatrix());
 
-    // glm::vec4 rayStartCamera = inverseProjMat * rayStartNDC;
-    // rayStartCamera /= rayStartCamera.w;
+    glm::vec4 rayStartCamera = inverseProjMat * rayStartNDC;
+    rayStartCamera /= rayStartCamera.w;
     
-    // glm::vec4 rayStartWorld = inverseViewMat * rayStartCamera;
-    // rayStartWorld /= rayStartWorld.w;
-    
+    glm::vec4 rayStartWorld = inverseViewMat * rayStartCamera;
+    rayStartWorld /= rayStartWorld.w;
 
-    // return glm::vec3(rayStartWorld);
-    return glm::vec3(rayStartNDC);
+    glm::vec4 rayEndCamera = inverseProjMat * rayEndNDC;
+    rayEndCamera /= rayEndCamera.w;
+
+    glm::vec4 rayEndWorld = inverseViewMat * rayEndCamera;
+    rayEndWorld /= rayEndWorld.w;
+
+    glm::vec4 rayDirWorld = rayEndWorld - rayStartWorld;
+    rayDirWorld = glm::normalize(rayDirWorld);
+
+    return glm::vec3(rayStartWorld);
 }
 
 void Picker::update(std::vector<Primitive*> primitives, TransformController* controller)
@@ -67,6 +75,7 @@ void Picker::update(std::vector<Primitive*> primitives, TransformController* con
     colliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, zControl->getBoundingBox().aabbMin,
                                         zControl->getBoundingBox().aabbMax, model, dist);
     zControl->isInSelectRange = colliding;
+    controller->distance = dist;
 
     //Check objects
     for(Primitive* obj : primitives) {
@@ -79,10 +88,21 @@ void Picker::update(std::vector<Primitive*> primitives, TransformController* con
     }
 }
 
-void Picker::calculateRay(glm::vec3* rayOrigin, glm::vec3* rayDirection)
+bool Picker::rayPlaneIntersection(glm::vec3 vectorOrigin, glm::vec3 vectorNormal, Plane plane, glm::vec3* location)
 {
-    float mouseX = _camera->getMouseCoords().x;
-    float mouseY = _camera->getMouseCoords().y;
+    if(glm::dot(vectorNormal, plane.normal) == 0)
+        return false;
+
+    float distance = glm::dot(plane.normal, plane.origin-vectorOrigin) / glm::dot(plane.normal,vectorNormal);
+    glm::vec3 intersect = vectorOrigin + (vectorNormal * distance);
+    *location = intersect;
+    return true;
+}
+
+void Picker::calculateRay(glm::vec3* rayOrigin, glm::vec3* rayDirection, glm::vec2 mouseCoords)
+{
+    float mouseX = mouseCoords.x;
+    float mouseY = mouseCoords.y;
 
     //Get normalized device coordinates from viewspace
     glm::vec2 ndCoords = getNDCoords(mouseX,mouseY);
@@ -109,6 +129,14 @@ void Picker::calculateRay(glm::vec3* rayOrigin, glm::vec3* rayDirection)
 
     *rayOrigin = glm::vec3(rayStartWorld);
     *rayDirection = rayDirWorld;
+}
+
+void Picker::calculateRay(glm::vec3* rayOrigin, glm::vec3* rayDirection)
+{
+    float mouseX = _camera->getMouseCoords().x;
+    float mouseY = _camera->getMouseCoords().y;
+
+    calculateRay(rayOrigin, rayDirection, glm::vec2(mouseX,mouseY));
 }
 
 glm::vec2 Picker::getNDCoords(float mouseX, float mouseY)

@@ -83,6 +83,9 @@ void MainEditor::init()
 
 bool MainEditor::updateTransformSelection()
 {
+    if(transformController->inControl())
+        return true;
+
     bool selected = false;
     if(transformController->getXController()->isInSelectRange) {
         transformController->getXController()->isSelected = true;
@@ -103,6 +106,10 @@ bool MainEditor::updateTransformSelection()
         selected = true;
     } else {
         transformController->getZController()->isSelected = false;
+    }
+
+    if(!selected) {
+        prevMouseCoords = glm::vec2(inputManager.getMouseX(), inputManager.getMouseY());
     }
 
     transformController->setControlling(selected);
@@ -149,6 +156,7 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
             sumPosition /= size;
             transformController->setPosition(sumPosition);
             transformController->setVisible(true);
+            prevMouseCoords = glm::vec2(inputManager.getMouseX(), inputManager.getMouseY());
             // printf("Pos: %f,%f,%f\n", transformController->getPosition().x, transformController->getPosition().y, transformController->getPosition().z);
         }
     }
@@ -219,18 +227,32 @@ void MainEditor::update()
     if(transformController->inControl()) {
         glm::vec2 mouseCoords = glm::vec2(inputManager.getMouseX(), inputManager.getMouseY());
         if(transformController->getXController()->isSelected) {
-            // float distance = mouseCoords.x - prevMouseCoords.x;
-            //May need to convert from screen to world coords here and get the x component
-            glm::vec3 coords = picker.screenToWorldCoords(mouseCoords.x, mouseCoords.y);
-            glm::vec3 prev = picker.screenToWorldCoords(prevMouseCoords.x, prevMouseCoords.y);
-            float distance = coords.x - prev.x;
-            transformController->moveX(distance);
-            printf("Controller new x: %f\n", transformController->getPosition().x);
+            // TODO: Create plane along the X-axis at depth of object and test for a ray collision
+            //       from the mouse position and where ever that point is is where to put the transform
+            //       controller.  (Will need to calculate orgin + mouseOffset to keep moues aligned w/ object)
+            Plane plane;
+            plane.origin = transformController->getPosition();
+            plane.normal = glm::vec3(0,0,-1);
+            glm::vec3 origin, direction;
+            picker.calculateRay(&origin, &direction);
+            glm::vec3 intersectLocation;
+            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+                printf("Intersect location: %f, %f, %f\n", intersectLocation.x, intersectLocation.y, intersectLocation.z);
+                transformController->setPosition(glm::vec3(intersectLocation.x, transformController->getPosition().y,
+                                                transformController->getPosition().z));
+            }
+            // picker.calculateRay(&origin, &direction, prevMouseCoords);
+            // float distance = coords.x - prev.x;
+            // distance *= (transformController->distance*transformController->distance);
+            // distance *= (transformController->distance);
+            // transformController->moveX(distance);
+            // printf("Controller dist: %f\n", transformController->distance);
+            // printf("Controller new x: %f\n", transformController->getPosition().x);
 
             for(Primitive* obj : renderer.getPrimitives()) {
                 if(obj->isSelected) {
-                    obj->setPosition(glm::vec3(obj->getPosition().x + distance, obj->getPosition().y, obj->getPosition().z));
-                    printf("object new x: %f\n", obj->getPosition().x);
+                    obj->setPosition(glm::vec3(intersectLocation.x, obj->getPosition().y, obj->getPosition().z));
+                    // printf("object new x: %f\n", obj->getPosition().x);
                 }
             }
         }

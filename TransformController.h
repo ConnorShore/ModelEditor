@@ -49,6 +49,7 @@ public:
     void moveY(float amount) {_controlPosition.y += amount;}
     void moveZ(float amount) {_controlPosition.z += amount;}
 
+    float distance;
 private:
     Cube* _xControl;
     Cube* _yControl;
