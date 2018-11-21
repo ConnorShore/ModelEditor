@@ -83,15 +83,6 @@ void MainEditor::init()
 
 bool MainEditor::updateTransformSelection()
 {
-    //Check if all axis are in select range
-    if(transformController->getXController()->isInSelectRange &&
-            transformController->getYController()->isInSelectRange &&
-            transformController->getZController()->isInSelectRange) {
-        transformController->setAllAxisSelected(true);
-    } else {
-        transformController->setAllAxisSelected(false);
-    }
-
     //Dont need to set axis selection if already in control of transform controller
     if(transformController->inControl())
         return true;
@@ -121,6 +112,16 @@ bool MainEditor::updateTransformSelection()
     if(!selected) {
         transformController->selectLocUpdated = false;
     }
+
+    //Check if all axis are in select range
+    if(transformController->getXController()->isSelected &&
+            transformController->getYController()->isSelected &&
+            transformController->getZController()->isSelected) {
+        transformController->setAllAxisSelected(true);
+    } else {
+        transformController->setAllAxisSelected(false);
+    }
+
 
     transformController->setControlling(selected);
     return selected;
@@ -167,7 +168,7 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
             sumPosition /= size;
             transformController->setPosition(sumPosition);
             transformController->setVisible(true);
-            transformController->setControlling(true);
+            // transformController->setControlling(true);
             transformSelectLoc = transformController->getPosition();
             transformController->selectLocUpdated = true;
         }
