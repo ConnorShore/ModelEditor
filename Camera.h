@@ -41,6 +41,7 @@ public:
     glm::mat4 getViewMatrix();
 
     glm::vec3 getPosition() { return _position; }
+    glm::vec3 getDirection() {return _direction;}
     glm::vec2 getMouseCoords() {return _mouseCoords;}
 
     void setPosition(float x, float y, float z) { _position = glm::vec3(x,y,z); }

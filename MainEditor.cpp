@@ -243,7 +243,21 @@ void MainEditor::update()
 
         //All axis
         if(transformController->allAxisSelected()) {
-            printf("All in control\n");
+            Plane plane;
+            plane.origin = transformController->getPosition();
+            plane.normal = camera.getDirection();
+            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+                transformController->setPosition(glm::vec3(intersectLocation.x, intersectLocation.y, intersectLocation.z));
+            }
+
+            for(Primitive* obj : renderer.getPrimitives()) {
+                if(obj->isSelected) {
+                    glm::vec3 offset(0.0f);
+                    offset = obj->selectedLocation - transformSelectLoc;
+                    obj->setPosition(transformController->getPosition() + offset);
+                    // obj->setPosition(glm::vec3(transformController->getPosition().x + offset.x, obj->getPosition().y, obj->getPosition().z));
+                }
+            }
         } 
         
         //X Axis
