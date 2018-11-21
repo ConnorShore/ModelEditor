@@ -53,6 +53,8 @@ void StaticShader::getUniformLocations()
 	_materialDiffuseLoc = getUniformLocation("material.diffuse");
 	_materialSpecularLoc = getUniformLocation("material.specular");
 	_materialShininessLoc = getUniformLocation("material.shininess");
+
+	_isSelectedLoc = getUniformLocation("isSelected");
 }
 
 void StaticShader::loadModelMatrix(glm::mat4 matrix)
@@ -79,6 +81,11 @@ void StaticShader::loadMaterial(Material material)
 	loadVector3f(_materialDiffuseLoc, material.diffuse);
 	loadVector3f(_materialSpecularLoc, material.specular);
 	loadFloat(_materialShininessLoc, material.shininess);
+}
+
+void StaticShader::loadSelected(bool selected)
+{
+	loadBool(_isSelectedLoc, selected);
 }
 
 void StaticShader::loadLights(std::vector<Light*> lights)

@@ -9,12 +9,14 @@
 #include <vector>
 
 #include "StaticShader.h"
+#include "OutlineShader.h"
 #include "Camera.h"
 #include "Renderer.h"
 #include "Cube.h"
 #include "InputManager.h"
 #include "Timing.h"
 #include "Material.h"
+#include "Picker.h"
 
 class MainEditor
 {
@@ -27,10 +29,12 @@ private:
 
     SDL_Window* window;
     StaticShader staticShader;
+    OutlineShader outlineShader;
     Camera camera;
     Renderer renderer;
     InputManager inputManager;
     Timing _timer;
+    Picker picker;
 
     unsigned int cube1, cube2, light, light1, light2, light3;
 

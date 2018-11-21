@@ -16,14 +16,17 @@ Renderer::~Renderer()
     }
 }
 
-void Renderer::init(StaticShader* shader)
+void Renderer::init(StaticShader* shader, OutlineShader* outline)
 {
     _staticShader = shader;
+    _outlineShader = outline;
 }
 
 void Renderer::beginRender()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	_staticShader->start();
 	_staticShader->getUniformLocations();
@@ -40,18 +43,52 @@ void Renderer::renderObjects(Camera& camera)
 
     _staticShader->loadLights(_lights);
 
+    glStencilFunc(GL_ALWAYS, 1, 0x1);
+    glStencilMask(0x1);
+
     for(Primitive* obj : _objects) {
-        glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
+        // glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
+        glm::mat4 model = obj->getModelMatrix();
         _staticShader->loadModelMatrix(model);
         _staticShader->loadMaterial(obj->getMaterial());
         
         obj->render();
     }
+
+    _staticShader->stop();
+
+    _outlineShader->start();
+    _outlineShader->getUniformLocations();
+    _outlineShader->loadProjectionMatrix(proj);
+    _outlineShader->loadViewMatrix(view);
+
+    glStencilFunc(GL_NOTEQUAL, 0x1, 0x1);
+    glStencilMask(0x0);
+    glDisable(GL_DEPTH_TEST);
+
+     for(Primitive* obj : _objects) {
+        float factor = 1.05f;
+        glm::vec3 scale = obj->getScale() * factor;
+        glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), scale);
+
+        _outlineShader->loadModelMatrix(model);
+        _outlineShader->loadIsSelected(obj->isSelected);
+        
+        obj->render();
+    }
+
+    glEnable(GL_DEPTH_TEST);
+    glStencilMask(0x1);
+
+    _outlineShader->stop();
 }
 
 void Renderer::endRender(SDL_Window* window)
 {
-    _staticShader->stop();
+    // _outlineShader->stop();
+    // _staticShader->stop();
+
+    glDisable(GL_STENCIL_TEST);
 
     SDL_GL_SwapWindow(window);
 }

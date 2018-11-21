@@ -20,6 +20,9 @@ Cube::Cube(float x, float y, float z, float rx, float ry, float rz,
         vertices.push_back(vert);
     }
 
+    boundingBox.aabbMin = glm::vec3(-0.5f*sx*sx, -0.5f*sy*sy, -0.5f*sz*sz);
+    boundingBox.aabbMax = glm::vec3(0.5f*sx*sx, 0.5f*sy*sy, 0.5f*sz*sz);
+
     createIDs();
 }
 
@@ -35,6 +38,9 @@ Cube::Cube()
         vert.normal.x = verts[i+3];     vert.normal.y = verts[i+4];         vert.normal.z = verts[i+5];
         vertices.push_back(vert);
     }
+
+    boundingBox.aabbMin = glm::vec3(-0.5f);
+    boundingBox.aabbMax = glm::vec3(0.5f);
 
     createIDs();
 }
