@@ -29,8 +29,10 @@ public:
 
     virtual void render() = 0;
 
+    //TODO: Figure out what properties are and if should use here
     bool isInSelectRange = false;
     bool isSelected = false;
+    glm::vec3 selectedLocation;
 protected:
     glm::vec3 position, rotation, scale;
     glm::mat4 modelMatrix;

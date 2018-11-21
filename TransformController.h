@@ -50,6 +50,7 @@ public:
     void moveZ(float amount) {_controlPosition.z += amount;}
 
     float distance;
+    bool selectLocUpdated = false;
 private:
     Cube* _xControl;
     Cube* _yControl;

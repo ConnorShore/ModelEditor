@@ -37,7 +37,6 @@ void TransformController::render(Camera& camera, TransformShader& shader)
     shader.loadModelMatrix(model);
     shader.loadAxisID(0);
     shader.loadSelected(_xControl->isSelected);
-    printf("X Control is selected: %d\n", _xControl->isSelected);
     _xControl->render();
 
     //Y Axis Controller
@@ -45,7 +44,6 @@ void TransformController::render(Camera& camera, TransformShader& shader)
     shader.loadModelMatrix(model);
     shader.loadAxisID(1);
     shader.loadSelected(_yControl->isSelected);
-    printf("Y Control is selected: %d\n", _yControl->isSelected);
     _yControl->render();
 
     //Z Axis Controller
@@ -53,7 +51,6 @@ void TransformController::render(Camera& camera, TransformShader& shader)
     shader.loadModelMatrix(model);
     shader.loadAxisID(2);
     shader.loadSelected(_zControl->isSelected);
-    printf("Z Control is selected: %d\n", _zControl->isSelected);
     _zControl->render();
 
     shader.stop();

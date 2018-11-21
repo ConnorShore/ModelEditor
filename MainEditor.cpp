@@ -109,7 +109,7 @@ bool MainEditor::updateTransformSelection()
     }
 
     if(!selected) {
-        prevMouseCoords = glm::vec2(inputManager.getMouseX(), inputManager.getMouseY());
+        transformController->selectLocUpdated = false;
     }
 
     transformController->setControlling(selected);
@@ -129,6 +129,7 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
         std::vector<glm::vec3> positions;
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isInSelectRange) {
+                obj->selectedLocation = obj->getPosition();
                 obj->isSelected = true;
                 positions.push_back(obj->getPosition());
                 selectedIds.push_back(ct);
@@ -136,6 +137,7 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
             else if((inputManager.isKeyDown(SDLK_LSHIFT) || inputManager.isKeyDown(SDLK_RSHIFT)) && obj->isSelected){
                 positions.push_back(obj->getPosition());
                 selectedIds.push_back(ct);
+                obj->selectedLocation = obj->getPosition();
             }
             else {
                 obj->isSelected = false;
@@ -149,7 +151,6 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
         else {
             glm::vec3 sumPosition(0.0f);
             for(unsigned int i = 0; i < size; i++) {
-                // printf("Position %d x: %f\n", i, positions[i].x);
                 sumPosition += positions[i];
             }
 
@@ -157,15 +158,14 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
             transformController->setPosition(sumPosition);
             transformController->setVisible(true);
             transformController->setControlling(true);
-            prevMouseCoords = glm::vec2(inputManager.getMouseX(), inputManager.getMouseY());
-            // printf("Pos: %f,%f,%f\n", transformController->getPosition().x, transformController->getPosition().y, transformController->getPosition().z);
+            transformSelectLoc = transformController->getPosition();
+            transformController->selectLocUpdated = true;
         }
     }
 }
 
 void MainEditor::update()
 {
-
     inputManager.update();
     camera.setMouseCords(inputManager.getMouseX(), inputManager.getMouseY());
     camera.update();
@@ -221,40 +221,27 @@ void MainEditor::update()
     }
 
     std::vector<int> ids;
-    // printf("IDs size before: %d\n", ids.size());
     updateSelections(ids);
-    // printf("IDs size after: %d\n", ids.size());
 
     //Move object and transform if needed
     if(transformController->inControl()) {
-        glm::vec2 mouseCoords = glm::vec2(inputManager.getMouseX(), inputManager.getMouseY());
+        glm::vec3 origin, direction;
+        picker.calculateRay(&origin, &direction);
+        glm::vec3 intersectLocation;
         if(transformController->getXController()->isSelected) {
-            // TODO: Create plane along the X-axis at depth of object and test for a ray collision
-            //       from the mouse position and where ever that point is is where to put the transform
-            //       controller.  (Will need to calculate orgin + mouseOffset to keep moues aligned w/ object)
             Plane plane;
             plane.origin = transformController->getPosition();
             plane.normal = glm::vec3(0,0,-1);
-            glm::vec3 origin, direction;
-            picker.calculateRay(&origin, &direction);
-            glm::vec3 intersectLocation;
             if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
-                printf("Intersect location: %f, %f, %f\n", intersectLocation.x, intersectLocation.y, intersectLocation.z);
                 transformController->setPosition(glm::vec3(intersectLocation.x, transformController->getPosition().y,
                                                 transformController->getPosition().z));
             }
-            // picker.calculateRay(&origin, &direction, prevMouseCoords);
-            // float distance = coords.x - prev.x;
-            // distance *= (transformController->distance*transformController->distance);
-            // distance *= (transformController->distance);
-            // transformController->moveX(distance);
-            // printf("Controller dist: %f\n", transformController->distance);
-            // printf("Controller new x: %f\n", transformController->getPosition().x);
 
             for(Primitive* obj : renderer.getPrimitives()) {
                 if(obj->isSelected) {
-                    obj->setPosition(glm::vec3(intersectLocation.x, obj->getPosition().y, obj->getPosition().z));
-                    // printf("object new x: %f\n", obj->getPosition().x);
+                    glm::vec3 offset(0.0f);
+                    offset = obj->selectedLocation - transformSelectLoc;
+                    obj->setPosition(glm::vec3(transformController->getPosition().x + offset.x, obj->getPosition().y, obj->getPosition().z));
                 }
             }
         }
@@ -266,8 +253,6 @@ void MainEditor::update()
         // } else {
         //     printf("In control however no axis selected\n");
         // }
-
-        prevMouseCoords = mouseCoords;
     }
 }
 
