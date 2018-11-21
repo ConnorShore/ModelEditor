@@ -83,6 +83,16 @@ void MainEditor::init()
 
 bool MainEditor::updateTransformSelection()
 {
+    //Check if all axis are in select range
+    if(transformController->getXController()->isInSelectRange &&
+            transformController->getYController()->isInSelectRange &&
+            transformController->getZController()->isInSelectRange) {
+        transformController->setAllAxisSelected(true);
+    } else {
+        transformController->setAllAxisSelected(false);
+    }
+
+    //Dont need to set axis selection if already in control of transform controller
     if(transformController->inControl())
         return true;
 
@@ -122,9 +132,9 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
 
     if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
 
-        if(updateTransformSelection())
+        if(updateTransformSelection() && renderer.getNumPrimitivesSelected() > 0)
             return;
-
+        
         int ct = 0;
         std::vector<glm::vec3> positions;
         for(Primitive* obj : renderer.getPrimitives()) {
@@ -228,7 +238,15 @@ void MainEditor::update()
         glm::vec3 origin, direction;
         picker.calculateRay(&origin, &direction);
         glm::vec3 intersectLocation;
-        if(transformController->getXController()->isSelected) {
+
+
+        //All axis
+        if(transformController->allAxisSelected()) {
+            printf("All in control\n");
+        } 
+        
+        //X Axis
+        else if(transformController->getXController()->isSelected) {
             Plane plane;
             plane.origin = transformController->getPosition();
             plane.normal = glm::vec3(0,0,-1);
@@ -245,14 +263,20 @@ void MainEditor::update()
                 }
             }
         }
-        // else if(transformController->getYController()->isSelected) {
-        //     moveDir = glm::vec3(0.0f, 1.0f, 0.0f);
-        // }
-        // else if(transformController->getZController()->isSelected) {
-        //     moveDir = glm::vec3(0.0f, 0.0f, 1.0f);
-        // } else {
-        //     printf("In control however no axis selected\n");
-        // }
+
+        //Y Axis
+        else if(transformController->getYController()->isSelected) {
+
+        }
+
+        //Z Axis
+        else if(transformController->getZController()->isSelected) {
+
+        } 
+
+        else {
+            printf("In control however no axis selected\n");
+        }
     }
 }
 

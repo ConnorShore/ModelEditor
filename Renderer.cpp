@@ -149,3 +149,13 @@ unsigned int Renderer::addDirectionalLight(float dx, float dy, float dz, float r
     _lights.push_back(light);
     return light->getID();
 }
+
+unsigned int Renderer::getNumPrimitivesSelected()
+{
+    unsigned int ct = 0;
+    for(Primitive* obj : _objects) {
+        if(obj->isSelected)
+            ct++;
+    }
+    return ct;
+}

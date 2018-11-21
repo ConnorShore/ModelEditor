@@ -40,10 +40,12 @@ public:
     }
     bool isVisible() {return _visible;}
     bool inControl() {return _inControl;}
+    bool allAxisSelected() {return _allAxisSelected;}
 
     void setPosition(glm::vec3 position) {_controlPosition = position;}
     void setVisible(bool visible) {_visible = visible;}
     void setControlling(bool control) {_inControl = control;}
+    void setAllAxisSelected(bool selected) {_allAxisSelected = selected;}
 
     void moveX(float amount) {_controlPosition.x += amount;}
     void moveY(float amount) {_controlPosition.y += amount;}
@@ -59,6 +61,7 @@ private:
     glm::vec3 _controlPosition;
     bool _visible;
     bool _inControl;
+    bool _allAxisSelected;
 };
 
 #endif
