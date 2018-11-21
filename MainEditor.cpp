@@ -136,7 +136,7 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
         if(updateTransformSelection() && renderer.getNumPrimitivesSelected() > 0)
             return;
         
-        int ct = 0;
+        unsigned int ct = 0;
         std::vector<glm::vec3> positions;
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isInSelectRange) {
@@ -267,12 +267,40 @@ void MainEditor::update()
 
         //Y Axis
         else if(transformController->getYController()->isSelected) {
+            Plane plane;
+            plane.origin = transformController->getPosition();
+            plane.normal = glm::vec3(1,0,0);
+            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+                transformController->setPosition(glm::vec3(transformController->getPosition().x, intersectLocation.y,
+                                                transformController->getPosition().z));
+            }
 
+            for(Primitive* obj : renderer.getPrimitives()) {
+                if(obj->isSelected) {
+                    glm::vec3 offset(0.0f);
+                    offset = obj->selectedLocation - transformSelectLoc;
+                    obj->setPosition(glm::vec3(obj->getPosition().x, transformController->getPosition().y + offset.y, obj->getPosition().z));
+                }
+            }
         }
 
         //Z Axis
         else if(transformController->getZController()->isSelected) {
+            Plane plane;
+            plane.origin = transformController->getPosition();
+            plane.normal = glm::vec3(1,0,0);
+            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+                transformController->setPosition(glm::vec3(transformController->getPosition().x, transformController->getPosition().y,
+                                                intersectLocation.z));
+            }
 
+            for(Primitive* obj : renderer.getPrimitives()) {
+                if(obj->isSelected) {
+                    glm::vec3 offset(0.0f);
+                    offset = obj->selectedLocation - transformSelectLoc;
+                    obj->setPosition(glm::vec3(obj->getPosition().x, obj->getPosition().y, transformController->getPosition().z + offset.z));
+                }
+            }
         } 
 
         else {
