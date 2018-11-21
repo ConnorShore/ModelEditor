@@ -17,6 +17,8 @@
 #include "Timing.h"
 #include "Material.h"
 #include "Picker.h"
+#include "TransformController.h"
+#include "TransformShader.h"
 
 class MainEditor
 {
@@ -33,8 +35,10 @@ private:
     Camera camera;
     Renderer renderer;
     InputManager inputManager;
-    Timing _timer;
+    Timing timer;
     Picker picker;
+    TransformController* transformController;
+    TransformShader transformShader;
 
     unsigned int cube1, cube2, light, light1, light2, light3;
 
@@ -45,7 +49,11 @@ private:
     int screenHeight = 900;
     bool isRunning = false;
 
+    glm::vec3 transformSelectLoc;
+
     void init();
+    void updateSelections(std::vector<int>& selectedIds);
+    bool updateTransformSelection();
     void update();
     void render();
     void gameLoop();

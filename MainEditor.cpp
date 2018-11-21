@@ -48,11 +48,16 @@ void MainEditor::init()
 
     outlineShader.init("Shaders/outlineShader.vert", "Shaders/outlineShader.frag");
     outlineShader.bindAttributes();
+
+    transformShader.init("Shaders/transformShader.vert", "Shaders/transformShader.frag");
+    transformShader.bindAttributes();
     
     renderer.init(&staticShader, &outlineShader);
 
     camera.init(screenWidth, screenHeight);
     camera.setPosition(0.0f, 0.0f, 3.0f);
+
+    transformController = new TransformController;
 
     Material mat;
     mat.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
@@ -76,13 +81,106 @@ void MainEditor::init()
     picker = Picker(&camera);
 }
 
+bool MainEditor::updateTransformSelection()
+{
+    //Dont need to set axis selection if already in control of transform controller
+    if(transformController->inControl())
+        return true;
+
+    bool selected = false;
+    if(transformController->getXController()->isInSelectRange) {
+        transformController->getXController()->isSelected = true;
+        selected = true;
+    } else {
+        transformController->getXController()->isSelected = false;
+    }
+
+    if(transformController->getYController()->isInSelectRange) {
+        transformController->getYController()->isSelected = true;
+        selected = true;
+    } else {
+        transformController->getYController()->isSelected = false;
+    }
+
+    if(transformController->getZController()->isInSelectRange) {
+        transformController->getZController()->isSelected = true;
+        selected = true;
+    } else {
+        transformController->getZController()->isSelected = false;
+    }
+
+    if(!selected) {
+        transformController->selectLocUpdated = false;
+    }
+
+    //Check if all axis are in select range
+    if(transformController->getXController()->isSelected &&
+            transformController->getYController()->isSelected &&
+            transformController->getZController()->isSelected) {
+        transformController->setAllAxisSelected(true);
+    } else {
+        transformController->setAllAxisSelected(false);
+    }
+
+
+    transformController->setControlling(selected);
+    return selected;
+}
+
+void MainEditor::updateSelections(std::vector<int>& selectedIds)
+{
+    selectedIds.clear();
+
+    if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
+
+        if(updateTransformSelection() && renderer.getNumPrimitivesSelected() > 0)
+            return;
+        
+        unsigned int ct = 0;
+        std::vector<glm::vec3> positions;
+        for(Primitive* obj : renderer.getPrimitives()) {
+            if(obj->isInSelectRange) {
+                obj->selectedLocation = obj->getPosition();
+                obj->isSelected = true;
+                positions.push_back(obj->getPosition());
+                selectedIds.push_back(ct);
+            } 
+            else if((inputManager.isKeyDown(SDLK_LSHIFT) || inputManager.isKeyDown(SDLK_RSHIFT)) && obj->isSelected){
+                positions.push_back(obj->getPosition());
+                selectedIds.push_back(ct);
+                obj->selectedLocation = obj->getPosition();
+            }
+            else {
+                obj->isSelected = false;
+            }
+            ct++;
+        }
+        
+        unsigned int size = positions.size();
+        if(size == 0)
+            transformController->setVisible(false);
+        else {
+            glm::vec3 sumPosition(0.0f);
+            for(unsigned int i = 0; i < size; i++) {
+                sumPosition += positions[i];
+            }
+
+            sumPosition /= size;
+            transformController->setPosition(sumPosition);
+            transformController->setVisible(true);
+            // transformController->setControlling(true);
+            transformSelectLoc = transformController->getPosition();
+            transformController->selectLocUpdated = true;
+        }
+    }
+}
+
 void MainEditor::update()
 {
-
     inputManager.update();
     camera.setMouseCords(inputManager.getMouseX(), inputManager.getMouseY());
     camera.update();
-    picker.update(renderer.getPrimitives());
+    picker.update(renderer.getPrimitives(), transformController);
 
     // KEYBOARD //
     if(inputManager.isKeyDown(SDLK_w)) {
@@ -127,34 +225,131 @@ void MainEditor::update()
         d->setIntensity(intensity);
     }
 
-    if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
-        for(Primitive* obj : renderer.getPrimitives()) {
-            if(obj->isInSelectRange) {
-                obj->isSelected = true;
-            } else {
-                obj->isSelected = false;
+    //Releases
+    if(transformController->inControl() && !inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
+        transformController->deselectAxis();
+        transformController->setControlling(false);
+    }
+
+    std::vector<int> ids;
+    updateSelections(ids);
+
+    //Move object and transform if needed
+    if(transformController->inControl()) {
+        glm::vec3 origin, direction;
+        picker.calculateRay(&origin, &direction);
+        glm::vec3 intersectLocation;
+
+
+        //All axis
+        if(transformController->allAxisSelected()) {
+            Plane plane;
+            plane.origin = transformController->getPosition();
+            plane.normal = camera.getDirection();
+            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+                transformController->setPosition(glm::vec3(intersectLocation.x, intersectLocation.y, intersectLocation.z));
             }
+
+            for(Primitive* obj : renderer.getPrimitives()) {
+                if(obj->isSelected) {
+                    glm::vec3 offset(0.0f);
+                    offset = obj->selectedLocation - transformSelectLoc;
+                    obj->setPosition(transformController->getPosition() + offset);
+                    // obj->setPosition(glm::vec3(transformController->getPosition().x + offset.x, obj->getPosition().y, obj->getPosition().z));
+                }
+            }
+        } 
+        
+        //X Axis
+        else if(transformController->getXController()->isSelected) {
+            Plane plane;
+            plane.origin = transformController->getPosition();
+            plane.normal = glm::vec3(0,0,-1);
+            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+                transformController->setPosition(glm::vec3(intersectLocation.x, transformController->getPosition().y,
+                                                transformController->getPosition().z));
+            }
+
+            for(Primitive* obj : renderer.getPrimitives()) {
+                if(obj->isSelected) {
+                    glm::vec3 offset(0.0f);
+                    offset = obj->selectedLocation - transformSelectLoc;
+                    obj->setPosition(glm::vec3(transformController->getPosition().x + offset.x, obj->getPosition().y, obj->getPosition().z));
+                }
+            }
+        }
+
+        //Y Axis
+        else if(transformController->getYController()->isSelected) {
+            Plane plane;
+            plane.origin = transformController->getPosition();
+            plane.normal = glm::vec3(1,0,0);
+            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+                transformController->setPosition(glm::vec3(transformController->getPosition().x, intersectLocation.y,
+                                                transformController->getPosition().z));
+            }
+
+            for(Primitive* obj : renderer.getPrimitives()) {
+                if(obj->isSelected) {
+                    glm::vec3 offset(0.0f);
+                    offset = obj->selectedLocation - transformSelectLoc;
+                    obj->setPosition(glm::vec3(obj->getPosition().x, transformController->getPosition().y + offset.y, obj->getPosition().z));
+                }
+            }
+        }
+
+        //Z Axis
+        else if(transformController->getZController()->isSelected) {
+            Plane plane;
+            plane.origin = transformController->getPosition();
+            plane.normal = glm::vec3(1,0,0);
+            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+                transformController->setPosition(glm::vec3(transformController->getPosition().x, transformController->getPosition().y,
+                                                intersectLocation.z));
+            }
+
+            for(Primitive* obj : renderer.getPrimitives()) {
+                if(obj->isSelected) {
+                    glm::vec3 offset(0.0f);
+                    offset = obj->selectedLocation - transformSelectLoc;
+                    obj->setPosition(glm::vec3(obj->getPosition().x, obj->getPosition().y, transformController->getPosition().z + offset.z));
+                }
+            }
+        } 
+
+        else {
+            printf("In control however no axis selected\n");
         }
     }
 }
 
 void MainEditor::render()
 {
-    renderer.beginRender();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glDepthRange(0.01, 1);
+    renderer.beginObjectRender();
     renderer.renderObjects(camera);
+    renderer.endObjectRender();
+
+    glDepthRange(0.0, 0.01);
+    transformController->render(camera, transformShader);
+
+    glDepthRange(0,1);
     renderer.endRender(window);
 }
 
 void MainEditor::gameLoop()
 {
-    _timer.TimeInit();
+    timer.TimeInit();
     while(isRunning) {
-        _timer.FpsLimitInit();
-        _timer.calcDeltaTime();
+        timer.FpsLimitInit();
+        timer.calcDeltaTime();
+
         update();
         render();
 
-        _timer.CalculateFPS(true);
+        timer.CalculateFPS(true);
     }
 }
 

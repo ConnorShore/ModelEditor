@@ -22,14 +22,17 @@ public:
     Material getMaterial() {return material;}
     BoundingBox getBoundingBox() {return boundingBox;}
 
+    void setPosition(glm::vec3 pos) {position = pos;}
     void setScale(glm::vec3 newScale) {scale = newScale;}
     void setMaterial(Material& mat) {material = mat;}
     void setModelMatrix(glm::mat4 model) {modelMatrix = model;}
 
     virtual void render() = 0;
 
+    //TODO: Figure out what properties are and if should use here
     bool isInSelectRange = false;
     bool isSelected = false;
+    glm::vec3 selectedLocation;
 protected:
     glm::vec3 position, rotation, scale;
     glm::mat4 modelMatrix;

@@ -16,12 +16,10 @@ public:
     ~Renderer();
 
     void init(StaticShader* shader, OutlineShader* outline);
-
-    void beginRender();
+    void beginObjectRender();
     void renderObjects(Camera& camera);
+    void endObjectRender();
     void endRender(SDL_Window* window);
-    GameObject* getGameObject(unsigned int id);
-    std::vector<Primitive*> getPrimitives() {return _objects;}
 
 
     unsigned int addCube(float x, float y, float z, float rx, float ry, float rz, 
@@ -30,6 +28,11 @@ public:
                           float intensity, float constant, float linear, float quadratic);
 
     unsigned int addDirectionalLight(float dx, float dy, float dz, float r, float g, float b, float instensity);
+
+    unsigned int getNumPrimitivesSelected();
+
+    GameObject* getGameObject(unsigned int id);
+    std::vector<Primitive*> getPrimitives() {return _objects;}
 
 private:
     std::vector<Primitive*> _objects;
