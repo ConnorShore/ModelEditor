@@ -4,6 +4,8 @@
 #include "PointLight.h"
 #include "DirectionalLight.h"
 
+#include <algorithm>
+
 Renderer::Renderer()
 {
 }
@@ -95,6 +97,47 @@ void Renderer::endRender(SDL_Window* window)
     SDL_GL_SwapWindow(window);
 }
 
+void Renderer::unselectAllObjects()
+{
+    for(Primitive* obj : _objects) {
+        obj->isSelected = false;
+    }
+}
+
+bool Renderer::deleteObject(unsigned int id)
+{
+    unselectAllObjects();
+    
+    int deleteIndex = -1;
+    for(unsigned int i = 0; i < _objects.size(); i++) {
+        if(_objects[i]->getID() == id) {
+            deleteIndex = i;
+            break;
+        }
+    }
+
+    if(deleteIndex != -1) {
+        if(_objects.size() > 1)
+            std::swap(_objects[deleteIndex], _objects.back());
+        delete _objects.back();
+        _objects.pop_back();
+        return true;
+    }
+
+    return false;
+}
+
+std::vector<unsigned int> Renderer::getSelectedIDs()
+{
+    std::vector<unsigned int> ids;
+    for(unsigned int i = 0; i < _objects.size(); i++) {
+        if(_objects[i]->isSelected)
+            ids.push_back(_objects[i]->getID());
+    }
+
+    return ids;
+}
+
 GameObject* Renderer::getGameObject(unsigned int id)
 {
     GameObject* temp = nullptr;
@@ -123,6 +166,23 @@ unsigned int Renderer::addCube(float x, float y, float z, float rx, float ry, fl
     _objects.push_back(cube);
 
     return cube->getID();
+}
+
+unsigned int Renderer::addCube(float x, float y, float z, float rx, float ry, float rz, 
+                               float sx, float sy, float sz)
+{
+    Material matDefault;
+    matDefault.ambient = glm::vec3(0.5, 0.5, 0.5);
+    matDefault.diffuse = glm::vec3(0.5, 0.5, 0.5);
+    matDefault.specular = glm::vec3(0.5, 0.5, 0.5);
+    matDefault.shininess = 5.0f;
+
+    unsigned int id = addCube(x,y,z,rx,ry,rz,sx,sy,sz,matDefault);
+    printf("object added ID=%d\n.  NEw list:\n",(int)id);
+    for(unsigned int i = 0; i < _objects.size(); i++) {
+        printf("objects[%d]: ID=%d\n", i, _objects[i]->getID());
+    }
+    return id;
 }
 
 unsigned int Renderer::addPointLight(float x, float y, float z, float r, float g, float b, float intensity,

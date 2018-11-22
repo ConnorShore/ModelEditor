@@ -20,10 +20,17 @@ public:
     void renderObjects(Camera& camera);
     void endObjectRender();
     void endRender(SDL_Window* window);
+    std::vector<unsigned int> getSelectedIDs();
 
+    void unselectAllObjects();
+    bool deleteObject(unsigned int id);
 
     unsigned int addCube(float x, float y, float z, float rx, float ry, float rz, 
                          float sx, float sy, float sz, Material& material);
+
+    unsigned int addCube(float x, float y, float z, float rx, float ry, float rz, 
+                         float sx, float sy, float sz);
+
     unsigned int addPointLight(float x, float y, float z, float r, float g, float b,
                           float intensity, float constant, float linear, float quadratic);
 

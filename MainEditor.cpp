@@ -183,6 +183,19 @@ void MainEditor::update()
     picker.update(renderer.getPrimitives(), transformController);
 
     // KEYBOARD //
+    if(inputManager.isKeyDown(SDLK_SPACE)) {
+        renderer.addCube(0,0,0, 0,0,0, 1,1,1);
+        renderer.unselectAllObjects();
+        inputManager.keyReleased(SDLK_SPACE);
+    }
+    if(inputManager.isKeyDown(SDLK_DELETE)) {
+        std::vector<unsigned int> selectedIDs = renderer.getSelectedIDs();
+        for(unsigned int i = 0; i < selectedIDs.size(); i++) {
+            renderer.deleteObject(selectedIDs[i]);
+        }
+        transformController->setControlling(false);
+        transformController->setVisible(false);
+    }
     if(inputManager.isKeyDown(SDLK_w)) {
         camera.moveForward(cameraSpeed);
     }
@@ -240,7 +253,6 @@ void MainEditor::update()
         picker.calculateRay(&origin, &direction);
         glm::vec3 intersectLocation;
 
-
         //All axis
         if(transformController->allAxisSelected()) {
             Plane plane;
@@ -283,7 +295,7 @@ void MainEditor::update()
         else if(transformController->getYController()->isSelected) {
             Plane plane;
             plane.origin = transformController->getPosition();
-            plane.normal = glm::vec3(1,0,0);
+            plane.normal = glm::vec3(0,0,-1);
             if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
                 transformController->setPosition(glm::vec3(transformController->getPosition().x, intersectLocation.y,
                                                 transformController->getPosition().z));
@@ -302,7 +314,7 @@ void MainEditor::update()
         else if(transformController->getZController()->isSelected) {
             Plane plane;
             plane.origin = transformController->getPosition();
-            plane.normal = glm::vec3(1,0,0);
+            plane.normal = glm::vec3(0,1,0);
             if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
                 transformController->setPosition(glm::vec3(transformController->getPosition().x, transformController->getPosition().y,
                                                 intersectLocation.z));
