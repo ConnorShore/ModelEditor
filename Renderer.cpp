@@ -18,10 +18,11 @@ Renderer::~Renderer()
     }
 }
 
-void Renderer::init(StaticShader* shader, OutlineShader* outline)
+void Renderer::init(StaticShader* shader, OutlineShader* outline, GUIShader* gui)
 {
     _staticShader = shader;
     _outlineShader = outline;
+    _guiShader = gui;
 }
 
 void Renderer::beginObjectRender()
@@ -90,6 +91,27 @@ void Renderer::endObjectRender()
 {
     //maybe move up right under glStencilMask or right after glEnable(DEPTHTEST)
     glDisable(GL_STENCIL_TEST);
+}
+
+void Renderer::renderGUIs()
+{
+    glDisable(GL_DEPTH_TEST);
+    
+    _guiShader->start();
+    _guiShader->getUniformLocations();
+    
+    for(GUI* gui : _guis)
+    {
+        glm::mat4 transform = Math::createTransformationMatrix(gui->getPosition(), glm::vec2(0.0f), gui->getScale());
+        _guiShader->loadTransformationMatrix(transform);
+        _guiShader->loadColor(gui->getColor());
+
+        gui->render();
+    }
+
+    _guiShader->stop();
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Renderer::endRender(SDL_Window* window)
@@ -208,6 +230,14 @@ unsigned int Renderer::addDirectionalLight(float dx, float dy, float dz, float r
     light->setID(currentID++);
     _lights.push_back(light);
     return light->getID();
+}
+
+unsigned int Renderer::addGUI(float x, float y, float sx, float sy, glm::vec4 color)
+{
+    GUI* gui = new GUI(x,y,sx,sy,color);
+    gui->setID(currentID++);
+    _guis.push_back(gui);
+    return gui->getID();
 }
 
 unsigned int Renderer::getNumPrimitivesSelected()

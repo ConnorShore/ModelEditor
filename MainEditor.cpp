@@ -51,8 +51,11 @@ void MainEditor::init()
 
     transformShader.init("Shaders/transformShader.vert", "Shaders/transformShader.frag");
     transformShader.bindAttributes();
+
+    guiShader.init("Shaders/guiShader.vert", "Shaders/guiShader.frag");
+    guiShader.bindAttributes();
     
-    renderer.init(&staticShader, &outlineShader);
+    renderer.init(&staticShader, &outlineShader, &guiShader);
 
     camera.init(screenWidth, screenHeight);
     camera.setPosition(0.0f, 0.0f, 3.0f);
@@ -71,12 +74,14 @@ void MainEditor::init()
     mat2.diffuse = glm::vec3(0.2f, 0.95f, 0.45f);
     mat2.specular = glm::vec3(1.0f);
     mat2.shininess = 13.0f;
-    renderer.addCube(2, -0.74, -3,      0,25,56, 1.25,1.75,1.25, mat2);
+    renderer.addCube(2,-0.75,-3,  0,25,56,  1.25,1.75,1.25,  mat2);
     
     light = renderer.addPointLight(1.2f,1.0f,2.0f,  0.15f,0.5f,1.0f,  1.0f,  1.0f,0.09f,0.032f);
     light1 = renderer.addPointLight(-1.2f,-0.5,-0.8f,  0.0f,0.0f,1.0f,  0.6f,  1.0f,0.09f,0.032f);
     light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
     light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
+
+    gui1 = renderer.addGUI(0.5f, 0.5f, 0.25f, 0.25f, glm::vec4(0,1,0,1));
 
     picker = Picker(&camera);
 }
@@ -136,6 +141,7 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
     //TODO: Start adding in gui to atleast get that working
     //      1) Need buttons and panels and labels to begin
     //      2) try to get typing boxes as well (check out SDL2 tutorial on that one SDL2 tuts page)
+    //      3) Add gui overlays for lights to tell position and to be able to change position
 
     //TODO: Add in ability to scale and rotate with transform controller.  Make rotations of objects in place
     //      so that if multiple are selected, they rotate in place and not around the origin of the controller
@@ -357,8 +363,10 @@ void MainEditor::render()
 
     glDepthRange(0.0, 0.01);
     transformController->render(camera, transformShader);
-
     glDepthRange(0,1);
+
+    renderer.renderGUIs();
+    
     renderer.endRender(window);
 }
 

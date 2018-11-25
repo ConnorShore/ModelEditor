@@ -6,6 +6,8 @@
 #include "OutlineShader.h"
 #include "Camera.h"
 #include "Light.h"
+#include "GUI.h"
+#include "GUIShader.h"
 
 #include <SDL2/SDL.h>
 #include <vector>
@@ -14,11 +16,11 @@ class Renderer {
 public:
     Renderer();
     ~Renderer();
-
-    void init(StaticShader* shader, OutlineShader* outline);
+    void init(StaticShader* shader, OutlineShader* outline, GUIShader* gui);
     void beginObjectRender();
     void renderObjects(Camera& camera);
     void endObjectRender();
+    void renderGUIs();
     void endRender(SDL_Window* window);
     std::vector<unsigned int> getSelectedIDs();
 
@@ -36,6 +38,8 @@ public:
 
     unsigned int addDirectionalLight(float dx, float dy, float dz, float r, float g, float b, float instensity);
 
+    unsigned int addGUI(float x, float y, float sx, float sy, glm::vec4 color);
+
     unsigned int getNumPrimitivesSelected();
 
     GameObject* getGameObject(unsigned int id);
@@ -44,8 +48,11 @@ public:
 private:
     std::vector<Primitive*> _objects;
     std::vector<Light*> _lights;
+    std::vector<GUI*> _guis;
+
     StaticShader* _staticShader;
     OutlineShader* _outlineShader;
+    GUIShader* _guiShader;
 
     unsigned int currentID = 0;
 };
