@@ -129,6 +129,17 @@ bool MainEditor::updateTransformSelection()
 
 void MainEditor::updateSelections(std::vector<int>& selectedIds)
 {
+    //TODO: Add in method in Math.h to determine distances between objects and use that to select the object
+    //      closed to the camera.  Do the same with the transform controller (i.e if z-axis overlaps x-axis, make
+    //      sure that z gets selected and not the x-axis)
+
+    //TODO: Start adding in gui to atleast get that working
+    //      1) Need buttons and panels and labels to begin
+    //      2) try to get typing boxes as well (check out SDL2 tutorial on that one SDL2 tuts page)
+
+    //TODO: Add in ability to scale and rotate with transform controller.  Make rotations of objects in place
+    //      so that if multiple are selected, they rotate in place and not around the origin of the controller
+    
     selectedIds.clear();
 
     if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
