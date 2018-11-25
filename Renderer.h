@@ -11,6 +11,7 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
+#include <string>
 
 class Renderer {
 public:
@@ -38,7 +39,7 @@ public:
 
     unsigned int addDirectionalLight(float dx, float dy, float dz, float r, float g, float b, float instensity);
 
-    unsigned int addGUI(float x, float y, float sx, float sy, glm::vec4 color);
+    unsigned int addGUI(float x, float y, float sx, float sy, std::string filePath);
 
     unsigned int getNumPrimitivesSelected();
 

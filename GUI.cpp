@@ -1,14 +1,14 @@
 #include "GUI.h"
+#include "Loader.h"
 
-#include <stdio.h>
-
-GUI::GUI(float x, float y, float sx, float sy, glm::vec4 color)
+GUI::GUI(float x, float y, float sx, float sy, std::string& textureFile)
 {
     _vaoID = 0;
     _vboID = 0;
     _position = glm::vec2(x,y);
     _scale = glm::vec2(sx, sy);
-    _color = color;
+    _texture = Loader::loadPNG(textureFile);
+    _uv = glm::vec4(0,0,1,1);
 
     createIDs();
 }
@@ -19,7 +19,7 @@ GUI::GUI()
     _vboID = 0;
     _position = glm::vec2(0.0f);
     _scale = glm::vec2(1.0f);
-    _color = glm::vec4(1,1,1,1);
+    _uv = glm::vec4(0,0,1,1);
 
     createIDs();
 }
@@ -47,6 +47,9 @@ void GUI::createIDs()
 
 void GUI::render()
 {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _texture.id);
+    
     glBindVertexArray(_vaoID);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 10);
     glBindVertexArray(0);

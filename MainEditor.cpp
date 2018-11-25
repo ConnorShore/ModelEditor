@@ -81,7 +81,7 @@ void MainEditor::init()
     light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
     light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
 
-    gui1 = renderer.addGUI(0.5f, 0.5f, 0.25f, 0.25f, glm::vec4(0,1,0,1));
+    gui1 = renderer.addGUI(0.5f, 0.5f, 0.25f, 0.25f, "Textures/brick.png");
 
     picker = Picker(&camera);
 }

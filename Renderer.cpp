@@ -104,8 +104,8 @@ void Renderer::renderGUIs()
     {
         glm::mat4 transform = Math::createTransformationMatrix(gui->getPosition(), glm::vec2(0.0f), gui->getScale());
         _guiShader->loadTransformationMatrix(transform);
-        _guiShader->loadColor(gui->getColor());
-
+        _guiShader->loadTexture();
+        
         gui->render();
     }
 
@@ -232,9 +232,9 @@ unsigned int Renderer::addDirectionalLight(float dx, float dy, float dz, float r
     return light->getID();
 }
 
-unsigned int Renderer::addGUI(float x, float y, float sx, float sy, glm::vec4 color)
+unsigned int Renderer::addGUI(float x, float y, float sx, float sy, std::string filePath)
 {
-    GUI* gui = new GUI(x,y,sx,sy,color);
+    GUI* gui = new GUI(x,y,sx,sy,filePath);
     gui->setID(currentID++);
     _guis.push_back(gui);
     return gui->getID();

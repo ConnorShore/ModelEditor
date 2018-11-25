@@ -17,13 +17,13 @@ void GUIShader::bindAttributes()
 
 void GUIShader::getUniformLocations()
 {
-    _colorLoc = getUniformLocation("color");
+    _textureLoc = getUniformLocation("tex");
     _transformMatrixLoc = getUniformLocation("transformMatrix");
 }
 
-void GUIShader::loadColor(glm::vec4 color)
+void GUIShader::loadTexture()
 {
-    loadVector4f(_colorLoc, color);
+    loadInt(_textureLoc, 0);
 }
 
 void GUIShader::loadTransformationMatrix(glm::mat4 matrix)
