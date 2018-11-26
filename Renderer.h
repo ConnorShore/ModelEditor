@@ -8,6 +8,7 @@
 #include "Light.h"
 #include "GUI.h"
 #include "GUIShader.h"
+#include "Button.h"
 
 #include <SDL2/SDL.h>
 #include <vector>
@@ -40,14 +41,14 @@ public:
 
     unsigned int addDirectionalLight(float dx, float dy, float dz, float r, float g, float b, float instensity);
 
-    unsigned int addButton(float x, float y, float sx, float sy, std::string filePath);
+    Button* addButton(float x, float y, float sx, float sy, std::string filePath, unsigned int* id);
 
     unsigned int getNumPrimitivesSelected();
 
     GameObject* getGameObject(unsigned int id);
     GUI* getGUI(unsigned int id);
     std::vector<Primitive*> getPrimitives() {return _objects;}
-
+    std::vector<GUI*> getGUIs() {return _guis;}
 private:
     std::vector<Primitive*> _objects;
     std::vector<Light*> _lights;

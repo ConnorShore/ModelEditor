@@ -3,18 +3,21 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <functional>
 
 #include "GameObject.h"
 #include "Texture.h"
 
 enum GUIType
 {
-    BUTTON
+    GUI_BUTTON
 };
 
 class GUI : public GameObject
 {
 public:
+    typedef std::function<void()> call;
+
     GUI(float x, float y, float sx, float sy, std::string& textureFile);
     GUI();
     ~GUI();
@@ -38,6 +41,15 @@ public:
     void setMouseOver(bool mouseOver) {_mouseOver = mouseOver;}
     void setVisible(bool visible) {_visible = visible;}
 
+    //Callbacks
+    std::function<void()> callback() const {return eventCallback;}
+    template<typename T, typename F, typename... Args>
+    void subscribeEvent(T instance, F func, Args... args)
+    {
+        call temp = { std::bind(func, instance, args...) };
+        eventCallback = temp;
+    }
+
 protected:
     GLuint _vaoID, _vboID;
     
@@ -49,6 +61,8 @@ protected:
     GUIType _type;
     bool _mouseOver;
     bool _visible;
+
+    call eventCallback;
 
     void createIDs();
 

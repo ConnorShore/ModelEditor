@@ -5,6 +5,7 @@
 #include "DirectionalLight.h"
 
 #include "Math.h"
+#include "Button.h"
 
 void MainEditor::init()
 {
@@ -81,7 +82,8 @@ void MainEditor::init()
     light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
     light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
 
-    button1 = renderer.addButton(0.5f, 0.5f, 0.25f, 0.25f, "Textures/brick.png");
+    Button* button = renderer.addButton(0.5f, 0.5f, 0.25f, 0.25f, "Textures/brick.png", &button1);
+    button->subscribeEvent(this, &MainEditor::printNumber, 4);
 
     picker = Picker(&camera);
 }
@@ -192,20 +194,11 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
     }
 }
 
-void MainEditor::update()
+void MainEditor::input()
 {
     inputManager.update();
-    camera.setMouseCords(inputManager.getMouseX(), inputManager.getMouseY());
-    camera.update();
-    picker.update(renderer.getPrimitives(), transformController);
 
-    glm::vec2 coords = camera.screenToNDC();
-    Button* temp = static_cast<Button*>(renderer.getGameObject(button1));
-
-    if(temp->inBounds(coords))
-        printf("In Button\n");
-
-    // KEYBOARD //
+     // KEYBOARD //
     if(inputManager.isKeyDown(SDLK_SPACE)) {
         renderer.addCube(0,0,0, 0,0,0, 1,1,1);
         renderer.unselectAllObjects();
@@ -266,7 +259,48 @@ void MainEditor::update()
         transformController->deselectAxis();
         transformController->setControlling(false);
     }
+}
 
+void MainEditor::updateGUIs()
+{
+    bool control = false;
+    glm::vec2 mouse = camera.screenToNDC();
+    
+    std::vector<GUI*> guis = renderer.getGUIs();
+    for(unsigned int i = 0; i < guis.size(); i++) {
+        guis[i]->update();
+
+        if(guis[i]->inBounds(mouse)) {
+            GUIType type = guis[i]->getType();
+            control = true;
+            if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
+                switch(type) {
+                    case GUI_BUTTON:
+                        Button* button;
+                        button = static_cast<Button*>(guis[i]);
+                        button->onClick();
+                        break;
+                }
+            }
+        }
+    }
+
+    guiControl = control;
+}
+
+void MainEditor::update()
+{
+    camera.setMouseCords(inputManager.getMouseX(), inputManager.getMouseY());
+    camera.update();
+    picker.update(renderer.getPrimitives(), transformController);
+
+    updateGUIs();
+
+    if(guiControl)
+        return;
+   
+
+    //Update object and transform controller selection
     std::vector<int> ids;
     updateSelections(ids);
 
@@ -383,6 +417,7 @@ void MainEditor::gameLoop()
         timer.FpsLimitInit();
         timer.calcDeltaTime();
 
+        input();
         update();
         render();
 
@@ -400,4 +435,9 @@ void MainEditor::run()
     init();
     gameLoop();
     cleanUp();
+}
+
+void MainEditor::printNumber(int num)
+{
+    printf("Number: %d\n", num);
 }

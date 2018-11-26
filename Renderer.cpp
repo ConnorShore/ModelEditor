@@ -3,7 +3,6 @@
 #include "Cube.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
-#include "Button.h"
 
 #include <algorithm>
 
@@ -211,7 +210,7 @@ unsigned int Renderer::addCube(float x, float y, float z, float rx, float ry, fl
     matDefault.shininess = 5.0f;
 
     unsigned int id = addCube(x,y,z,rx,ry,rz,sx,sy,sz,matDefault);
-    
+
     return id;
 }
 
@@ -240,12 +239,13 @@ unsigned int Renderer::addDirectionalLight(float dx, float dy, float dz, float r
     return light->getID();
 }
 
-unsigned int Renderer::addButton(float x, float y, float sx, float sy, std::string filePath)
+Button* Renderer::addButton(float x, float y, float sx, float sy, std::string filePath, unsigned int* id)
 {
     Button* button = new Button(x,y,sx,sy,filePath);
     button->setID(currentID++);
     _guis.push_back(button);
-    return button->getID();
+    *id = button->getID();
+    return button;
 }
 
 unsigned int Renderer::getNumPrimitivesSelected()

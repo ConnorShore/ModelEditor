@@ -20,7 +20,6 @@
 #include "TransformController.h"
 #include "TransformShader.h"
 #include "GUIShader.h"
-#include "Button.h"
 
 class MainEditor
 {
@@ -51,16 +50,22 @@ private:
     int screenWidth = 1600;
     int screenHeight = 900;
     bool isRunning = false;
+    bool guiControl = false;
 
     glm::vec3 transformSelectLoc;
 
     void init();
     void updateSelections(std::vector<int>& selectedIds);
     bool updateTransformSelection();
+    void input();
+    void updateGUIs();
     void update();
     void render();
     void gameLoop();
     void cleanUp();
+
+    //Callbacks
+    void printNumber(int num);
 };
 
 #endif // MAIN_EDITOR
