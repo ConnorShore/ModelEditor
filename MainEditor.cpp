@@ -199,6 +199,13 @@ void MainEditor::update()
     camera.update();
     picker.update(renderer.getPrimitives(), transformController);
 
+    glm::vec2 coords = camera.screenToNDC();
+    GUI* temp = static_cast<GUI*>(renderer.getGameObject(gui1));
+    glm::vec4 bounds = temp->getBounds();
+
+    if(coords.x > bounds.x && coords.x < bounds.y && coords.y > bounds.z && coords.y < bounds.w)
+        printf("In GUI\n");
+
     // KEYBOARD //
     if(inputManager.isKeyDown(SDLK_SPACE)) {
         renderer.addCube(0,0,0, 0,0,0, 1,1,1);

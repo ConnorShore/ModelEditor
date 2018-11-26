@@ -18,6 +18,9 @@ public:
     glm::vec2 getScale() {return _scale;}
     Texture getTexture() {return _texture;}
 
+    // return: [minX, maxX, minY, maxY]
+    glm::vec4 getBounds();
+
     void render();
 
 private:

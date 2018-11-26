@@ -44,6 +44,7 @@ public:
     unsigned int getNumPrimitivesSelected();
 
     GameObject* getGameObject(unsigned int id);
+    GUI* getGUI(unsigned int id);
     std::vector<Primitive*> getPrimitives() {return _objects;}
 
 private:

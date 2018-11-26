@@ -177,6 +177,13 @@ GameObject* Renderer::getGameObject(unsigned int id)
         }
     }
 
+    for(unsigned int i = 0; i < _guis.size(); i++) {
+        if(_guis[i]->getID() == id) {
+            temp = _guis[i];
+            return temp;
+        }
+    }
+
     return temp;
 }
 

@@ -14,13 +14,13 @@ public:
     void keyReleased(unsigned int keyID);
     bool isKeyDown(unsigned int keyID);
 
-    float getMouseX() { return _mouseX; }
-    float getMouseY() { return _mouseY; }
-    void setMouseCoords(float x, float y);
+    int getMouseX() { return _mouseX; }
+    int getMouseY() { return _mouseY; }
+    void setMouseCoords(int x, int y);
 
 private:
     std::unordered_map<unsigned int, bool> _keyMap;
-    float _mouseX, _mouseY;
+    int _mouseX, _mouseY;
 };
 
 #endif

@@ -103,6 +103,12 @@ glm::vec3 Camera::screenToWorldCoords(float mouseX, float mouseY)
     return glm::vec3(result);
 }
 
+glm::vec2 Camera::screenToNDC()
+{
+    return glm::vec2(((_mouseCoords.x * 2.0f)/ _screenWidth) - 1.0f, 
+                    (1.0f - (_mouseCoords.y * 2.0f)/ _screenHeight));
+}
+
 glm::mat4 Camera::createProjectionMatrix()
 {
     glm::mat4 projMatrix;

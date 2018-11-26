@@ -54,3 +54,13 @@ void GUI::render()
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 10);
     glBindVertexArray(0);
 }
+
+glm::vec4 GUI::getBounds()
+{
+    glm::vec4 bounds;
+    bounds.x = _position.x - _scale.x;
+    bounds.y = _position.x + _scale.x;
+    bounds.z = _position.y - _scale.y;
+    bounds.w = _position.y + _scale.y;
+    return bounds;
+}
