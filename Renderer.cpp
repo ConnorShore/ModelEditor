@@ -3,6 +3,7 @@
 #include "Cube.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
+#include "Button.h"
 
 #include <algorithm>
 
@@ -102,6 +103,9 @@ void Renderer::renderGUIs()
     
     for(GUI* gui : _guis)
     {
+        if(!gui->isVisible())
+            continue;
+
         glm::mat4 transform = Math::createTransformationMatrix(gui->getPosition(), glm::vec2(0.0f), gui->getScale());
         _guiShader->loadTransformationMatrix(transform);
         _guiShader->loadTexture();
@@ -207,10 +211,7 @@ unsigned int Renderer::addCube(float x, float y, float z, float rx, float ry, fl
     matDefault.shininess = 5.0f;
 
     unsigned int id = addCube(x,y,z,rx,ry,rz,sx,sy,sz,matDefault);
-    printf("object added ID=%d\n.  NEw list:\n",(int)id);
-    for(unsigned int i = 0; i < _objects.size(); i++) {
-        printf("objects[%d]: ID=%d\n", i, _objects[i]->getID());
-    }
+    
     return id;
 }
 
@@ -239,12 +240,12 @@ unsigned int Renderer::addDirectionalLight(float dx, float dy, float dz, float r
     return light->getID();
 }
 
-unsigned int Renderer::addGUI(float x, float y, float sx, float sy, std::string filePath)
+unsigned int Renderer::addButton(float x, float y, float sx, float sy, std::string filePath)
 {
-    GUI* gui = new GUI(x,y,sx,sy,filePath);
-    gui->setID(currentID++);
-    _guis.push_back(gui);
-    return gui->getID();
+    Button* button = new Button(x,y,sx,sy,filePath);
+    button->setID(currentID++);
+    _guis.push_back(button);
+    return button->getID();
 }
 
 unsigned int Renderer::getNumPrimitivesSelected()

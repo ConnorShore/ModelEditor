@@ -20,6 +20,7 @@
 #include "TransformController.h"
 #include "TransformShader.h"
 #include "GUIShader.h"
+#include "Button.h"
 
 class MainEditor
 {
@@ -42,7 +43,7 @@ private:
     TransformShader transformShader;
     GUIShader guiShader;
 
-    unsigned int cube1, cube2, light, light1, light2, light3, gui1;
+    unsigned int cube1, cube2, light, light1, light2, light3, button1;
 
     float cameraSpeed = 0.015f;
     float intensity = 0.1f;

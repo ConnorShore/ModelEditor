@@ -81,7 +81,7 @@ void MainEditor::init()
     light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
     light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
 
-    gui1 = renderer.addGUI(0.5f, 0.5f, 0.25f, 0.25f, "Textures/brick.png");
+    button1 = renderer.addButton(0.5f, 0.5f, 0.25f, 0.25f, "Textures/brick.png");
 
     picker = Picker(&camera);
 }
@@ -200,11 +200,10 @@ void MainEditor::update()
     picker.update(renderer.getPrimitives(), transformController);
 
     glm::vec2 coords = camera.screenToNDC();
-    GUI* temp = static_cast<GUI*>(renderer.getGameObject(gui1));
-    glm::vec4 bounds = temp->getBounds();
+    Button* temp = static_cast<Button*>(renderer.getGameObject(button1));
 
-    if(coords.x > bounds.x && coords.x < bounds.y && coords.y > bounds.z && coords.y < bounds.w)
-        printf("In GUI\n");
+    if(temp->inBounds(coords))
+        printf("In Button\n");
 
     // KEYBOARD //
     if(inputManager.isKeyDown(SDLK_SPACE)) {

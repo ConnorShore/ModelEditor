@@ -3,12 +3,14 @@
 
 GUI::GUI(float x, float y, float sx, float sy, std::string& textureFile)
 {
+    printf("In gui constructor\n");
     _vaoID = 0;
     _vboID = 0;
     _position = glm::vec2(x,y);
     _scale = glm::vec2(sx, sy);
     _texture = Loader::loadPNG(textureFile);
     _uv = glm::vec4(0,0,1,1);
+    _visible = true;
 
     createIDs();
 }
@@ -20,6 +22,7 @@ GUI::GUI()
     _position = glm::vec2(0.0f);
     _scale = glm::vec2(1.0f);
     _uv = glm::vec4(0,0,1,1);
+    _visible = true;
 
     createIDs();
 }
@@ -43,6 +46,12 @@ void GUI::createIDs()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+bool GUI::inBounds(glm::vec2 coords)
+{
+    glm::vec4 bounds = getBounds();
+    return coords.x > bounds.x && coords.x < bounds.y && coords.y > bounds.z && coords.y < bounds.w;
 }
 
 void GUI::render()

@@ -17,6 +17,7 @@ class Renderer {
 public:
     Renderer();
     ~Renderer();
+
     void init(StaticShader* shader, OutlineShader* outline, GUIShader* gui);
     void beginObjectRender();
     void renderObjects(Camera& camera);
@@ -39,7 +40,7 @@ public:
 
     unsigned int addDirectionalLight(float dx, float dy, float dz, float r, float g, float b, float instensity);
 
-    unsigned int addGUI(float x, float y, float sx, float sy, std::string filePath);
+    unsigned int addButton(float x, float y, float sx, float sy, std::string filePath);
 
     unsigned int getNumPrimitivesSelected();
 
