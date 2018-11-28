@@ -19,6 +19,7 @@
 #include "Picker.h"
 #include "TransformController.h"
 #include "TransformShader.h"
+#include "GUIShader.h"
 
 class MainEditor
 {
@@ -39,8 +40,9 @@ private:
     Picker picker;
     TransformController* transformController;
     TransformShader transformShader;
+    GUIShader guiShader;
 
-    unsigned int cube1, cube2, light, light1, light2, light3;
+    unsigned int cube1, cube2, light, light1, light2, light3, panel, button1;
 
     float cameraSpeed = 0.015f;
     float intensity = 0.1f;
@@ -48,16 +50,22 @@ private:
     int screenWidth = 1600;
     int screenHeight = 900;
     bool isRunning = false;
+    bool guiControl = false;
 
     glm::vec3 transformSelectLoc;
 
     void init();
     void updateSelections(std::vector<int>& selectedIds);
     bool updateTransformSelection();
+    void input();
+    void updateGUIs();
     void update();
     void render();
     void gameLoop();
     void cleanUp();
+
+    //Callbacks
+    void printNumber(int num);
 };
 
 #endif // MAIN_EDITOR

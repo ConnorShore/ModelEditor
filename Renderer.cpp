@@ -16,12 +16,21 @@ Renderer::~Renderer()
         delete _objects.back();
         _objects.pop_back();
     }
+    for(unsigned int i = _lights.size()-1; i >= 0; i--) {
+        delete _lights.back();
+        _lights.pop_back();
+    }
+    for(unsigned int i = _guis.size()-1; i >= 0; i--) {
+        delete _guis.back();
+        _guis.pop_back();
+    }
 }
 
-void Renderer::init(StaticShader* shader, OutlineShader* outline)
+void Renderer::init(StaticShader* shader, OutlineShader* outline, GUIShader* gui)
 {
     _staticShader = shader;
     _outlineShader = outline;
+    _guiShader = gui;
 }
 
 void Renderer::beginObjectRender()
@@ -92,6 +101,30 @@ void Renderer::endObjectRender()
     glDisable(GL_STENCIL_TEST);
 }
 
+void Renderer::renderGUIs()
+{
+    glDisable(GL_DEPTH_TEST);
+    
+    _guiShader->start();
+    _guiShader->getUniformLocations();
+    
+    for(GUI* gui : _guis)
+    {
+        if(!gui->isVisible())
+            continue;
+
+        glm::mat4 transform = Math::createTransformationMatrix(gui->getPosition(), glm::vec2(0.0f), gui->getScale());
+        _guiShader->loadTransformationMatrix(transform);
+        _guiShader->loadTexture();
+        
+        gui->render();
+    }
+
+    _guiShader->stop();
+
+    glEnable(GL_DEPTH_TEST);
+}
+
 void Renderer::endRender(SDL_Window* window)
 {
     SDL_GL_SwapWindow(window);
@@ -155,6 +188,13 @@ GameObject* Renderer::getGameObject(unsigned int id)
         }
     }
 
+    for(unsigned int i = 0; i < _guis.size(); i++) {
+        if(_guis[i]->getID() == id) {
+            temp = _guis[i];
+            return temp;
+        }
+    }
+
     return temp;
 }
 
@@ -178,10 +218,7 @@ unsigned int Renderer::addCube(float x, float y, float z, float rx, float ry, fl
     matDefault.shininess = 5.0f;
 
     unsigned int id = addCube(x,y,z,rx,ry,rz,sx,sy,sz,matDefault);
-    printf("object added ID=%d\n.  NEw list:\n",(int)id);
-    for(unsigned int i = 0; i < _objects.size(); i++) {
-        printf("objects[%d]: ID=%d\n", i, _objects[i]->getID());
-    }
+
     return id;
 }
 
@@ -208,6 +245,45 @@ unsigned int Renderer::addDirectionalLight(float dx, float dy, float dz, float r
     light->setID(currentID++);
     _lights.push_back(light);
     return light->getID();
+}
+
+Button* Renderer::addButton(GUI* parent, float x, float y, float sx, float sy, std::string filePath, bool relativePos, unsigned int* id)
+{
+    Button* button = new Button(parent,x,y,sx,sy,filePath,relativePos);
+    button->setID(currentID++);
+    _guis.push_back(button);
+    if(id != nullptr)
+        *id = button->getID();
+    return button;
+}
+
+Button* Renderer::addButton(float x, float y, float sx, float sy, std::string filePath, unsigned int* id)
+{
+    Button* button = new Button(x,y,sx,sy,filePath);
+    button->setID(currentID++);
+    _guis.push_back(button);
+    if(id != nullptr)
+        *id = button->getID();
+    return button;
+}
+
+Panel* Renderer::addPanel(GUI* parent, float x, float y, float sx, float sy, std::string filePath, bool relativePos, unsigned int* id)
+{
+    Panel* panel = new Panel(parent,x,y,sx,sy,filePath,relativePos);
+    panel->setID(currentID++);
+    _guis.push_back(panel);
+    if(id != nullptr)
+        *id = panel->getID();
+    return panel;
+}
+Panel* Renderer::addPanel(float x, float y, float sx, float sy, std::string filePath, unsigned int* id)
+{
+    Panel* panel = new Panel(x,y,sx,sy,filePath);
+    panel->setID(currentID++);
+    _guis.push_back(panel);
+    if(id != nullptr)
+        *id = panel->getID();
+    return panel;
 }
 
 unsigned int Renderer::getNumPrimitivesSelected()
