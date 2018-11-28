@@ -2,10 +2,11 @@
 #include <string>
 #include <iostream>
 #include <glm/glm.hpp>
-#include "DirectionalLight.h"
 
+#include "DirectionalLight.h"
 #include "Math.h"
 #include "Button.h"
+#include "TextRenderer.h"
 
 void MainEditor::init()
 {
@@ -43,6 +44,8 @@ void MainEditor::init()
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+
+    TextRenderer* tr = new TextRenderer;
 
     staticShader.init("Shaders/shader.vert", "Shaders/shader.frag");
     staticShader.bindAttributes();
