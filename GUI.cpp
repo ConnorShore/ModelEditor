@@ -1,9 +1,30 @@
 #include "GUI.h"
 #include "Loader.h"
 
+GUI::GUI(GUI* parent, float x, float y, float sx, float sy, std::string& textureFile, bool relativePos /* true */)
+{
+    printf("IN GUI Constructorn 1\n");
+    _vaoID = 0;
+    _vboID = 0;
+    
+    if(relativePos)
+        _position = parent->getPosition() + glm::vec2(x,y);
+    else
+        _position = glm::vec2(x,y);
+
+    _scale = glm::vec2(sx, sy);
+    _texture = Loader::loadPNG(textureFile);
+    _uv = glm::vec4(0,0,1,1);
+    _visible = true;
+    _parent = parent;
+    _parent->addChild(this);
+
+    createIDs();
+}
+
 GUI::GUI(float x, float y, float sx, float sy, std::string& textureFile)
 {
-    printf("In gui constructor\n");
+    printf("IN GUI Constructorn 2\n");
     _vaoID = 0;
     _vboID = 0;
     _position = glm::vec2(x,y);
@@ -11,18 +32,22 @@ GUI::GUI(float x, float y, float sx, float sy, std::string& textureFile)
     _texture = Loader::loadPNG(textureFile);
     _uv = glm::vec4(0,0,1,1);
     _visible = true;
+    printf("About to assign parent nullptr\n");
+    _parent = nullptr;
 
     createIDs();
 }
 
 GUI::GUI()
 {
+    printf("IN GUI Constructorn 3\n");
     _vaoID = 0;
     _vboID = 0;
     _position = glm::vec2(0.0f);
     _scale = glm::vec2(1.0f);
     _uv = glm::vec4(0,0,1,1);
     _visible = true;
+    _parent = nullptr;
 
     createIDs();
 }
@@ -72,4 +97,16 @@ glm::vec4 GUI::getBounds()
     bounds.z = _position.y - _scale.y;
     bounds.w = _position.y + _scale.y;
     return bounds;
+}
+
+void GUI::addChild(GUI* child)
+{
+    bool exists = false;
+    for(unsigned int i = 0; i < _children.size(); i++)
+        if(_children[i]->getID() == child->getID())
+            exists = true;
+    if(!exists)
+        _children.push_back(child);
+    else
+        printf("Child [%d] already exists\n", child->getID());
 }

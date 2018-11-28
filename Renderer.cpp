@@ -16,6 +16,14 @@ Renderer::~Renderer()
         delete _objects.back();
         _objects.pop_back();
     }
+    for(unsigned int i = _lights.size()-1; i >= 0; i--) {
+        delete _lights.back();
+        _lights.pop_back();
+    }
+    for(unsigned int i = _guis.size()-1; i >= 0; i--) {
+        delete _guis.back();
+        _guis.pop_back();
+    }
 }
 
 void Renderer::init(StaticShader* shader, OutlineShader* outline, GUIShader* gui)
@@ -239,13 +247,43 @@ unsigned int Renderer::addDirectionalLight(float dx, float dy, float dz, float r
     return light->getID();
 }
 
+Button* Renderer::addButton(GUI* parent, float x, float y, float sx, float sy, std::string filePath, bool relativePos, unsigned int* id)
+{
+    Button* button = new Button(parent,x,y,sx,sy,filePath,relativePos);
+    button->setID(currentID++);
+    _guis.push_back(button);
+    if(id != nullptr)
+        *id = button->getID();
+    return button;
+}
+
 Button* Renderer::addButton(float x, float y, float sx, float sy, std::string filePath, unsigned int* id)
 {
     Button* button = new Button(x,y,sx,sy,filePath);
     button->setID(currentID++);
     _guis.push_back(button);
-    *id = button->getID();
+    if(id != nullptr)
+        *id = button->getID();
     return button;
+}
+
+Panel* Renderer::addPanel(GUI* parent, float x, float y, float sx, float sy, std::string filePath, bool relativePos, unsigned int* id)
+{
+    Panel* panel = new Panel(parent,x,y,sx,sy,filePath,relativePos);
+    panel->setID(currentID++);
+    _guis.push_back(panel);
+    if(id != nullptr)
+        *id = panel->getID();
+    return panel;
+}
+Panel* Renderer::addPanel(float x, float y, float sx, float sy, std::string filePath, unsigned int* id)
+{
+    Panel* panel = new Panel(x,y,sx,sy,filePath);
+    panel->setID(currentID++);
+    _guis.push_back(panel);
+    if(id != nullptr)
+        *id = panel->getID();
+    return panel;
 }
 
 unsigned int Renderer::getNumPrimitivesSelected()

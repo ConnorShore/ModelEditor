@@ -42,7 +42,7 @@ private:
     TransformShader transformShader;
     GUIShader guiShader;
 
-    unsigned int cube1, cube2, light, light1, light2, light3, button1;
+    unsigned int cube1, cube2, light, light1, light2, light3, panel, button1;
 
     float cameraSpeed = 0.015f;
     float intensity = 0.1f;

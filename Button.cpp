@@ -1,20 +1,17 @@
 #include "Button.h"
 #include "Loader.h"
 
-Button::Button(float x, float y, float sx, float sy, std::string& textureFile)
+Button::Button(GUI* parent, float x, float y, float sx, float sy, std::string& textureFile, bool relativePos)
+     : GUI(parent,x,y,sx,sy,textureFile,relativePos)
 {
     _type = GUI_BUTTON;
-    
-    _vaoID = 0;
-    _vboID = 0;
-    _position = glm::vec2(x,y);
-    _scale = glm::vec2(sx, sy);
-    _texture = Loader::loadPNG(textureFile);
-    _uv = glm::vec4(0,0,1,1);
-    _visible = true;
     _enabled = true;
+}
 
-    createIDs();
+Button::Button(float x, float y, float sx, float sy, std::string& textureFile) : GUI(x,y,sx,sy,textureFile)
+{
+    _type = GUI_BUTTON;
+    _enabled = true;
 }
 
 Button::Button() : GUI()

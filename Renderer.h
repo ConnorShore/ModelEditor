@@ -9,6 +9,7 @@
 #include "GUI.h"
 #include "GUIShader.h"
 #include "Button.h"
+#include "Panel.h"
 
 #include <SDL2/SDL.h>
 #include <vector>
@@ -41,7 +42,11 @@ public:
 
     unsigned int addDirectionalLight(float dx, float dy, float dz, float r, float g, float b, float instensity);
 
-    Button* addButton(float x, float y, float sx, float sy, std::string filePath, unsigned int* id);
+    Button* addButton(GUI* parent, float x, float y, float sx, float sy, std::string filePath, bool relativePos=true,unsigned int* id=nullptr);
+    Button* addButton(float x, float y, float sx, float sy, std::string filePath, unsigned int* id=nullptr);
+
+    Panel* addPanel(GUI* parent, float x, float y, float sx, float sy, std::string filePath, bool relativePos=true,unsigned int* id=nullptr);
+    Panel* addPanel(float x, float y, float sx, float sy, std::string filePath, unsigned int* id=nullptr);
 
     unsigned int getNumPrimitivesSelected();
 

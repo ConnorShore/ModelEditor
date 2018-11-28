@@ -82,7 +82,8 @@ void MainEditor::init()
     light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
     light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
 
-    Button* button = renderer.addButton(0.5f, 0.5f, 0.25f, 0.25f, "Textures/brick.png", &button1);
+    Panel* sidePanel = renderer.addPanel(0.7f, 0.0f, 0.3f, 1.0f, "Textures/panel.png", &panel);
+    Button* button = renderer.addButton(sidePanel, 0.0f, 0.0f, 0.2, 0.15f, "Textures/brick.png", true, &button1);
     button->subscribeEvent(this, &MainEditor::printNumber, 4);
 
     picker = Picker(&camera);
@@ -279,6 +280,9 @@ void MainEditor::updateGUIs()
                         Button* button;
                         button = static_cast<Button*>(guis[i]);
                         button->onClick();
+                        break;
+                    case GUI_PANEL:
+                    default:
                         break;
                 }
             }
