@@ -133,7 +133,6 @@ bool MainEditor::updateTransformSelection()
         transformController->setAllAxisSelected(false);
     }
 
-
     transformController->setControlling(selected);
     return selected;
 }

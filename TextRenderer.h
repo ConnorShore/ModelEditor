@@ -1,14 +1,15 @@
 #ifndef TEXT_RENDERER
 #define TEXT_RENDERER
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
+#include <SDL2/SDL_ttf.h>
 
 class TextRenderer
 {
 public:
     TextRenderer();
     ~TextRenderer();
+
+    
 
 private:
 
