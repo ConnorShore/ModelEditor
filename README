@@ -1,0 +1,26 @@
+Connor Shore Final Project - Model Editor
+
+Prereqs: This program is built using SDL2 so if you don't have it installed I believe this command will do the trick:
+
+    sudo apt-get install libsdl2-dev
+
+Build and run:
+
+    make clean; make; ./app
+
+
+How to use:
+    W/A/S/D         Move camera around
+    E/Q             Increase/Decrease camera elevation
+    Arrow Keys      Rotate camera
+    Left click      Select object   (Hold shift to select multiple objects at once)
+    Delete Keys     Delete selected objects
+    Space bar       Create new object
+    1/2             Increase/Decrease directional light intensity
+
+The panel on the right with the brick wall textured button is the start of my GUI implementation.  Textures are obviously placeholders, but if you click on the brick wall button, you will see the console prints out Number: 4 which was used to test the GUI callbacks.
+
+Remaining Work:
+The big things I have remaining are mainly GUI related.  I still need to implement rendering text to the screen so I can print out the selected object's transform properties (position, scale and rotation) and I would like to add an ability to edit those fields so you can type in the transform values (however I've had alot of trouble with this so we'll see how it goes).  I also want to add in ability to scale and rotate an object with the transform controller.  Finally, I want to add ability to add lights to the scene.  Currently I have lights in there just at preset locations but if I could get it so that you can add lights and have a little GUI icon appear over it so that you can adjust its position and such, that would be great.
+
+NOTE: Some of these things such as text rendering I've begun working on but is in beginning stages or not working properly so I am providing the latest "full working solution" so to say.
