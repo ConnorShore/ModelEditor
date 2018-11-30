@@ -12,7 +12,7 @@ else
 #Linux
 CFLG= -O3 -Wall -o $(EXE)
 INCLUDE=-I/usr/include/freetype2
-LIBS=-lSDL2 -lGLEW -lGL -lm -lfreetype -lSDL2_ttf
+LIBS=-lSDL2 -lGLEW -lGL -lm -lfreetype
 CLEAN=rm -f $(EXE) *.o *.a
 endif
 
