@@ -11,4 +11,5 @@ void main()
 {
     vec4 sampled = vec4(1.0,1.0,1.0,texture(text,fragmentUV).r);
     outColor = sampled * vec4(glyphColor, 1.0);
+    // outColor = vec4(1,0,0,1);
 }

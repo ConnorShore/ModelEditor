@@ -40,6 +40,7 @@ void MainEditor::init()
     glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_TEXTURE_2D);
 
     // glEnable(GL_CULL_FACE);
     // glCullFace(GL_BACK);
@@ -191,7 +192,6 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
             sumPosition /= size;
             transformController->setPosition(sumPosition);
             transformController->setVisible(true);
-            // transformController->setControlling(true);
             transformSelectLoc = transformController->getPosition();
             transformController->selectLocUpdated = true;
         }
@@ -306,7 +306,6 @@ void MainEditor::update()
     if(guiControl)
         return;
    
-
     //Update object and transform controller selection
     std::vector<int> ids;
     updateSelections(ids);
@@ -401,9 +400,9 @@ void MainEditor::update()
 
 void MainEditor::render()
 {
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.5f,0.5f,0.5f,1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT);
 
     // glDepthRange(0.01, 1);
     // renderer.beginObjectRender();
@@ -417,7 +416,7 @@ void MainEditor::render()
     // renderer.renderGUIs();
 
     //text render
-    textRenderer.renderText(&textShader, "abcdefghijklmnopqrstuvwxyz 1234567890", 400.0f, 300.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+    textRenderer.renderText(&textShader, "This is a test sentence", 400.0f, 300.0f, 1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
     renderer.endRender(window);
 }

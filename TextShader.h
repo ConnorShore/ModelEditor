@@ -14,10 +14,11 @@ public:
 
     void loadGlyph();
     void loadProjectionMatrix(glm::mat4 matrix);
+    void loadTransformationMatrix(glm::mat4 matrix);
     void loadColor(glm::vec3 color);
 
 private:
-    GLuint _glyphTexLoc, _projectionMatrixLoc, _colorLoc;
+    GLuint _glyphTexLoc, _projectionMatrixLoc, _colorLoc, _transformMatrixLoc;
 };
 
 

@@ -31,6 +31,14 @@ public:
 private:
     GLuint _vaoID, _vboID;
     std::map<GLchar, Character> _characters;
+
+    float vertices[10] = {
+        1,1,
+        1,-1,
+        -1,-1,
+        -1,1,
+        1,1
+    };
 };
 
 #endif

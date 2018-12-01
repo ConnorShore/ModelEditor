@@ -16,6 +16,7 @@ void TextShader::bindAttributes()
 void TextShader::getUniformLocations()
 {
     _projectionMatrixLoc = getUniformLocation("projectionMatrix");
+    _transformMatrixLoc = getUniformLocation("transformMatrix");
     _colorLoc = getUniformLocation("glyphColor");
     _glyphTexLoc = getUniformLocation("text");
 }
@@ -23,6 +24,11 @@ void TextShader::getUniformLocations()
 void TextShader::loadGlyph()
 {
     loadInt(_glyphTexLoc, 0);
+}
+
+void TextShader::loadTransformationMatrix(glm::mat4 matrix)
+{
+    loadMatrix4f(_transformMatrixLoc, matrix);
 }
 
 void TextShader::loadProjectionMatrix(glm::mat4 matrix)
