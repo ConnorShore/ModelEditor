@@ -6,7 +6,6 @@
 #include "DirectionalLight.h"
 #include "Math.h"
 #include "Button.h"
-#include "TextRenderer.h"
 
 void MainEditor::init()
 {
@@ -42,10 +41,8 @@ void MainEditor::init()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-
-    TextRenderer* tr = new TextRenderer;
+    // glEnable(GL_CULL_FACE);
+    // glCullFace(GL_BACK);
 
     staticShader.init("Shaders/shader.vert", "Shaders/shader.frag");
     staticShader.bindAttributes();
@@ -58,8 +55,12 @@ void MainEditor::init()
 
     guiShader.init("Shaders/guiShader.vert", "Shaders/guiShader.frag");
     guiShader.bindAttributes();
+
+    textShader.init("Shaders/textShader.vert", "Shaders/textShader.frag");
+    textShader.bindAttributes();
     
     renderer.init(&staticShader, &outlineShader, &guiShader);
+    textRenderer.init(&textShader, screenWidth, screenHeight);
 
     camera.init(screenWidth, screenHeight);
     camera.setPosition(0.0f, 0.0f, 3.0f);
@@ -400,19 +401,24 @@ void MainEditor::update()
 
 void MainEditor::render()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.5f,0.5f,0.5f,1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-    glDepthRange(0.01, 1);
-    renderer.beginObjectRender();
-    renderer.renderObjects(camera);
-    renderer.endObjectRender();
+    // glDepthRange(0.01, 1);
+    // renderer.beginObjectRender();
+    // renderer.renderObjects(camera);
+    // renderer.endObjectRender();
 
-    glDepthRange(0.0, 0.01);
-    transformController->render(camera, transformShader);
-    glDepthRange(0,1);
+    // glDepthRange(0.0, 0.01);
+    // transformController->render(camera, transformShader);
+    // glDepthRange(0,1);
 
-    renderer.renderGUIs();
-    
+    // renderer.renderGUIs();
+
+    //text render
+    textRenderer.renderText(&textShader, "abcdefghijklmnopqrstuvwxyz 1234567890", 400.0f, 300.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+
     renderer.endRender(window);
 }
 

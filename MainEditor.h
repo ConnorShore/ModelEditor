@@ -20,6 +20,8 @@
 #include "TransformController.h"
 #include "TransformShader.h"
 #include "GUIShader.h"
+#include "TextShader.h"
+#include "TextRenderer.h"
 
 class MainEditor
 {
@@ -41,6 +43,8 @@ private:
     TransformController* transformController;
     TransformShader transformShader;
     GUIShader guiShader;
+    TextRenderer textRenderer;
+    TextShader textShader;
 
     unsigned int cube1, cube2, light, light1, light2, light3, panel, button1;
 
