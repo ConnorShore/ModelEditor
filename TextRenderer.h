@@ -15,6 +15,7 @@ struct Character
     glm::ivec2 size;
     glm::ivec2 bearing;
     glm::ivec2 advance;
+    // GLuint advance;
 };
 
 class TextRenderer

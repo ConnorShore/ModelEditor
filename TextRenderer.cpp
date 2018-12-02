@@ -25,7 +25,7 @@ void TextRenderer::init(TextShader* shader, int width, int height)
     if(FT_New_Face(ft, "Fonts/arial.ttf", 0, &face))
         printf("Failed to load font\n");
     
-    FT_Set_Pixel_Sizes(face, 0, 48);
+    FT_Set_Pixel_Sizes(face, 0, 42);
     
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
@@ -48,10 +48,14 @@ void TextRenderer::init(TextShader* shader, int width, int height)
 
         Character character;
         character.textureID = texID;
-        character.size = glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
-        character.bearing = glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
-        character.advance.x = face->glyph->advance.x;
-        character.advance.y = face->glyph->advance.y;
+        // character.size = glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
+        // character.bearing = glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
+        // character.advance.x = face->glyph->advance.x;
+        // character.advance.y = face->glyph->advance.y;
+        character.size = glm::ivec2(face->glyph->metrics.width>>6, face->glyph->metrics.height>>6);
+        character.bearing = glm::ivec2(face->glyph->metrics.horiBearingX>>6, face->glyph->metrics.vertBearingY>>6);
+        character.advance.x = face->glyph->metrics.horiAdvance>>6;
+        character.advance.y = face->glyph->metrics.vertAdvance>>6;
         _characters.insert(std::pair<GLchar, Character>(i, character));
     }
 
@@ -103,13 +107,14 @@ void TextRenderer::renderText(TextShader* shader, std::string text, float x, flo
     std::string::const_iterator c;
     for(c = text.begin(); c != text.end(); c++) {
         Character ch = _characters[*c];
+        printf("Char: %c; bearing: %d; size: %d; advance: %d\n", *c, ch.bearing.y, ch.size.y, ch.advance.y);
         float xpos = x + ch.bearing.x * size;
-        float ypos = y - (ch.size.y - ch.bearing.y) * size;
+        float ypos = y + ((ch.size.y - ch.bearing.y)/2.0f) * size;
 
         float w = ch.size.x * size;
         float h = ch.size.y * size;
 
-        glm::mat4 transform = Math::createTransformationMatrix(glm::vec2(xpos,ypos), glm::vec2(0.0f), glm::vec2(w,h));
+        glm::mat4 transform = Math::createTransformationMatrix(glm::vec2(xpos+w/2,ypos+h/2), glm::vec2(0.0f), glm::vec2(w,h));
         shader->loadTransformationMatrix(transform);
 
         // float vertices[6][4] = {
@@ -143,9 +148,11 @@ void TextRenderer::renderText(TextShader* shader, std::string text, float x, flo
 
         // glDrawArrays(GL_TRIANGLES, 0, 6);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 10);
-
-        x += (ch.advance.x >> 6) * size;     //advance 1/64 of a pixel
-        y += (ch.advance.y >> 6) * size;     //advance 1/64 of a pixel
+        // if(ch.textureID == 33 || ch.textureID == 106)
+        //     x += (ch.advance >> 6) * size * 4;
+        // else
+        x += (ch.advance.x) * size*2;     //advance 1/64 of a pixel
+        // y += (ch.advance.y >> 6) * size;     //advance 1/64 of a pixel
     }
 
     glBindVertexArray(0);

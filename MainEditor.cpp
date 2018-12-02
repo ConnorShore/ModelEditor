@@ -404,16 +404,16 @@ void MainEditor::render()
     glClearColor(0.5f,0.5f,0.5f,1.0f);
     // glClear(GL_COLOR_BUFFER_BIT);
 
-    // glDepthRange(0.01, 1);
-    // renderer.beginObjectRender();
-    // renderer.renderObjects(camera);
-    // renderer.endObjectRender();
+    glDepthRange(0.01, 1);
+    renderer.beginObjectRender();
+    renderer.renderObjects(camera);
+    renderer.endObjectRender();
 
-    // glDepthRange(0.0, 0.01);
-    // transformController->render(camera, transformShader);
-    // glDepthRange(0,1);
+    glDepthRange(0.0, 0.01);
+    transformController->render(camera, transformShader);
+    glDepthRange(0,1);
 
-    // renderer.renderGUIs();
+    renderer.renderGUIs();
 
     //text render
     textRenderer.renderText(&textShader, "This is a test sentence", 400.0f, 300.0f, 1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
