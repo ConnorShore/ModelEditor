@@ -60,8 +60,7 @@ void MainEditor::init()
     textShader.init("Shaders/textShader.vert", "Shaders/textShader.frag");
     textShader.bindAttributes();
     
-    renderer.init(&staticShader, &outlineShader, &guiShader);
-    textRenderer.init(&textShader, screenWidth, screenHeight);
+    renderer.init(&staticShader, &outlineShader, &guiShader, &textShader, screenWidth, screenHeight);
 
     camera.init(screenWidth, screenHeight);
     camera.setPosition(0.0f, 0.0f, 3.0f);
@@ -90,6 +89,9 @@ void MainEditor::init()
     Panel* sidePanel = renderer.addPanel(0.7f, 0.0f, 0.3f, 1.0f, "Textures/panel.png", &panel);
     Button* button = renderer.addButton(sidePanel, 0.0f, 0.0f, 0.2, 0.15f, "Textures/brick.png", true, &button1);
     button->subscribeEvent(this, &MainEditor::printNumber, 4);
+    printf("Origin: %f, %f\n", button->getOrigin().x, button->getOrigin().y);
+
+    GUILabel* buttonLabel = renderer.attachLabel(button, "Print Number", 2.0f, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
 
     picker = Picker(&camera);
 }
@@ -402,7 +404,6 @@ void MainEditor::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.5f,0.5f,0.5f,1.0f);
-    // glClear(GL_COLOR_BUFFER_BIT);
 
     glDepthRange(0.01, 1);
     renderer.beginObjectRender();
@@ -416,7 +417,7 @@ void MainEditor::render()
     renderer.renderGUIs();
 
     //text render
-    textRenderer.renderText(&textShader, "This is a test sentence", 400.0f, 300.0f, 1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+    // textRenderer.renderText(&textShader, "This is a test sentence", 400.0f, 300.0f, 1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
     renderer.endRender(window);
 }

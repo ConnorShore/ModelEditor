@@ -16,6 +16,8 @@ TextRenderer::~TextRenderer()
 void TextRenderer::init(TextShader* shader, int width, int height)
 {
     // shader->start();
+    _width = width;
+    _height = height;
 
     FT_Library ft;
     if(FT_Init_FreeType(&ft))
@@ -80,7 +82,7 @@ void TextRenderer::init(TextShader* shader, int width, int height)
     glBindVertexArray(0);
 }
 
-void TextRenderer::prepare(TextShader* shader, int width, int height)
+void TextRenderer::prepare(TextShader* shader)
 {
     shader->start();
     // shader->loadGlyph();
@@ -96,7 +98,7 @@ void TextRenderer::renderText(TextShader* shader, std::string text, float x, flo
     glDisable(GL_DEPTH_TEST);
     shader->start();
     shader->getUniformLocations();
-    glm::mat4 proj = glm::ortho(0.0f, static_cast<GLfloat>(1600), 0.0f, static_cast<GLfloat>(900));
+    glm::mat4 proj = glm::ortho(0.0f, static_cast<GLfloat>(_width), 0.0f, static_cast<GLfloat>(_height));
     shader->loadProjectionMatrix(proj);
     shader->loadColor(color);
     shader->loadGlyph();
@@ -107,7 +109,7 @@ void TextRenderer::renderText(TextShader* shader, std::string text, float x, flo
     std::string::const_iterator c;
     for(c = text.begin(); c != text.end(); c++) {
         Character ch = _characters[*c];
-        printf("Char: %c; bearing: %d; size: %d; advance: %d\n", *c, ch.bearing.y, ch.size.y, ch.advance.y);
+        // printf("Char: %c; bearing: %d; size: %d; advance: %d\n", *c, ch.bearing.y, ch.size.y, ch.advance.y);
         float xpos = x + ch.bearing.x * size;
         float ypos = y + ((ch.size.y - ch.bearing.y)/2.0f) * size;
 

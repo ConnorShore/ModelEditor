@@ -22,6 +22,7 @@
 #include "GUIShader.h"
 #include "TextShader.h"
 #include "TextRenderer.h"
+#include "GUILabel.h"
 
 class MainEditor
 {

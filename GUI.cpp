@@ -12,7 +12,9 @@ GUI::GUI(GUI* parent, float x, float y, float sx, float sy, std::string& texture
     else
         _position = glm::vec2(x,y);
 
+
     _scale = glm::vec2(sx, sy);
+    _origin = _position + glm::vec2(_scale.x/2.0f, 0.0f);
     _texture = Loader::loadPNG(textureFile);
     _uv = glm::vec4(0,0,1,1);
     _visible = true;
@@ -29,6 +31,7 @@ GUI::GUI(float x, float y, float sx, float sy, std::string& textureFile)
     _vboID = 0;
     _position = glm::vec2(x,y);
     _scale = glm::vec2(sx, sy);
+    _origin = _position + glm::vec2(_scale.x/2.0f, 0.0f);
     _texture = Loader::loadPNG(textureFile);
     _uv = glm::vec4(0,0,1,1);
     _visible = true;
@@ -45,6 +48,7 @@ GUI::GUI()
     _vboID = 0;
     _position = glm::vec2(0.0f);
     _scale = glm::vec2(1.0f);
+    _origin = _position + glm::vec2(_scale.x/2.0f, 0.0f);
     _uv = glm::vec4(0,0,1,1);
     _visible = true;
     _parent = nullptr;

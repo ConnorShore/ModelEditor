@@ -35,6 +35,7 @@ public:
 
     glm::vec2 getPosition() {return _position;}
     glm::vec2 getScale() {return _scale;}
+    glm::vec2 getOrigin() {return _origin;}
     Texture getTexture() {return _texture;}
     GUI* getParent() {return _parent;}
 
@@ -65,6 +66,7 @@ protected:
     GLuint _vaoID, _vboID;
     
     glm::vec2 _position;
+    glm::vec2 _origin;
     glm::vec2 _scale;
     glm::vec4 _uv;
     Texture _texture;

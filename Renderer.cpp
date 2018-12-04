@@ -24,13 +24,23 @@ Renderer::~Renderer()
         delete _guis.back();
         _guis.pop_back();
     }
+    for(unsigned int i = _labels.size()-1; i >= 0; i--) {
+        delete _labels.back();
+        _labels.pop_back();
+    }
 }
 
-void Renderer::init(StaticShader* shader, OutlineShader* outline, GUIShader* gui)
+void Renderer::init(StaticShader* shader, OutlineShader* outline, GUIShader* gui, TextShader* text, int width, int height)
 {
     _staticShader = shader;
     _outlineShader = outline;
     _guiShader = gui;
+    _textShader = text;
+
+    _width = width;
+    _height = height;
+
+    _textRenderer.init(_textShader, _width, _height);
 }
 
 void Renderer::beginObjectRender()
@@ -38,7 +48,6 @@ void Renderer::beginObjectRender()
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
     glClear(GL_STENCIL_BUFFER_BIT);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	_staticShader->start();
 	_staticShader->getUniformLocations();
@@ -59,7 +68,6 @@ void Renderer::renderObjects(Camera& camera)
     glStencilMask(0x1);
 
     for(Primitive* obj : _objects) {
-        // glm::mat4 model = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
         glm::mat4 model = obj->getModelMatrix();
         _staticShader->loadModelMatrix(model);
         _staticShader->loadMaterial(obj->getMaterial());
@@ -122,7 +130,22 @@ void Renderer::renderGUIs()
 
     _guiShader->stop();
 
+    renderGUILabels();
+
     glEnable(GL_DEPTH_TEST);
+}
+
+void Renderer::renderGUILabels()
+{
+    _textRenderer.prepare(_textShader);
+
+    for(GUILabel* label : _labels) {
+        if(label->getParent()->isVisible()) {
+            label->render(_textRenderer, _textShader, _width, _height);
+        }
+    }
+
+    _textRenderer.end(_textShader);
 }
 
 void Renderer::endRender(SDL_Window* window)
@@ -284,6 +307,13 @@ Panel* Renderer::addPanel(float x, float y, float sx, float sy, std::string file
     if(id != nullptr)
         *id = panel->getID();
     return panel;
+}
+
+GUILabel* Renderer::attachLabel(GUI* parent, const char* text, float size, glm::vec4 color)
+{
+    GUILabel* label = new GUILabel(parent, text, size, color);
+    _labels.push_back(label);
+    return label;
 }
 
 unsigned int Renderer::getNumPrimitivesSelected()
