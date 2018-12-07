@@ -19,6 +19,7 @@ void GUIShader::getUniformLocations()
 {
     _textureLoc = getUniformLocation("tex");
     _transformMatrixLoc = getUniformLocation("transformMatrix");
+    _alphaLoc = getUniformLocation("alpha");
 }
 
 void GUIShader::loadTexture()
@@ -29,4 +30,9 @@ void GUIShader::loadTexture()
 void GUIShader::loadTransformationMatrix(glm::mat4 matrix)
 {
     loadMatrix4f(_transformMatrixLoc, matrix);
+}
+
+void GUIShader::loadAlpha(float val)
+{
+    loadFloat(_alphaLoc, val);
 }

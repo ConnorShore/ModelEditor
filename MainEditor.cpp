@@ -87,9 +87,9 @@ void MainEditor::init()
     light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
 
     Panel* sidePanel = renderer.addPanel(0.7f, 0.0f, 0.3f, 1.0f, "Textures/panel.png", &panel);
-    Button* button = renderer.addButton(sidePanel, 0.0f, 0.0f, 0.2, 0.15f, "Textures/brick.png", true, &button1);
+    sidePanel->setAlpha(0.8f);
+    Button* button = renderer.addButton(sidePanel, 0.0f, 0.0f, 0.2, 0.15f, "Textures/default.png", true, &button1);
     button->subscribeEvent(this, &MainEditor::printNumber, 4);
-    printf("Origin: %f, %f\n", button->getOrigin().x, button->getOrigin().y);
 
     GUILabel* buttonLabel = renderer.attachLabel(button, "Print Number", 2.0f, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
 

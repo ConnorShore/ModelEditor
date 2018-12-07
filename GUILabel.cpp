@@ -22,16 +22,11 @@ GUILabel::~GUILabel()
 
 void GUILabel::render(TextRenderer& renderer, TextShader* shader, int width, int height)
 {
-    // printf("Pre Pos: %f, %f\n", _parent->getPosition().x, _parent->getPosition().y);
     glm::vec2 textSize = renderer.getStringSize(_text, _size);
-    // glm::vec2 adjustedPos = glm::vec2(_parent->getOrigin().x - (textWidth/2.0f), _parent->getOrigin().y);
-    printf("Position: %f, %f\n", _parent->getPosition().x, _parent->getPosition().y);
-    printf("Origin: %f, %f\n", _parent->getOrigin().x, _parent->getOrigin().y);
     glm::vec2 pos = toPixelCoords(_parent->getOrigin(), width, height);
-    // printf("Width: %d, Height: %d\n", width, height);
-    printf("Text Pos: %f, %f\n", pos.x/1600.0f, pos.y/900.0f);
-    // pos = glm::vec2(pos.x - (textWidth/2.0f), pos.y);
+
     pos -= textSize/2.0f;
+
     renderer.renderText(shader, _text, pos.x, pos.y, _size, _color);
 }
 
@@ -42,18 +37,13 @@ glm::vec2 GUILabel::toPixelCoords(glm::vec2 coords, int width, int height)
 
     glm::vec2 newCoords;
 
-    // printf("Width/2: %f\n", fwidth/2.0f);
-
     if(coords.x < 0) {
-        // printf("in negative\n");
         newCoords.x = (coords.x * fwidth) + fwidth;
     }
     else if(coords.x == 0) {
-        // printf("0");
         newCoords.x = fwidth/2.0f;
     }
     else {
-        // printf("positive\n");
         newCoords.x = (coords.x * fwidth);
     }
 

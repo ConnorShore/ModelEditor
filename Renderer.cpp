@@ -124,6 +124,7 @@ void Renderer::renderGUIs()
         glm::mat4 transform = Math::createTransformationMatrix(gui->getPosition(), glm::vec2(0.0f), gui->getScale());
         _guiShader->loadTransformationMatrix(transform);
         _guiShader->loadTexture();
+        _guiShader->loadAlpha(gui->getAlpha());
         
         gui->render();
     }

@@ -43,6 +43,8 @@ public:
     bool getMouseOver() {return _mouseOver;}
     bool isVisible() {return _visible;}
 
+    float getAlpha() {return _alpha;}
+
     void addChild(GUI* child);
 
     void setParent(GUI* parent) {
@@ -51,6 +53,7 @@ public:
     }
     void setMouseOver(bool mouseOver) {_mouseOver = mouseOver;}
     void setVisible(bool visible) {_visible = visible;}
+    void setAlpha(float alpha) {_alpha = alpha;}
 
     //Callbacks
     std::function<void()> callback() const {return eventCallback;}
@@ -70,6 +73,8 @@ protected:
     glm::vec2 _scale;
     glm::vec4 _uv;
     Texture _texture;
+
+    float _alpha = 1.0f;
 
     GUIType _type;
     bool _mouseOver;

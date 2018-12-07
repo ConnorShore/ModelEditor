@@ -15,7 +15,6 @@ TextRenderer::~TextRenderer()
 
 void TextRenderer::init(TextShader* shader, int width, int height)
 {
-    // shader->start();
     _width = width;
     _height = height;
 
@@ -50,14 +49,11 @@ void TextRenderer::init(TextShader* shader, int width, int height)
 
         Character character;
         character.textureID = texID;
-        // character.size = glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
-        // character.bearing = glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
-        // character.advance.x = face->glyph->advance.x;
-        // character.advance.y = face->glyph->advance.y;
         character.size = glm::ivec2(face->glyph->metrics.width>>6, face->glyph->metrics.height>>6);
         character.bearing = glm::ivec2(face->glyph->metrics.horiBearingX>>6, face->glyph->metrics.vertBearingY>>6);
         character.advance.x = face->glyph->metrics.horiAdvance>>6;
         character.advance.y = face->glyph->metrics.vertAdvance>>6;
+
         _characters.insert(std::pair<GLchar, Character>(i, character));
     }
 
@@ -109,7 +105,7 @@ void TextRenderer::renderText(TextShader* shader, const std::string text, float 
     std::string::const_iterator c;
     for(c = text.begin(); c != text.end(); c++) {
         Character ch = _characters[*c];
-        // printf("Char: %c; bearing: %d; size: %d; advance: %d\n", *c, ch.bearing.y, ch.size.y, ch.advance.y);
+
         float xpos = x + ch.bearing.x * size;
         float ypos = y + ((ch.size.y - ch.bearing.y)/2.0f) * size;
 
@@ -149,10 +145,6 @@ glm::vec2 TextRenderer::getStringSize(std::string text, float size)
     }
 
     height *= size;
-    // width /= 2.0f;
-
-    printf("Text width: %f\n", width);
-    printf("Text height: %f\n", height);
 
     return glm::vec2(width,height);
 }
