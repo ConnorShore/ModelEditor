@@ -26,7 +26,9 @@ public:
     void init(TextShader* shader, int width, int height);
     void prepare(TextShader* shader);
     void end(TextShader* shader);
-    void renderText(TextShader* shader, std::string text, float x, float y, float size, glm::vec3 color);
+    void renderText(TextShader* shader, const std::string text, float x, float y, float size, glm::vec3 color);
+
+    glm::vec2 getStringSize(std::string text, float size);
 
 private:
     GLuint _vaoID, _vboID;

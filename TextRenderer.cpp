@@ -93,7 +93,7 @@ void TextRenderer::end(TextShader* shader)
     shader->stop();
 }
 
-void TextRenderer::renderText(TextShader* shader, std::string text, float x, float y, float size, glm::vec3 color)
+void TextRenderer::renderText(TextShader* shader, const std::string text, float x, float y, float size, glm::vec3 color)
 {
     glDisable(GL_DEPTH_TEST);
     shader->start();
@@ -119,42 +119,10 @@ void TextRenderer::renderText(TextShader* shader, std::string text, float x, flo
         glm::mat4 transform = Math::createTransformationMatrix(glm::vec2(xpos+w/2,ypos+h/2), glm::vec2(0.0f), glm::vec2(w,h));
         shader->loadTransformationMatrix(transform);
 
-        // float vertices[6][4] = {
-        //     { xpos, ypos + h, 0.0f, 0.0f},
-        //     { xpos, ypos, 0.0f, 1.0f},
-        //     { xpos + w, ypos, 1.0f, 1.0f},
-
-        //     { xpos, ypos + h, 0.0f, 0.0f},
-        //     { xpos + w, ypos, 1.0f, 1.0f},
-        //     { xpos + w, ypos + h, 1.0f, 0.0f},
-        // };
-
-        // GLfloat vertices[4][4] = {
-        //     {xpos, -ypos, 0.0f, 0.0f},
-        //     {xpos + w, -ypos, 1.0f, 0.0f},
-        //     {xpos, -ypos - h, 0.0f, 1.0f},
-        //     {xpos + w, -ypos - h, 1.0f, 1.0f}
-        // };
-
-        // printf("XPos: %f\n", xpos);
-        // printf("YPos: %f\n", ypos);
-        // printf("Width: %f\n", w);
-        // printf("Height: %f\n", h);
-
         glBindTexture(GL_TEXTURE_2D, ch.textureID);
-
-        // glBindBuffer(GL_ARRAY_BUFFER, _vboID);
-        // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-        // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-        // glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // glDrawArrays(GL_TRIANGLES, 0, 6);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 10);
-        // if(ch.textureID == 33 || ch.textureID == 106)
-        //     x += (ch.advance >> 6) * size * 4;
-        // else
+
         x += (ch.advance.x) * size*2;     //advance 1/64 of a pixel
-        // y += (ch.advance.y >> 6) * size;     //advance 1/64 of a pixel
     }
 
     glBindVertexArray(0);
@@ -162,4 +130,29 @@ void TextRenderer::renderText(TextShader* shader, std::string text, float x, flo
 
     shader->stop();
     glEnable(GL_DEPTH_TEST);
+}
+
+glm::vec2 TextRenderer::getStringSize(std::string text, float size)
+{
+    float width = 0.0f;
+    float height = 0.0f;
+
+    std::string::const_iterator c;
+    for(c = text.begin(); c != text.end(); c++) {
+        Character ch = _characters[*c];
+
+        width += ch.bearing.x + (ch.size.x * size) / 2.0f;
+        width += (ch.advance.x) * size;
+
+        if(ch.size.y > height)
+            height = ch.size.y;
+    }
+
+    height *= size;
+    // width /= 2.0f;
+
+    printf("Text width: %f\n", width);
+    printf("Text height: %f\n", height);
+
+    return glm::vec2(width,height);
 }
