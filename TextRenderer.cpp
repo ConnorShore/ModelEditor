@@ -102,6 +102,8 @@ void TextRenderer::renderText(TextShader* shader, const std::string text, float 
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(_vaoID);
 
+    printf("Rendering the text: %s\n", text.c_str());
+
     std::string::const_iterator c;
     for(c = text.begin(); c != text.end(); c++) {
         Character ch = _characters[*c];

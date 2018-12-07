@@ -45,13 +45,13 @@ public:
 
     unsigned int addDirectionalLight(float dx, float dy, float dz, float r, float g, float b, float instensity);
 
-    Button* addButton(GUI* parent, float x, float y, float sx, float sy, std::string filePath, bool relativePos=true,unsigned int* id=nullptr);
+    Button* addButton(GUI* parent, float x, float y, float sx, float sy, std::string filePath, std::string description, bool relativePos=true,unsigned int* id=nullptr);
     Button* addButton(float x, float y, float sx, float sy, std::string filePath, unsigned int* id=nullptr);
 
     Panel* addPanel(GUI* parent, float x, float y, float sx, float sy, std::string filePath, bool relativePos=true,unsigned int* id=nullptr);
     Panel* addPanel(float x, float y, float sx, float sy, std::string filePath, unsigned int* id=nullptr);
 
-    GUILabel* attachLabel(GUI* parent, const char* text, float size, glm::vec4 color);
+    GUILabel* attachLabel(GUI* parent, const char* text, float size, glm::vec2 offset, glm::vec4 color);
 
     unsigned int getNumPrimitivesSelected();
 

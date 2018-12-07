@@ -271,9 +271,9 @@ unsigned int Renderer::addDirectionalLight(float dx, float dy, float dz, float r
     return light->getID();
 }
 
-Button* Renderer::addButton(GUI* parent, float x, float y, float sx, float sy, std::string filePath, bool relativePos, unsigned int* id)
+Button* Renderer::addButton(GUI* parent, float x, float y, float sx, float sy, std::string filePath, std::string description, bool relativePos, unsigned int* id)
 {
-    Button* button = new Button(parent,x,y,sx,sy,filePath,relativePos);
+    Button* button = new Button(parent,x,y,sx,sy,filePath,description,relativePos);
     button->setID(currentID++);
     _guis.push_back(button);
     if(id != nullptr)
@@ -310,7 +310,7 @@ Panel* Renderer::addPanel(float x, float y, float sx, float sy, std::string file
     return panel;
 }
 
-GUILabel* Renderer::attachLabel(GUI* parent, const char* text, float size, glm::vec4 color)
+GUILabel* Renderer::attachLabel(GUI* parent, const char* text, float size, glm::vec2 offset, glm::vec4 color)
 {
     GUILabel* label = new GUILabel(parent, text, size, color);
     _labels.push_back(label);

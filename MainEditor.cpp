@@ -42,8 +42,8 @@ void MainEditor::init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_TEXTURE_2D);
 
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
     staticShader.init("Shaders/shader.vert", "Shaders/shader.frag");
     staticShader.bindAttributes();
@@ -88,10 +88,15 @@ void MainEditor::init()
 
     Panel* sidePanel = renderer.addPanel(0.7f, 0.0f, 0.3f, 1.0f, "Textures/panel.png", &panel);
     sidePanel->setAlpha(0.8f);
-    Button* button = renderer.addButton(sidePanel, 0.0f, 0.0f, 0.2, 0.15f, "Textures/default.png", true, &button1);
-    button->subscribeEvent(this, &MainEditor::printNumber, 4);
 
-    GUILabel* buttonLabel = renderer.attachLabel(button, "Print Number", 2.0f, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+    Button* addCubeButton = renderer.addButton(sidePanel, -0.1f, 0.5f, 0.065f, 0.065f * (16.0f/9.0f), "Textures/addCube.png", "Add Cube", true, &addCube);
+    addCubeButton->subscribeEvent(this, &MainEditor::createCube);
+
+    Button* deleteCubeButton = renderer.addButton(sidePanel, 0.1f, 0.5f, 0.065f, 0.065f * (16.0f/9.0f), "Textures/deleteCube.png", "Delete Cube", true, &addCube);
+    deleteCubeButton->subscribeEvent(this, &MainEditor::deleteCubes);
+
+    Panel* statusPanel = renderer.addPanel(0.7, -0.9, 0.3, 0.2, "Textures/panel.png");
+    description = renderer.attachLabel(statusPanel, std::string().c_str(), 1.0f, glm::vec2(0.0f), glm::vec4(1.0f));
 
     picker = Picker(&camera);
 }
@@ -206,17 +211,9 @@ void MainEditor::input()
 
      // KEYBOARD //
     if(inputManager.isKeyDown(SDLK_SPACE)) {
-        renderer.addCube(0,0,0, 0,0,0, 1,1,1);
-        renderer.unselectAllObjects();
-        inputManager.keyReleased(SDLK_SPACE);
     }
     if(inputManager.isKeyDown(SDLK_DELETE)) {
-        std::vector<unsigned int> selectedIDs = renderer.getSelectedIDs();
-        for(unsigned int i = 0; i < selectedIDs.size(); i++) {
-            renderer.deleteObject(selectedIDs[i]);
-        }
-        transformController->setControlling(false);
-        transformController->setVisible(false);
+ 
     }
     if(inputManager.isKeyDown(SDLK_w)) {
         camera.moveForward(cameraSpeed);
@@ -269,6 +266,7 @@ void MainEditor::input()
 
 void MainEditor::updateGUIs()
 {
+    bool descriptionVisible = false;
     bool control = false;
     glm::vec2 mouse = camera.screenToNDC();
     
@@ -278,6 +276,12 @@ void MainEditor::updateGUIs()
 
         if(guis[i]->inBounds(mouse)) {
             GUIType type = guis[i]->getType();
+            if(type == GUI_BUTTON) {
+                Button* button = static_cast<Button*>(guis[i]);
+                description->setText(button->getDescription());
+                descriptionVisible = true;
+                printf("New description: %s\n", description->getText().c_str());
+            }
             control = true;
             if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
                 switch(type) {
@@ -294,6 +298,7 @@ void MainEditor::updateGUIs()
         }
     }
 
+    description->setVisible(descriptionVisible);
     guiControl = control;
 }
 
@@ -449,7 +454,18 @@ void MainEditor::run()
     cleanUp();
 }
 
-void MainEditor::printNumber(int num)
+void MainEditor::createCube()
 {
-    printf("Number: %d\n", num);
+    renderer.addCube(0,0,0, 0,0,0, 1,1,1);
+    renderer.unselectAllObjects();
+}
+
+void MainEditor::deleteCubes()
+{
+    std::vector<unsigned int> selectedIDs = renderer.getSelectedIDs();
+    for(unsigned int i = 0; i < selectedIDs.size(); i++) {
+        renderer.deleteObject(selectedIDs[i]);
+    }
+    transformController->setControlling(false);
+    transformController->setVisible(false);
 }
