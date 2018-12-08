@@ -21,6 +21,8 @@ public:
     void rotateDown(float speed);
     void rotateLeft(float speed);
     void rotateRight(float speed);
+    glm::vec3 screenToWorldCoords(float mouseX, float mouseY);
+    glm::vec2 screenToNDC();
 
     float getPitch() { return _pitch; }
     float getYaw() { return _yaw; }
@@ -40,7 +42,8 @@ public:
     glm::mat4 getViewMatrix();
 
     glm::vec3 getPosition() { return _position; }
-    glm::vec2 getMouseCoords() {return _mouseCoords;}
+    glm::vec3 getDirection() {return _direction;}
+    glm::ivec2 getMouseCoords() {return _mouseCoords;}
 
     void setPosition(float x, float y, float z) { _position = glm::vec3(x,y,z); }
     void setMouseCords(float x, float y) {_mouseCoords = glm::vec2(x,y);}
@@ -55,7 +58,7 @@ private:
     glm::vec3 _position, _direction, _up, _right;
     glm::mat4 _projectionMatrix;
 
-    glm::vec2 _mouseCoords;
+    glm::ivec2 _mouseCoords;
 };
 
 #endif

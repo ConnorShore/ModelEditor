@@ -1,0 +1,4 @@
+1) Add in image buttons for add and delete (cubes with plueses on them or something)
+2) Have a mini status area at bottom to display text when mouse hover overs buttons
+3) Need scale functionality
+4) Print out the pos, rot, scale of selected cube in panel

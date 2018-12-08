@@ -90,10 +90,30 @@ void Camera::rotateRight(float speed)
     _yaw += speed;
 }
 
+glm::vec3 Camera::screenToWorldCoords(float mouseX, float mouseY)
+{
+    printf("Screen coords: %f, %f\n", mouseX, mouseY);
+    glm::vec3 worldCoords;
+    glm::mat4 invertedView = glm::inverse(getViewMatrix());
+    glm::mat4 invertedProj = glm::inverse(_projectionMatrix);
+
+    glm::vec4 mouseCoords(mouseX, mouseY, 1, 1);
+    glm::vec4 result = mouseCoords * invertedProj * invertedView;
+    printf("New Coords: %f, %f\n", result.x, result.y);
+    return glm::vec3(result);
+}
+
+glm::vec2 Camera::screenToNDC()
+{
+    return glm::vec2(((_mouseCoords.x * 2.0f)/ _screenWidth) - 1.0f, 
+                    (1.0f - (_mouseCoords.y * 2.0f)/ _screenHeight));
+}
+
 glm::mat4 Camera::createProjectionMatrix()
 {
     glm::mat4 projMatrix;
     projMatrix = glm::perspective(glm::radians(_fov), (float)_screenWidth/(float)_screenHeight, _zNear, _zFar);
+    _projectionMatrix = projMatrix;
     return projMatrix;
 }
 

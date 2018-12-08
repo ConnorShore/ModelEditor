@@ -17,6 +17,12 @@
 #include "Timing.h"
 #include "Material.h"
 #include "Picker.h"
+#include "TransformController.h"
+#include "TransformShader.h"
+#include "GUIShader.h"
+#include "TextShader.h"
+#include "TextRenderer.h"
+#include "GUILabel.h"
 
 class MainEditor
 {
@@ -33,10 +39,17 @@ private:
     Camera camera;
     Renderer renderer;
     InputManager inputManager;
-    Timing _timer;
+    Timing timer;
     Picker picker;
+    TransformController* transformController;
+    TransformShader transformShader;
+    GUIShader guiShader;
+    TextRenderer textRenderer;
+    TextShader textShader;
 
-    unsigned int cube1, cube2, light, light1, light2, light3;
+    GUILabel* description;
+
+    unsigned int cube1, cube2, light, light1, light2, light3, panel, addCube, deleteCube;
 
     float cameraSpeed = 0.015f;
     float intensity = 0.1f;
@@ -44,12 +57,23 @@ private:
     int screenWidth = 1600;
     int screenHeight = 900;
     bool isRunning = false;
+    bool guiControl = false;
+
+    glm::vec3 transformSelectLoc;
 
     void init();
+    void updateSelections(std::vector<int>& selectedIds);
+    bool updateTransformSelection();
+    void input();
+    void updateGUIs();
     void update();
     void render();
     void gameLoop();
     void cleanUp();
+
+    //Callbacks
+    void createCube();
+    void deleteCubes();
 };
 
 #endif // MAIN_EDITOR

@@ -10,6 +10,8 @@ class Cube : public Primitive {
 public:
     Cube(float x, float y, float z, float rx, float ry, float rz, 
          float sx, float sy, float sz, Material& mat);
+    Cube(float x, float y, float z, float rx, float ry, float rz, 
+         float sx, float sy, float sz);
     Cube();
     ~Cube();
 

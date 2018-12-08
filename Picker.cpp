@@ -22,13 +22,62 @@ Picker::~Picker()
 
 }
 
-void Picker::update(std::vector<Primitive*> primitives)
+glm::vec3 Picker::screenToWorldCoords(float mouseX, float mouseY)
+{
+    glm::vec2 ndCoords = getNDCoords(mouseX,mouseY);
+    glm::vec4 rayStartNDC(ndCoords.x, ndCoords.y, -1.0f, 1.0f);
+    glm::vec4 rayEndNDC(ndCoords.x, ndCoords.y, 1.0f, 1.0f);
+
+    glm::mat4 inverseProjMat = glm::inverse(_camera->getProjectionMatrix());
+    glm::mat4 inverseViewMat = glm::inverse(_camera->getViewMatrix());
+
+    glm::vec4 rayStartCamera = inverseProjMat * rayStartNDC;
+    rayStartCamera /= rayStartCamera.w;
+    
+    glm::vec4 rayStartWorld = inverseViewMat * rayStartCamera;
+    rayStartWorld /= rayStartWorld.w;
+
+    glm::vec4 rayEndCamera = inverseProjMat * rayEndNDC;
+    rayEndCamera /= rayEndCamera.w;
+
+    glm::vec4 rayEndWorld = inverseViewMat * rayEndCamera;
+    rayEndWorld /= rayEndWorld.w;
+
+    glm::vec4 rayDirWorld = rayEndWorld - rayStartWorld;
+    rayDirWorld = glm::normalize(rayDirWorld);
+
+    return glm::vec3(rayStartWorld);
+}
+
+void Picker::update(std::vector<Primitive*> primitives, TransformController* controller)
 {
     _viewMatrix = _camera->getViewMatrix();
 
     glm::vec3 rayOrigin, rayDirection;
     calculateRay(&rayOrigin, &rayDirection);
 
+    //Check transform controller
+    float dist;
+    Cube* xControl = controller->getXController();
+    glm::mat4 model = Math::createTransformationMatrix(controller->getAxisPosition(TC_AXIS_X), xControl->getRotation(), xControl->getScale());
+    bool colliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, xControl->getBoundingBox().aabbMin,
+                                        xControl->getBoundingBox().aabbMax, model, dist);
+    xControl->isInSelectRange = colliding;
+
+    Cube* yControl = controller->getYController();
+    model = Math::createTransformationMatrix(controller->getAxisPosition(TC_AXIS_Y), yControl->getRotation(), yControl->getScale());
+    colliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, yControl->getBoundingBox().aabbMin,
+                                        yControl->getBoundingBox().aabbMax, model, dist);
+    yControl->isInSelectRange = colliding;
+
+    Cube* zControl = controller->getZController();
+    model = Math::createTransformationMatrix(controller->getAxisPosition(TC_AXIS_Z), zControl->getRotation(), zControl->getScale());
+    colliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, zControl->getBoundingBox().aabbMin,
+                                        zControl->getBoundingBox().aabbMax, model, dist);
+    zControl->isInSelectRange = colliding;
+    controller->distance = dist;
+
+    //Check objects
     for(Primitive* obj : primitives) {
         glm::mat4 modelMatrix = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
         obj->setModelMatrix(modelMatrix);
@@ -39,10 +88,21 @@ void Picker::update(std::vector<Primitive*> primitives)
     }
 }
 
-void Picker::calculateRay(glm::vec3* rayOrigin, glm::vec3* rayDirection)
+bool Picker::rayPlaneIntersection(glm::vec3 vectorOrigin, glm::vec3 vectorNormal, Plane plane, glm::vec3* location)
 {
-    float mouseX = _camera->getMouseCoords().x;
-    float mouseY = _camera->getMouseCoords().y;
+    if(glm::dot(vectorNormal, plane.normal) == 0)
+        return false;
+
+    float distance = glm::dot(plane.normal, plane.origin-vectorOrigin) / glm::dot(plane.normal,vectorNormal);
+    glm::vec3 intersect = vectorOrigin + (vectorNormal * distance);
+    *location = intersect;
+    return true;
+}
+
+void Picker::calculateRay(glm::vec3* rayOrigin, glm::vec3* rayDirection, glm::vec2 mouseCoords)
+{
+    float mouseX = mouseCoords.x;
+    float mouseY = mouseCoords.y;
 
     //Get normalized device coordinates from viewspace
     glm::vec2 ndCoords = getNDCoords(mouseX,mouseY);
@@ -69,6 +129,14 @@ void Picker::calculateRay(glm::vec3* rayOrigin, glm::vec3* rayDirection)
 
     *rayOrigin = glm::vec3(rayStartWorld);
     *rayDirection = rayDirWorld;
+}
+
+void Picker::calculateRay(glm::vec3* rayOrigin, glm::vec3* rayDirection)
+{
+    float mouseX = _camera->getMouseCoords().x;
+    float mouseY = _camera->getMouseCoords().y;
+
+    calculateRay(rayOrigin, rayDirection, glm::vec2(mouseX,mouseY));
 }
 
 glm::vec2 Picker::getNDCoords(float mouseX, float mouseY)
