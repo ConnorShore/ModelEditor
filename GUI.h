@@ -35,12 +35,15 @@ public:
 
     glm::vec2 getPosition() {return _position;}
     glm::vec2 getScale() {return _scale;}
+    glm::vec2 getOrigin() {return _origin;}
     Texture getTexture() {return _texture;}
     GUI* getParent() {return _parent;}
 
     GUIType getType() {return _type;}
     bool getMouseOver() {return _mouseOver;}
     bool isVisible() {return _visible;}
+
+    float getAlpha() {return _alpha;}
 
     void addChild(GUI* child);
 
@@ -50,6 +53,7 @@ public:
     }
     void setMouseOver(bool mouseOver) {_mouseOver = mouseOver;}
     void setVisible(bool visible) {_visible = visible;}
+    void setAlpha(float alpha) {_alpha = alpha;}
 
     //Callbacks
     std::function<void()> callback() const {return eventCallback;}
@@ -65,9 +69,12 @@ protected:
     GLuint _vaoID, _vboID;
     
     glm::vec2 _position;
+    glm::vec2 _origin;
     glm::vec2 _scale;
     glm::vec4 _uv;
     Texture _texture;
+
+    float _alpha = 1.0f;
 
     GUIType _type;
     bool _mouseOver;

@@ -10,4 +10,5 @@ void main()
 {
     gl_Position = transformMatrix * vec4(vertexPosition, 0.0, 1.0);
     textureCoords = vec2((vertexPosition.x+1.0)/2.0, (vertexPosition.y+1.0)/2.0);
+    textureCoords.y *= -1.0;
 }

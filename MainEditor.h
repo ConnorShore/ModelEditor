@@ -20,6 +20,9 @@
 #include "TransformController.h"
 #include "TransformShader.h"
 #include "GUIShader.h"
+#include "TextShader.h"
+#include "TextRenderer.h"
+#include "GUILabel.h"
 
 class MainEditor
 {
@@ -41,8 +44,12 @@ private:
     TransformController* transformController;
     TransformShader transformShader;
     GUIShader guiShader;
+    TextRenderer textRenderer;
+    TextShader textShader;
 
-    unsigned int cube1, cube2, light, light1, light2, light3, panel, button1;
+    GUILabel* description;
+
+    unsigned int cube1, cube2, light, light1, light2, light3, panel, addCube, deleteCube;
 
     float cameraSpeed = 0.015f;
     float intensity = 0.1f;
@@ -65,7 +72,8 @@ private:
     void cleanUp();
 
     //Callbacks
-    void printNumber(int num);
+    void createCube();
+    void deleteCubes();
 };
 
 #endif // MAIN_EDITOR

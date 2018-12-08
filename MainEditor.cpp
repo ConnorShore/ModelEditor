@@ -2,8 +2,8 @@
 #include <string>
 #include <iostream>
 #include <glm/glm.hpp>
-#include "DirectionalLight.h"
 
+#include "DirectionalLight.h"
 #include "Math.h"
 #include "Button.h"
 
@@ -40,6 +40,7 @@ void MainEditor::init()
     glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_TEXTURE_2D);
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -55,8 +56,11 @@ void MainEditor::init()
 
     guiShader.init("Shaders/guiShader.vert", "Shaders/guiShader.frag");
     guiShader.bindAttributes();
+
+    textShader.init("Shaders/textShader.vert", "Shaders/textShader.frag");
+    textShader.bindAttributes();
     
-    renderer.init(&staticShader, &outlineShader, &guiShader);
+    renderer.init(&staticShader, &outlineShader, &guiShader, &textShader, screenWidth, screenHeight);
 
     camera.init(screenWidth, screenHeight);
     camera.setPosition(0.0f, 0.0f, 3.0f);
@@ -83,8 +87,16 @@ void MainEditor::init()
     light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
 
     Panel* sidePanel = renderer.addPanel(0.7f, 0.0f, 0.3f, 1.0f, "Textures/panel.png", &panel);
-    Button* button = renderer.addButton(sidePanel, 0.0f, 0.0f, 0.2, 0.15f, "Textures/brick.png", true, &button1);
-    button->subscribeEvent(this, &MainEditor::printNumber, 4);
+    sidePanel->setAlpha(0.8f);
+
+    Button* addCubeButton = renderer.addButton(sidePanel, -0.1f, 0.5f, 0.065f, 0.065f * (16.0f/9.0f), "Textures/addCube.png", "Add Cube", true, &addCube);
+    addCubeButton->subscribeEvent(this, &MainEditor::createCube);
+
+    Button* deleteCubeButton = renderer.addButton(sidePanel, 0.1f, 0.5f, 0.065f, 0.065f * (16.0f/9.0f), "Textures/deleteCube.png", "Delete Cube", true, &addCube);
+    deleteCubeButton->subscribeEvent(this, &MainEditor::deleteCubes);
+
+    Panel* statusPanel = renderer.addPanel(0.7, -0.925, 0.3, 0.125, "Textures/panel.png");
+    description = renderer.attachLabel(statusPanel, std::string().c_str(), 1.25f, glm::vec2(0.0f), glm::vec4(1.0f));
 
     picker = Picker(&camera);
 }
@@ -129,7 +141,6 @@ bool MainEditor::updateTransformSelection()
     } else {
         transformController->setAllAxisSelected(false);
     }
-
 
     transformController->setControlling(selected);
     return selected;
@@ -188,7 +199,6 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
             sumPosition /= size;
             transformController->setPosition(sumPosition);
             transformController->setVisible(true);
-            // transformController->setControlling(true);
             transformSelectLoc = transformController->getPosition();
             transformController->selectLocUpdated = true;
         }
@@ -201,17 +211,9 @@ void MainEditor::input()
 
      // KEYBOARD //
     if(inputManager.isKeyDown(SDLK_SPACE)) {
-        renderer.addCube(0,0,0, 0,0,0, 1,1,1);
-        renderer.unselectAllObjects();
-        inputManager.keyReleased(SDLK_SPACE);
     }
     if(inputManager.isKeyDown(SDLK_DELETE)) {
-        std::vector<unsigned int> selectedIDs = renderer.getSelectedIDs();
-        for(unsigned int i = 0; i < selectedIDs.size(); i++) {
-            renderer.deleteObject(selectedIDs[i]);
-        }
-        transformController->setControlling(false);
-        transformController->setVisible(false);
+ 
     }
     if(inputManager.isKeyDown(SDLK_w)) {
         camera.moveForward(cameraSpeed);
@@ -264,6 +266,7 @@ void MainEditor::input()
 
 void MainEditor::updateGUIs()
 {
+    bool descriptionVisible = false;
     bool control = false;
     glm::vec2 mouse = camera.screenToNDC();
     
@@ -273,6 +276,11 @@ void MainEditor::updateGUIs()
 
         if(guis[i]->inBounds(mouse)) {
             GUIType type = guis[i]->getType();
+            if(type == GUI_BUTTON) {
+                Button* button = static_cast<Button*>(guis[i]);
+                description->setText(button->getDescription());
+                descriptionVisible = true;
+            }
             control = true;
             if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
                 switch(type) {
@@ -289,6 +297,7 @@ void MainEditor::updateGUIs()
         }
     }
 
+    description->setVisible(descriptionVisible);
     guiControl = control;
 }
 
@@ -303,7 +312,6 @@ void MainEditor::update()
     if(guiControl)
         return;
    
-
     //Update object and transform controller selection
     std::vector<int> ids;
     updateSelections(ids);
@@ -399,6 +407,7 @@ void MainEditor::update()
 void MainEditor::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.5f,0.5f,0.5f,1.0f);
 
     glDepthRange(0.01, 1);
     renderer.beginObjectRender();
@@ -410,7 +419,10 @@ void MainEditor::render()
     glDepthRange(0,1);
 
     renderer.renderGUIs();
-    
+
+    //text render
+    // textRenderer.renderText(&textShader, "This is a test sentence", 400.0f, 300.0f, 1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+
     renderer.endRender(window);
 }
 
@@ -441,7 +453,18 @@ void MainEditor::run()
     cleanUp();
 }
 
-void MainEditor::printNumber(int num)
+void MainEditor::createCube()
 {
-    printf("Number: %d\n", num);
+    renderer.addCube(0,0,0, 0,0,0, 1,1,1);
+    renderer.unselectAllObjects();
+}
+
+void MainEditor::deleteCubes()
+{
+    std::vector<unsigned int> selectedIDs = renderer.getSelectedIDs();
+    for(unsigned int i = 0; i < selectedIDs.size(); i++) {
+        renderer.deleteObject(selectedIDs[i]);
+    }
+    transformController->setControlling(false);
+    transformController->setVisible(false);
 }

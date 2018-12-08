@@ -17,9 +17,10 @@ public:
 
     void loadTexture();
     void loadTransformationMatrix(glm::mat4 matrix);
+    void loadAlpha(float val);
 
 private:
-    GLuint _textureLoc, _transformMatrixLoc;
+    GLuint _textureLoc, _transformMatrixLoc, _alphaLoc;
 };
 
 #endif
