@@ -31,16 +31,14 @@ void GUILabel::render(TextRenderer& renderer, TextShader* shader, int width, int
         return;
 
     glm::vec2 pos;
-    if(_offset != glm::vec2(0.0f)) {
+    if(_offset.x != 0.0f && _offset.y != 0.0f) {
         glm::vec2 textSize = renderer.getStringSize(_text, _size);
         pos = toPixelCoords(_parent->getOrigin(), width, height);
 
-        pos -= textSize/2.0f;
+        pos.x -= textSize.x/2.0f;
     } else {
         pos = _offset;
     }
-
-    printf("Pre render text: %s\n", _text);
 
     renderer.renderText(shader, _text.c_str(), pos.x, pos.y, _size, _color);
 }

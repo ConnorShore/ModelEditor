@@ -95,8 +95,8 @@ void MainEditor::init()
     Button* deleteCubeButton = renderer.addButton(sidePanel, 0.1f, 0.5f, 0.065f, 0.065f * (16.0f/9.0f), "Textures/deleteCube.png", "Delete Cube", true, &addCube);
     deleteCubeButton->subscribeEvent(this, &MainEditor::deleteCubes);
 
-    Panel* statusPanel = renderer.addPanel(0.7, -0.9, 0.3, 0.2, "Textures/panel.png");
-    description = renderer.attachLabel(statusPanel, std::string().c_str(), 1.0f, glm::vec2(0.0f), glm::vec4(1.0f));
+    Panel* statusPanel = renderer.addPanel(0.7, -0.925, 0.3, 0.125, "Textures/panel.png");
+    description = renderer.attachLabel(statusPanel, std::string().c_str(), 1.25f, glm::vec2(0.0f), glm::vec4(1.0f));
 
     picker = Picker(&camera);
 }
@@ -280,7 +280,6 @@ void MainEditor::updateGUIs()
                 Button* button = static_cast<Button*>(guis[i]);
                 description->setText(button->getDescription());
                 descriptionVisible = true;
-                printf("New description: %s\n", description->getText().c_str());
             }
             control = true;
             if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
