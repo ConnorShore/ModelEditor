@@ -24,6 +24,12 @@
 #include "TextRenderer.h"
 #include "GUILabel.h"
 
+enum TransformMode
+{
+    POSITION,
+    SCALE
+};
+
 class MainEditor
 {
 public:
@@ -47,6 +53,8 @@ private:
     TextRenderer textRenderer;
     TextShader textShader;
 
+    TransformMode _tMode = POSITION;
+
     GUILabel* description;
 
     unsigned int cube1, cube2, light, light1, light2, light3, panel, addCube, deleteCube;
@@ -61,7 +69,12 @@ private:
 
     glm::vec3 transformSelectLoc;
 
+    glm::vec3 scaleTransformLoc;
+    bool scaleTransformSet;
+
     void init();
+    void updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction);
+    void updatePositionAdjustments(glm::vec3& origin, glm::vec3& direction);
     void updateSelections(std::vector<int>& selectedIds);
     bool updateTransformSelection();
     void input();
@@ -74,6 +87,7 @@ private:
     //Callbacks
     void createCube();
     void deleteCubes();
+    void setTransfromMode(TransformMode mode);
 };
 
 #endif // MAIN_EDITOR

@@ -18,6 +18,7 @@ public:
     glm::vec3 getPosition() {return position;}
     glm::vec3 getRotation() {return rotation;}
     glm::vec3 getScale() {return scale;}
+    glm::vec3 getBaseScale() {return baseScale;}
     glm::mat4 getModelMatrix() {return modelMatrix;}
     Material getMaterial() {return material;}
     BoundingBox getBoundingBox() {return boundingBox;}
@@ -26,6 +27,12 @@ public:
     void setScale(glm::vec3 newScale) {scale = newScale;}
     void setMaterial(Material& mat) {material = mat;}
     void setModelMatrix(glm::mat4 model) {modelMatrix = model;}
+    void setBaseScale(glm::vec3 scale) {baseScale = scale;}
+    void setBoundingBox(glm::vec3 aabbMin, glm::vec3 aabbMax)
+    {
+        boundingBox.aabbMin = aabbMin;
+        boundingBox.aabbMax = aabbMax;
+    }
 
     virtual void render() = 0;
 
@@ -37,6 +44,8 @@ protected:
     glm::vec3 position, rotation, scale;
     glm::mat4 modelMatrix;
     Material material;
+
+    glm::vec3 baseScale;
 
     BoundingBox boundingBox;
     

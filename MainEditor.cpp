@@ -143,6 +143,12 @@ bool MainEditor::updateTransformSelection()
     }
 
     transformController->setControlling(selected);
+
+    if(!scaleTransformSet){
+        scaleTransformLoc = transformController->getPosition();
+        scaleTransformSet = true;
+    }
+
     return selected;
 }
 
@@ -202,6 +208,18 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
             transformSelectLoc = transformController->getPosition();
             transformController->selectLocUpdated = true;
         }
+    } else {
+        scaleTransformSet = false;
+
+         for(Primitive* obj : renderer.getPrimitives()) {
+             if(obj->isSelected) {
+                obj->setBaseScale(obj->getScale());
+                glm::vec3 size = obj->getScale();
+                glm::vec3 aabbMin = glm::vec3(-0.5f*size.x*size.x, -0.5f*size.y*size.y, -0.5f*size.z*size.z);
+                glm::vec3 aabbMax = glm::vec3(0.5f*size.x*size.x, 0.5f*size.y*size.y, 0.5f*size.z*size.z);
+                obj->setBoundingBox(aabbMin, aabbMax);
+             }
+         }
     }
 }
 
@@ -247,14 +265,16 @@ void MainEditor::input()
     }
 
     if(inputManager.isKeyDown(SDLK_1)) {
-        DirectionalLight* d = static_cast<DirectionalLight*>(renderer.getGameObject(light3));
-        intensity += 0.05;
-        d->setIntensity(intensity);
+        // DirectionalLight* d = static_cast<DirectionalLight*>(renderer.getGameObject(light3));
+        // intensity += 0.05;
+        // d->setIntensity(intensity);
+        _tMode = POSITION;
     }
     if(inputManager.isKeyDown(SDLK_2)) {
-        DirectionalLight* d = static_cast<DirectionalLight*>(renderer.getGameObject(light3));
-        intensity -= 0.05;
-        d->setIntensity(intensity);
+        // DirectionalLight* d = static_cast<DirectionalLight*>(renderer.getGameObject(light3));
+        // intensity -= 0.05;
+        // d->setIntensity(intensity);
+        _tMode = SCALE;
     }
 
     //Releases
@@ -301,6 +321,164 @@ void MainEditor::updateGUIs()
     guiControl = control;
 }
 
+void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
+{
+    glm::vec3 intersectLocation;
+    //All axis
+    if(transformController->allAxisSelected()) {
+        Plane plane;
+        plane.origin = transformController->getPosition();
+        plane.normal = camera.getDirection();
+        picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
+
+        float size = (intersectLocation.x - scaleTransformLoc.x) + (intersectLocation.y - scaleTransformLoc.y) + (intersectLocation.z - scaleTransformLoc.z);
+        printf("Size: %f\n", size);
+        printf("Intersect loc: %f, %f, %f\n", intersectLocation.x, intersectLocation.y, intersectLocation.z);
+        printf("Transform select loc: %f, %f, %f\n", transformSelectLoc.x, transformSelectLoc.y, transformSelectLoc.z);
+
+        for(Primitive* obj : renderer.getPrimitives()) {
+            if(obj->isSelected) {
+                glm::vec3 offset(0.0f);
+                obj->setScale(obj->getBaseScale() + glm::vec3(size));
+                printf("Scale: %f, %f, %f\n", obj->getScale().x, obj->getScale().y, obj->getScale().z);
+                // obj->setPosition(glm::vec3(transformController->getPosition().x + offset.x, obj->getPosition().y, obj->getPosition().z));
+            }
+        }
+    } 
+    
+    //X Axis
+    else if(transformController->getXController()->isSelected) {
+        Plane plane;
+        plane.origin = transformController->getPosition();
+        plane.normal = glm::vec3(0,0,-1);
+        picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
+
+        for(Primitive* obj : renderer.getPrimitives()) {
+            if(obj->isSelected) {
+                glm::vec3 offset(0.0f);
+                offset = obj->selectedLocation - transformSelectLoc;
+            }
+        }
+    }
+
+    //Y Axis
+    else if(transformController->getYController()->isSelected) {
+        Plane plane;
+        plane.origin = transformController->getPosition();
+        plane.normal = glm::vec3(0,0,-1);
+        picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
+        
+        for(Primitive* obj : renderer.getPrimitives()) {
+            if(obj->isSelected) {
+                glm::vec3 offset(0.0f);
+                offset = obj->selectedLocation - transformSelectLoc;
+            }
+        }
+    }
+
+    //Z Axis
+    else if(transformController->getZController()->isSelected) {
+        Plane plane;
+        plane.origin = transformController->getPosition();
+        plane.normal = glm::vec3(0,1,0);
+        picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
+
+        for(Primitive* obj : renderer.getPrimitives()) {
+            if(obj->isSelected) {
+                glm::vec3 offset(0.0f);
+                offset = obj->selectedLocation - transformSelectLoc;
+            }
+        }
+    } 
+
+    else {
+        printf("In control however no axis selected\n");
+    }
+}
+
+void MainEditor::updatePositionAdjustments(glm::vec3& origin, glm::vec3& direction)
+{
+    glm::vec3 intersectLocation;
+    //All axis
+    if(transformController->allAxisSelected()) {
+        Plane plane;
+        plane.origin = transformController->getPosition();
+        plane.normal = camera.getDirection();
+        if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+            transformController->setPosition(glm::vec3(intersectLocation.x, intersectLocation.y, intersectLocation.z));
+        }
+        for(Primitive* obj : renderer.getPrimitives()) {
+            if(obj->isSelected) {
+                glm::vec3 offset(0.0f);
+                offset = obj->selectedLocation - transformSelectLoc;
+                obj->setPosition(transformController->getPosition() + offset);
+                // obj->setPosition(glm::vec3(transformController->getPosition().x + offset.x, obj->getPosition().y, obj->getPosition().z));
+            }
+        }
+    } 
+    
+    //X Axis
+    else if(transformController->getXController()->isSelected) {
+        Plane plane;
+        plane.origin = transformController->getPosition();
+        plane.normal = glm::vec3(0,0,-1);
+        if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+            transformController->setPosition(glm::vec3(intersectLocation.x, transformController->getPosition().y,
+                                            transformController->getPosition().z));
+        }
+
+        for(Primitive* obj : renderer.getPrimitives()) {
+            if(obj->isSelected) {
+                glm::vec3 offset(0.0f);
+                offset = obj->selectedLocation - transformSelectLoc;
+                    obj->setPosition(glm::vec3(transformController->getPosition().x + offset.x, obj->getPosition().y, obj->getPosition().z));
+            }
+        }
+    }
+
+    //Y Axis
+    else if(transformController->getYController()->isSelected) {
+        Plane plane;
+        plane.origin = transformController->getPosition();
+        plane.normal = glm::vec3(0,0,-1);
+        if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+            transformController->setPosition(glm::vec3(transformController->getPosition().x, intersectLocation.y,
+                                            transformController->getPosition().z));
+        }
+        
+        for(Primitive* obj : renderer.getPrimitives()) {
+            if(obj->isSelected) {
+                glm::vec3 offset(0.0f);
+                offset = obj->selectedLocation - transformSelectLoc;
+                obj->setPosition(glm::vec3(obj->getPosition().x, transformController->getPosition().y + offset.y, obj->getPosition().z));
+            }
+        }
+    }
+
+    //Z Axis
+    else if(transformController->getZController()->isSelected) {
+        Plane plane;
+        plane.origin = transformController->getPosition();
+        plane.normal = glm::vec3(0,1,0);
+        if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
+            transformController->setPosition(glm::vec3(transformController->getPosition().x, transformController->getPosition().y,
+                                            intersectLocation.z));
+        }
+
+        for(Primitive* obj : renderer.getPrimitives()) {
+            if(obj->isSelected) {
+                glm::vec3 offset(0.0f);
+                offset = obj->selectedLocation - transformSelectLoc;
+                obj->setPosition(glm::vec3(obj->getPosition().x, obj->getPosition().y, transformController->getPosition().z + offset.z));
+            }
+        }
+    } 
+
+    else {
+        printf("In control however no axis selected\n");
+    }
+}
+
 void MainEditor::update()
 {
     camera.setMouseCords(inputManager.getMouseX(), inputManager.getMouseY());
@@ -320,87 +498,11 @@ void MainEditor::update()
     if(transformController->inControl()) {
         glm::vec3 origin, direction;
         picker.calculateRay(&origin, &direction);
-        glm::vec3 intersectLocation;
 
-        //All axis
-        if(transformController->allAxisSelected()) {
-            Plane plane;
-            plane.origin = transformController->getPosition();
-            plane.normal = camera.getDirection();
-            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
-                transformController->setPosition(glm::vec3(intersectLocation.x, intersectLocation.y, intersectLocation.z));
-            }
-
-            for(Primitive* obj : renderer.getPrimitives()) {
-                if(obj->isSelected) {
-                    glm::vec3 offset(0.0f);
-                    offset = obj->selectedLocation - transformSelectLoc;
-                    obj->setPosition(transformController->getPosition() + offset);
-                    // obj->setPosition(glm::vec3(transformController->getPosition().x + offset.x, obj->getPosition().y, obj->getPosition().z));
-                }
-            }
-        } 
-        
-        //X Axis
-        else if(transformController->getXController()->isSelected) {
-            Plane plane;
-            plane.origin = transformController->getPosition();
-            plane.normal = glm::vec3(0,0,-1);
-            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
-                transformController->setPosition(glm::vec3(intersectLocation.x, transformController->getPosition().y,
-                                                transformController->getPosition().z));
-            }
-
-            for(Primitive* obj : renderer.getPrimitives()) {
-                if(obj->isSelected) {
-                    glm::vec3 offset(0.0f);
-                    offset = obj->selectedLocation - transformSelectLoc;
-                    obj->setPosition(glm::vec3(transformController->getPosition().x + offset.x, obj->getPosition().y, obj->getPosition().z));
-                }
-            }
-        }
-
-        //Y Axis
-        else if(transformController->getYController()->isSelected) {
-            Plane plane;
-            plane.origin = transformController->getPosition();
-            plane.normal = glm::vec3(0,0,-1);
-            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
-                transformController->setPosition(glm::vec3(transformController->getPosition().x, intersectLocation.y,
-                                                transformController->getPosition().z));
-            }
-
-            for(Primitive* obj : renderer.getPrimitives()) {
-                if(obj->isSelected) {
-                    glm::vec3 offset(0.0f);
-                    offset = obj->selectedLocation - transformSelectLoc;
-                    obj->setPosition(glm::vec3(obj->getPosition().x, transformController->getPosition().y + offset.y, obj->getPosition().z));
-                }
-            }
-        }
-
-        //Z Axis
-        else if(transformController->getZController()->isSelected) {
-            Plane plane;
-            plane.origin = transformController->getPosition();
-            plane.normal = glm::vec3(0,1,0);
-            if(picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation)) {
-                transformController->setPosition(glm::vec3(transformController->getPosition().x, transformController->getPosition().y,
-                                                intersectLocation.z));
-            }
-
-            for(Primitive* obj : renderer.getPrimitives()) {
-                if(obj->isSelected) {
-                    glm::vec3 offset(0.0f);
-                    offset = obj->selectedLocation - transformSelectLoc;
-                    obj->setPosition(glm::vec3(obj->getPosition().x, obj->getPosition().y, transformController->getPosition().z + offset.z));
-                }
-            }
-        } 
-
-        else {
-            printf("In control however no axis selected\n");
-        }
+        if(_tMode == POSITION)
+            updatePositionAdjustments(origin, direction);
+        else if(_tMode == SCALE)
+            updateScaleAdjustments(origin, direction);
     }
 }
 
@@ -419,9 +521,6 @@ void MainEditor::render()
     glDepthRange(0,1);
 
     renderer.renderGUIs();
-
-    //text render
-    // textRenderer.renderText(&textShader, "This is a test sentence", 400.0f, 300.0f, 1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
     renderer.endRender(window);
 }
@@ -467,4 +566,9 @@ void MainEditor::deleteCubes()
     }
     transformController->setControlling(false);
     transformController->setVisible(false);
+}
+
+void MainEditor::setTransfromMode(TransformMode mode)
+{
+    _tMode = mode;
 }
