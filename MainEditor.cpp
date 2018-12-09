@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <glm/glm.hpp>
+#include <GL/glew.h>
 
 #include "DirectionalLight.h"
 #include "Math.h"
@@ -14,7 +15,7 @@ void MainEditor::init()
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-    window = SDL_CreateWindow("Editor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenWidth,screenHeight, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow("Editor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenWidth,screenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
 	if (window == nullptr) {
 		printf("Failed to create SDL Window");
@@ -95,8 +96,15 @@ void MainEditor::init()
     Button* deleteCubeButton = renderer.addButton(sidePanel, 0.1f, 0.5f, 0.065f, 0.065f * (16.0f/9.0f), "Textures/deleteCube.png", "Delete Cube", true, &addCube);
     deleteCubeButton->subscribeEvent(this, &MainEditor::deleteCubes);
 
+    Button* positionButton = renderer.addButton(sidePanel, -0.15f, 0.2f, 0.1f ,0.065f * (16.0f/9.0f), "Textures/addCube.png", "Position", true, &position);
+    positionButton->subscribeEvent(this, &MainEditor::setTransfromMode, POSITION);
+
+    Button* sizeButton = renderer.addButton(sidePanel, 0.15f, 0.2f, 0.1, 0.065f * (16.0f/9.0f), "Textures/deleteCube.png", "Size", true, &size);
+    sizeButton->subscribeEvent(this, &MainEditor::setTransfromMode, SCALE);
+
     Panel* statusPanel = renderer.addPanel(0.7, -0.925, 0.3, 0.125, "Textures/panel.png");
     description = renderer.attachLabel(statusPanel, std::string().c_str(), 1.25f, glm::vec2(0.0f), glm::vec4(1.0f));
+    transformMode = renderer.attachLabel(statusPanel, "Mode: Position", 1.25f, glm::vec2(-0.1f, 0.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
 
     picker = Picker(&camera);
 }
@@ -228,11 +236,6 @@ void MainEditor::input()
     inputManager.update();
 
      // KEYBOARD //
-    if(inputManager.isKeyDown(SDLK_SPACE)) {
-    }
-    if(inputManager.isKeyDown(SDLK_DELETE)) {
- 
-    }
     if(inputManager.isKeyDown(SDLK_w)) {
         camera.moveForward(cameraSpeed);
     }
@@ -481,6 +484,9 @@ void MainEditor::updatePositionAdjustments(glm::vec3& origin, glm::vec3& directi
 
 void MainEditor::update()
 {
+    SDL_GetWindowSize(window, &screenWidth, &screenHeight);
+    glViewport(0,  0, screenWidth, screenHeight);
+
     camera.setMouseCords(inputManager.getMouseX(), inputManager.getMouseY());
     camera.update();
     picker.update(renderer.getPrimitives(), transformController);
@@ -570,5 +576,10 @@ void MainEditor::deleteCubes()
 
 void MainEditor::setTransfromMode(TransformMode mode)
 {
+    if(mode == POSITION)
+        modeString = "Mode: Position";
+    if(mode == SCALE)
+        modeString = "Mode: Scale";
+
     _tMode = mode;
 }

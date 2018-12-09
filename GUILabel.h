@@ -10,7 +10,7 @@
 
 class GUILabel {
 public:
-    GUILabel(GUI* parent, const char* text, float size, glm::vec2 offset = glm::vec2(0.0f), glm::vec4 color = glm::vec4(1.0f));
+    GUILabel(GUI* parent, const char* text, float size, glm::vec2 offset = glm::vec2(0.0f,0.0f), glm::vec4 color = glm::vec4(1.0f));
     GUILabel();
     ~GUILabel();
 

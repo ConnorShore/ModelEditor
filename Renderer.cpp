@@ -312,6 +312,7 @@ Panel* Renderer::addPanel(float x, float y, float sx, float sy, std::string file
 
 GUILabel* Renderer::attachLabel(GUI* parent, const char* text, float size, glm::vec2 offset, glm::vec4 color)
 {
+    // TODO: ADD OFFSET IN HERE AND FIGURE OUT ISSUES
     GUILabel* label = new GUILabel(parent, text, size, color);
     _labels.push_back(label);
     return label;

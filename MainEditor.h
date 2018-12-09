@@ -56,8 +56,11 @@ private:
     TransformMode _tMode = POSITION;
 
     GUILabel* description;
+    GUILabel* transformMode;
 
-    unsigned int cube1, cube2, light, light1, light2, light3, panel, addCube, deleteCube;
+    std::string modeString;
+
+    unsigned int cube1, cube2, light, light1, light2, light3, panel, addCube, deleteCube, position, size;
 
     float cameraSpeed = 0.015f;
     float intensity = 0.1f;
