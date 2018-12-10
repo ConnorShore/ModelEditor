@@ -47,6 +47,13 @@ public:
     void setControlling(bool control) {_inControl = control;}
     void setAllAxisSelected(bool selected) {_allAxisSelected = selected;}
 
+    void setRotation(glm::vec3 rotation)
+    {
+        _xControl->setRotation(rotation);
+        _yControl->setRotation(rotation);
+        _zControl->setRotation(rotation);
+    }
+
     void moveX(float amount) {_controlPosition.x += amount;}
     void moveY(float amount) {_controlPosition.y += amount;}
     void moveZ(float amount) {_controlPosition.z += amount;}
@@ -58,7 +65,7 @@ private:
     Cube* _yControl;
     Cube* _zControl;
 
-    glm::vec3 _controlPosition;
+    glm::vec3 _controlPosition, _controlRotation;
     bool _visible;
     bool _inControl;
     bool _allAxisSelected;

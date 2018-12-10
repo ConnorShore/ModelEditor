@@ -24,6 +24,7 @@ public:
     BoundingBox getBoundingBox() {return boundingBox;}
 
     void setPosition(glm::vec3 pos) {position = pos;}
+    void setRotation(glm::vec3 rot) {rotation = rot;}
     void setScale(glm::vec3 newScale) {scale = newScale;}
     void setMaterial(Material& mat) {material = mat;}
     void setModelMatrix(glm::mat4 model) {modelMatrix = model;}

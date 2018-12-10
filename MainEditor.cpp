@@ -152,9 +152,18 @@ bool MainEditor::updateTransformSelection()
 
     transformController->setControlling(selected);
 
-    if(!scaleTransformSet){
-        scaleTransformLoc = transformController->getPosition();
+    if(selected && !scaleTransformSet){
+        glm::vec3 origin, direction;
+        picker.calculateRay(&origin, &direction);
+
+        glm::vec3 intersectLocation;
+        Plane plane;
+        plane.origin = transformController->getPosition();
+        plane.normal = camera.getDirection();
+        picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
+        scaleTransformLoc = intersectLocation;
         scaleTransformSet = true;
+        printf("\n\n\n\nNEW scaleTransformLoc: %f, %f, %f\n", scaleTransformLoc.x, scaleTransformLoc.y, scaleTransformLoc.z);
     }
 
     return selected;
@@ -183,15 +192,18 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
         
         unsigned int ct = 0;
         std::vector<glm::vec3> positions;
+        std::vector<glm::vec3> rotations;
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isInSelectRange) {
                 obj->selectedLocation = obj->getPosition();
                 obj->isSelected = true;
                 positions.push_back(obj->getPosition());
+                rotations.push_back(obj->getRotation());
                 selectedIds.push_back(ct);
             } 
             else if((inputManager.isKeyDown(SDLK_LSHIFT) || inputManager.isKeyDown(SDLK_RSHIFT)) && obj->isSelected){
                 positions.push_back(obj->getPosition());
+                rotations.push_back(obj->getRotation());
                 selectedIds.push_back(ct);
                 obj->selectedLocation = obj->getPosition();
             }
@@ -206,12 +218,19 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
             transformController->setVisible(false);
         else {
             glm::vec3 sumPosition(0.0f);
+            glm::vec3 sumRotation(0.0f);
             for(unsigned int i = 0; i < size; i++) {
                 sumPosition += positions[i];
+                sumRotation += rotations[i];
             }
 
             sumPosition /= size;
+            sumRotation /= size;
             transformController->setPosition(sumPosition);
+
+            if(_tMode == SCALE)
+                transformController->setRotation(sumRotation);
+                
             transformController->setVisible(true);
             transformSelectLoc = transformController->getPosition();
             transformController->selectLocUpdated = true;
@@ -304,6 +323,7 @@ void MainEditor::updateGUIs()
                 description->setText(button->getDescription());
                 descriptionVisible = true;
             }
+            
             control = true;
             if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
                 switch(type) {
@@ -335,16 +355,11 @@ void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
         picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
 
         float size = (intersectLocation.x - scaleTransformLoc.x) + (intersectLocation.y - scaleTransformLoc.y) + (intersectLocation.z - scaleTransformLoc.z);
-        printf("Size: %f\n", size);
-        printf("Intersect loc: %f, %f, %f\n", intersectLocation.x, intersectLocation.y, intersectLocation.z);
-        printf("Transform select loc: %f, %f, %f\n", transformSelectLoc.x, transformSelectLoc.y, transformSelectLoc.z);
 
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isSelected) {
                 glm::vec3 offset(0.0f);
                 obj->setScale(obj->getBaseScale() + glm::vec3(size));
-                printf("Scale: %f, %f, %f\n", obj->getScale().x, obj->getScale().y, obj->getScale().z);
-                // obj->setPosition(glm::vec3(transformController->getPosition().x + offset.x, obj->getPosition().y, obj->getPosition().z));
             }
         }
     } 
@@ -355,11 +370,15 @@ void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
         plane.origin = transformController->getPosition();
         plane.normal = glm::vec3(0,0,-1);
         picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
+        printf("intersectLocation: %f, %f, %f\n", intersectLocation.x, intersectLocation.y, intersectLocation.z);
+
+        float size = (intersectLocation.x - scaleTransformLoc.x);
+        printf("size: %f\n", size);
 
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isSelected) {
                 glm::vec3 offset(0.0f);
-                offset = obj->selectedLocation - transformSelectLoc;
+                obj->setScale(obj->getBaseScale() + glm::vec3(size, 0.0f, 0.0f));
             }
         }
     }
@@ -370,11 +389,15 @@ void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
         plane.origin = transformController->getPosition();
         plane.normal = glm::vec3(0,0,-1);
         picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
+        printf("intersectLocation: %f, %f, %f\n", intersectLocation.x, intersectLocation.y, intersectLocation.z);
         
+        float size = (intersectLocation.y - scaleTransformLoc.y);
+        printf("size: %f\n", size);
+
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isSelected) {
                 glm::vec3 offset(0.0f);
-                offset = obj->selectedLocation - transformSelectLoc;
+                obj->setScale(obj->getBaseScale() + glm::vec3(0.0f, size, 0.0f));
             }
         }
     }
@@ -385,11 +408,15 @@ void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
         plane.origin = transformController->getPosition();
         plane.normal = glm::vec3(0,1,0);
         picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
+        printf("intersectLocation: %f, %f, %f\n", intersectLocation.x, intersectLocation.y, intersectLocation.z);
+
+        float size = (intersectLocation.z - scaleTransformLoc.z);
+        printf("size: %f\n", size);
 
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isSelected) {
                 glm::vec3 offset(0.0f);
-                offset = obj->selectedLocation - transformSelectLoc;
+                obj->setScale(obj->getBaseScale() + glm::vec3(0.0f, 0.0f, size));
             }
         }
     } 
@@ -486,6 +513,9 @@ void MainEditor::update()
 {
     SDL_GetWindowSize(window, &screenWidth, &screenHeight);
     glViewport(0,  0, screenWidth, screenHeight);
+    camera.setScreenDimensions(screenWidth, screenHeight);
+    textRenderer.setWidthAndHeight(screenWidth, screenHeight);
+    renderer.setWidthAndHeight(screenWidth, screenHeight);
 
     camera.setMouseCords(inputManager.getMouseX(), inputManager.getMouseY());
     camera.update();

@@ -28,6 +28,8 @@ public:
     void end(TextShader* shader);
     void renderText(TextShader* shader, const std::string text, float x, float y, float size, glm::vec3 color);
 
+    void setWidthAndHeight(int width, int height) {_width = width; _height = height;}
+
     glm::vec2 getStringSize(std::string text, float size);
 
 private:

@@ -327,3 +327,9 @@ unsigned int Renderer::getNumPrimitivesSelected()
     }
     return ct;
 }
+
+void Renderer::setWidthAndHeight(int width, int height)
+{
+    _width = width;
+    _height = height;
+}

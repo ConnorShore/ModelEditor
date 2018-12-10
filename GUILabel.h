@@ -20,7 +20,7 @@ public:
     glm::vec4 getColor() {return _color;}
     bool getVisible() {return _visible;}
 
-    void setText(std::string text) {_text = text; printf("Text set\n");}
+    void setText(std::string text) {_text = text;}
     void setVisible(bool visible) {_visible = visible;}
 
     void render(TextRenderer& renderer, TextShader* shader, int width, int height);

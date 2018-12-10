@@ -34,6 +34,8 @@ public:
     void setRoll(float roll) { _roll = roll; }
     void setSensitivity(float sensitivity) { _sensitivity = sensitivity; }
 
+    void setScreenDimensions(int width, int height) {_screenWidth = width; _screenHeight = height;}
+
     float getScreenWidth() {return _screenWidth;}
     float getScreenHeight() {return _screenHeight;}
 
