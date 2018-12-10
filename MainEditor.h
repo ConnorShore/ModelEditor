@@ -60,7 +60,7 @@ private:
 
     std::string modeString;
 
-    unsigned int cube1, cube2, light, light1, light2, light3, panel, addCube, deleteCube, position, size;
+    unsigned int cube1, cube2, light, light1, light2, light3, panel, top, addCube, deleteCube, position, size;
 
     float cameraSpeed = 0.015f;
     float intensity = 0.1f;

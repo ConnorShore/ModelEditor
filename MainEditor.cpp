@@ -87,6 +87,8 @@ void MainEditor::init()
     light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
     light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
 
+    Panel* topBar = renderer.addPanel(0.0f, 0.925f, 1.0f, 0.075f, "Textures/panel.png", &top);
+
     Panel* sidePanel = renderer.addPanel(0.7f, 0.0f, 0.3f, 1.0f, "Textures/panel.png", &panel);
     sidePanel->setAlpha(0.8f);
 
@@ -228,8 +230,8 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
             sumRotation /= size;
             transformController->setPosition(sumPosition);
 
-            if(_tMode == SCALE)
-                transformController->setRotation(sumRotation);
+            // if(_tMode == SCALE)
+            //     transformController->setRotation(sumRotation);
                 
             transformController->setVisible(true);
             transformSelectLoc = transformController->getPosition();
@@ -308,6 +310,8 @@ void MainEditor::input()
 
 void MainEditor::updateGUIs()
 {
+    if(scaleTransformSet) return;
+
     bool descriptionVisible = false;
     bool control = false;
     glm::vec2 mouse = camera.screenToNDC();
