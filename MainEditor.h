@@ -57,6 +57,9 @@ private:
 
     GUILabel* description;
     GUILabel* transformMode;
+    GUILabel* positionValues;
+    GUILabel* rotationValues;
+    GUILabel* scaleValues;
 
     std::string modeString;
 

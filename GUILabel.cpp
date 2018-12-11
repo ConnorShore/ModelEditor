@@ -6,14 +6,12 @@ GUILabel::GUILabel(GUI* parent, const char* text, float size, glm::vec2 offset, 
     _text = text;
     _size = size * SCALE_FACTOR;
     _offset = offset;
-    printf("Offset set: %f, %f\n", _offset.x, _offset.y);
     _color = color;
     _visible = true;
 }
 
 GUILabel::GUILabel()
 {
-    printf("Default guilable contrust\n");
     _parent = nullptr;
     _text = "";
     _size = SCALE_FACTOR;
@@ -33,15 +31,12 @@ void GUILabel::render(TextRenderer& renderer, TextShader* shader, int width, int
         return;
 
     glm::vec2 pos;
-    printf("Pre if: %f, %f\n", _offset.x, _offset.y);
     if(_offset.x != 0.0f || _offset.y != 0.0f) {
-        printf("here\n");
         glm::vec2 textSize = renderer.getStringSize(_text, _size);
         pos = toPixelCoords(_parent->getOrigin() + _offset, width, height);
 
         pos.x -= textSize.x/2.0f;
     } else {
-        printf("here1\n");
         glm::vec2 textSize = renderer.getStringSize(_text, _size);
         pos = toPixelCoords(_parent->getOrigin(), width, height);
 

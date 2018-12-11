@@ -3,10 +3,20 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <GL/glew.h>
+#include <sstream>
 
 #include "DirectionalLight.h"
 #include "Math.h"
 #include "Button.h"
+
+template<typename T>
+std::string truncate(const T val, const int truncVal = 2)
+{
+    std::ostringstream out;
+    out.precision(truncVal);
+    out << std::fixed << val;
+    return out.str();
+}
 
 void MainEditor::init()
 {
@@ -15,7 +25,7 @@ void MainEditor::init()
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-    window = SDL_CreateWindow("Connor Shore - Final Project: Incredibly Complex Model Editor", 
+    window = SDL_CreateWindow("Connor Shore - Final Project: Deep Learning Model Editor", 
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenWidth,screenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
 	if (window == nullptr) {
@@ -107,12 +117,17 @@ void MainEditor::init()
     sizeButton->subscribeEvent(this, &MainEditor::setTransfromMode, SCALE);
 
 
-    Panel* sidePanel = renderer.addPanel(0.8f, 0.0f, 0.2f, 1.0f, "Textures/panel.png", &panel);
+    Panel* sidePanel = renderer.addPanel(0.7f, 0.0f, 0.3f, 1.0f, "Textures/panel.png", &panel);
     sidePanel->setAlpha(0.8f);
 
-    Panel* statusPanel = renderer.addPanel(0.8, -0.925, 0.2, 0.125, "Textures/panel.png");
+    Panel* statusPanel = renderer.addPanel(0.7, -0.925, 0.3, 0.125, "Textures/panel.png");
     transformMode = renderer.attachLabel(statusPanel, "Mode: Position", 1.25f, glm::vec2(0.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
     description = renderer.attachLabel(statusPanel, std::string().c_str(), 1.25f, glm::vec2(0.0f, -0.05f), glm::vec4(1.0f));
+
+    //Transform properties
+    positionValues = renderer.attachLabel(statusPanel, std::string().c_str(), 1.2f, glm::vec2(0.0f, 0.8f), glm::vec4(1.0f));
+    rotationValues = renderer.attachLabel(statusPanel, std::string().c_str(), 1.2f, glm::vec2(0.0f, 0.7f), glm::vec4(1.0f));
+    scaleValues = renderer.attachLabel(statusPanel, std::string().c_str(), 1.2f, glm::vec2(0.0f, 0.6f), glm::vec4(1.0f));
 }
 
 bool MainEditor::updateTransformSelection()
@@ -175,42 +190,61 @@ bool MainEditor::updateTransformSelection()
 }
 
 void MainEditor::updateSelections(std::vector<int>& selectedIds)
-{
-    //TODO: Add in method in Math.h to determine distances between objects and use that to select the object
-    //      closed to the camera.  Do the same with the transform controller (i.e if z-axis overlaps x-axis, make
-    //      sure that z gets selected and not the x-axis)
-
-    //TODO: Start adding in gui to atleast get that working
-    //      1) Need buttons and panels and labels to begin
-    //      2) try to get typing boxes as well (check out SDL2 tutorial on that one SDL2 tuts page)
-    //      3) Add gui overlays for lights to tell position and to be able to change position
-
-    //TODO: Add in ability to scale and rotate with transform controller.  Make rotations of objects in place
-    //      so that if multiple are selected, they rotate in place and not around the origin of the controller
-    
+{   
+    bool selections = false;
     selectedIds.clear();
 
+    if(renderer.getNumPrimitivesSelected() > 0) {
+        for(Primitive* obj : renderer.getPrimitives()) {
+            if(obj->isSelected) {
+                std::string posText = "Position: " + truncate(obj->getPosition().x) + " " + truncate(obj->getPosition().y) + " " + truncate(obj->getPosition().z);
+                positionValues->setText(posText);            
+                positionValues->setVisible(true);
+
+                std::string rotText = "Rotation: " + truncate(obj->getRotation().x) + " " + truncate(obj->getRotation().y) + " " + truncate(obj->getRotation().z);
+                rotationValues->setText(rotText);            
+                rotationValues->setVisible(true);
+
+                std::string scaleText = "   Scale: " + truncate(obj->getScale().x) + " " + truncate(obj->getScale().y) + " " + truncate(obj->getScale().z);
+                scaleValues->setText(scaleText);            
+                scaleValues->setVisible(true);
+                break;
+            }
+        }
+    } else {
+        positionValues->setVisible(false);
+        rotationValues->setVisible(false);
+        scaleValues->setVisible(false);
+    }
+
     if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
+
+        std::vector<glm::vec3> positions;
+        std::vector<glm::vec3> rotations;
+        std::vector<glm::vec3> scales;
 
         if(updateTransformSelection() && renderer.getNumPrimitivesSelected() > 0)
             return;
         
         unsigned int ct = 0;
-        std::vector<glm::vec3> positions;
-        std::vector<glm::vec3> rotations;
         for(Primitive* obj : renderer.getPrimitives()) {
+
             if(obj->isInSelectRange) {
                 obj->selectedLocation = obj->getPosition();
                 obj->isSelected = true;
                 positions.push_back(obj->getPosition());
                 rotations.push_back(obj->getRotation());
+                scales.push_back(obj->getScale());
                 selectedIds.push_back(ct);
+                selections = true;
             } 
             else if((inputManager.isKeyDown(SDLK_LSHIFT) || inputManager.isKeyDown(SDLK_RSHIFT)) && obj->isSelected){
                 positions.push_back(obj->getPosition());
                 rotations.push_back(obj->getRotation());
+                scales.push_back(obj->getScale());
                 selectedIds.push_back(ct);
                 obj->selectedLocation = obj->getPosition();
+                selections = true;
             }
             else {
                 obj->isSelected = false;
@@ -232,7 +266,8 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
             sumPosition /= size;
             sumRotation /= size;
             transformController->setPosition(sumPosition);
-
+            
+            //Keep controller to same rotation as objects
             // if(_tMode == SCALE)
             //     transformController->setRotation(sumRotation);
                 
@@ -292,16 +327,14 @@ void MainEditor::input()
     }
 
     if(inputManager.isKeyDown(SDLK_1)) {
-        // DirectionalLight* d = static_cast<DirectionalLight*>(renderer.getGameObject(light3));
-        // intensity += 0.05;
-        // d->setIntensity(intensity);
-        _tMode = POSITION;
+        DirectionalLight* d = static_cast<DirectionalLight*>(renderer.getGameObject(light3));
+        intensity += 0.05;
+        d->setIntensity(intensity);
     }
     if(inputManager.isKeyDown(SDLK_2)) {
-        // DirectionalLight* d = static_cast<DirectionalLight*>(renderer.getGameObject(light3));
-        // intensity -= 0.05;
-        // d->setIntensity(intensity);
-        _tMode = SCALE;
+        DirectionalLight* d = static_cast<DirectionalLight*>(renderer.getGameObject(light3));
+        intensity -= 0.05;
+        d->setIntensity(intensity);
     }
 
     //Releases
@@ -377,10 +410,8 @@ void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
         plane.origin = transformController->getPosition();
         plane.normal = glm::vec3(0,0,-1);
         picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
-        printf("intersectLocation: %f, %f, %f\n", intersectLocation.x, intersectLocation.y, intersectLocation.z);
 
         float size = (intersectLocation.x - scaleTransformLoc.x);
-        printf("size: %f\n", size);
 
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isSelected) {
@@ -396,10 +427,8 @@ void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
         plane.origin = transformController->getPosition();
         plane.normal = glm::vec3(0,0,-1);
         picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
-        printf("intersectLocation: %f, %f, %f\n", intersectLocation.x, intersectLocation.y, intersectLocation.z);
         
         float size = (intersectLocation.y - scaleTransformLoc.y);
-        printf("size: %f\n", size);
 
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isSelected) {
@@ -415,10 +444,8 @@ void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
         plane.origin = transformController->getPosition();
         plane.normal = glm::vec3(0,1,0);
         picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
-        printf("intersectLocation: %f, %f, %f\n", intersectLocation.x, intersectLocation.y, intersectLocation.z);
 
         float size = (intersectLocation.z - scaleTransformLoc.z);
-        printf("size: %f\n", size);
 
         for(Primitive* obj : renderer.getPrimitives()) {
             if(obj->isSelected) {
