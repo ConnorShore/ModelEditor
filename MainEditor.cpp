@@ -15,7 +15,8 @@ void MainEditor::init()
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-    window = SDL_CreateWindow("Editor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenWidth,screenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    window = SDL_CreateWindow("Connor Shore - Final Project: Incredibly Complex Model Editor", 
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenWidth,screenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
 	if (window == nullptr) {
 		printf("Failed to create SDL Window");
@@ -66,6 +67,8 @@ void MainEditor::init()
     camera.init(screenWidth, screenHeight);
     camera.setPosition(0.0f, 0.0f, 3.0f);
 
+    picker = Picker(&camera);
+
     transformController = new TransformController;
 
     Material mat;
@@ -87,28 +90,29 @@ void MainEditor::init()
     light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
     light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
 
-    Panel* topBar = renderer.addPanel(0.0f, 0.925f, 1.0f, 0.075f, "Textures/panel.png", &top);
+    float aspect = (float)screenWidth/(float)screenHeight;
 
-    Panel* sidePanel = renderer.addPanel(0.7f, 0.0f, 0.3f, 1.0f, "Textures/panel.png", &panel);
-    sidePanel->setAlpha(0.8f);
+    Panel* topBar = renderer.addPanel(0.0f, 0.92f, 1.0f, 0.08f, "Textures/panel.png", &top);
 
-    Button* addCubeButton = renderer.addButton(sidePanel, -0.1f, 0.5f, 0.065f, 0.065f * (16.0f/9.0f), "Textures/addCube.png", "Add Cube", true, &addCube);
+    Button* addCubeButton = renderer.addButton(topBar, -0.95f, 0.0, 0.035f, 0.035f * aspect, "Textures/addCube.png", "Add Cube", true, &addCube);
     addCubeButton->subscribeEvent(this, &MainEditor::createCube);
 
-    Button* deleteCubeButton = renderer.addButton(sidePanel, 0.1f, 0.5f, 0.065f, 0.065f * (16.0f/9.0f), "Textures/deleteCube.png", "Delete Cube", true, &addCube);
+    Button* deleteCubeButton = renderer.addButton(topBar, -0.85f, 0.0, 0.035f, 0.035f * aspect, "Textures/deleteCube.png", "Delete Cube", true, &addCube);
     deleteCubeButton->subscribeEvent(this, &MainEditor::deleteCubes);
 
-    Button* positionButton = renderer.addButton(sidePanel, -0.15f, 0.2f, 0.1f ,0.065f * (16.0f/9.0f), "Textures/addCube.png", "Position", true, &position);
+    Button* positionButton = renderer.addButton(topBar, -0.73f, 0.0f, 0.06f ,0.035f * aspect, "Textures/addCube.png", "Position", true, &position);
     positionButton->subscribeEvent(this, &MainEditor::setTransfromMode, POSITION);
 
-    Button* sizeButton = renderer.addButton(sidePanel, 0.15f, 0.2f, 0.1, 0.065f * (16.0f/9.0f), "Textures/deleteCube.png", "Size", true, &size);
+    Button* sizeButton = renderer.addButton(topBar, -0.585f, 0.0f, 0.06f ,0.035f * aspect, "Textures/deleteCube.png", "Size", true, &size);
     sizeButton->subscribeEvent(this, &MainEditor::setTransfromMode, SCALE);
 
-    Panel* statusPanel = renderer.addPanel(0.7, -0.925, 0.3, 0.125, "Textures/panel.png");
-    description = renderer.attachLabel(statusPanel, std::string().c_str(), 1.25f, glm::vec2(0.0f), glm::vec4(1.0f));
-    transformMode = renderer.attachLabel(statusPanel, "Mode: Position", 1.25f, glm::vec2(-0.1f, 0.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
 
-    picker = Picker(&camera);
+    Panel* sidePanel = renderer.addPanel(0.8f, 0.0f, 0.2f, 1.0f, "Textures/panel.png", &panel);
+    sidePanel->setAlpha(0.8f);
+
+    Panel* statusPanel = renderer.addPanel(0.8, -0.925, 0.2, 0.125, "Textures/panel.png");
+    transformMode = renderer.attachLabel(statusPanel, "Mode: Position", 1.25f, glm::vec2(0.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
+    description = renderer.attachLabel(statusPanel, std::string().c_str(), 1.25f, glm::vec2(0.0f, -0.05f), glm::vec4(1.0f));
 }
 
 bool MainEditor::updateTransformSelection()
@@ -165,7 +169,6 @@ bool MainEditor::updateTransformSelection()
         picker.rayPlaneIntersection(origin, direction, plane, &intersectLocation);
         scaleTransformLoc = intersectLocation;
         scaleTransformSet = true;
-        printf("\n\n\n\nNEW scaleTransformLoc: %f, %f, %f\n", scaleTransformLoc.x, scaleTransformLoc.y, scaleTransformLoc.z);
     }
 
     return selected;
@@ -611,9 +614,9 @@ void MainEditor::deleteCubes()
 void MainEditor::setTransfromMode(TransformMode mode)
 {
     if(mode == POSITION)
-        modeString = "Mode: Position";
+        transformMode->setText("Mode: Position");
     if(mode == SCALE)
-        modeString = "Mode: Scale";
+        transformMode->setText("Mode: Scale");
 
     _tMode = mode;
 }
