@@ -23,6 +23,7 @@
 #include "TextShader.h"
 #include "TextRenderer.h"
 #include "GUILabel.h"
+#include "LightOverlayShader.h"
 
 enum TransformMode
 {
@@ -52,6 +53,7 @@ private:
     GUIShader guiShader;
     TextRenderer textRenderer;
     TextShader textShader;
+    LightOverlayShader lightOverlayShader;
 
     TransformMode _tMode = POSITION;
 

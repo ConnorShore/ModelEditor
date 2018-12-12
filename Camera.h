@@ -21,7 +21,7 @@ public:
     void rotateDown(float speed);
     void rotateLeft(float speed);
     void rotateRight(float speed);
-    
+
     glm::vec3 screenToWorldCoords(float mouseX, float mouseY);
     glm::vec2 screenToNDC();
 
@@ -40,10 +40,11 @@ public:
     float getScreenWidth() {return _screenWidth;}
     float getScreenHeight() {return _screenHeight;}
 
+    glm::vec3 getViewDirection() {return _position + _direction;}
+
     glm::mat4 createProjectionMatrix();
     glm::mat4 getProjectionMatrix();
     glm::mat4 getViewMatrix();
-
     glm::vec3 getPosition() { return _position; }
     glm::vec3 getDirection() {return _direction;}
     glm::ivec2 getMouseCoords() {return _mouseCoords;}

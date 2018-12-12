@@ -4,6 +4,7 @@
 #include "Sphere.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
+#include "LightOverlay.h"
 
 #include <algorithm>
 
@@ -31,12 +32,13 @@ Renderer::~Renderer()
     }
 }
 
-void Renderer::init(StaticShader* shader, OutlineShader* outline, GUIShader* gui, TextShader* text, int width, int height)
+void Renderer::init(StaticShader* shader, OutlineShader* outline, GUIShader* gui, TextShader* text, LightOverlayShader* light, int width, int height)
 {
     _staticShader = shader;
     _outlineShader = outline;
     _guiShader = gui;
     _textShader = text;
+    _lightOverlayShader = light;
 
     _width = width;
     _height = height;
@@ -108,6 +110,27 @@ void Renderer::endObjectRender()
 {
     //maybe move up right under glStencilMask or right after glEnable(DEPTHTEST)
     glDisable(GL_STENCIL_TEST);
+}
+
+void Renderer::renderLightOverlays(Camera& camera)
+{
+    glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 proj = camera.getProjectionMatrix();
+
+    _lightOverlayShader->start();
+    _lightOverlayShader->getUniformLocations();
+    _lightOverlayShader->loadViewMatrix(view);
+    _lightOverlayShader->loadProjectionMatrix(proj);
+    _lightOverlayShader->loadTexture();
+
+    for(LightOverlay* overlay : _lightOverlays) {
+        glm::mat4 transform = Math::createTransformationMatrix(overlay->getPosition(), glm::vec3(0.0f), overlay->getScale());
+        printf("Transform pos: %f, %f, %f\n", transform[3].x, transform[3].y, transform[3].z);
+        _lightOverlayShader->loadModelMatrix(transform);
+        overlay->render();
+    }
+
+    _lightOverlayShader->stop();
 }
 
 void Renderer::renderGUIs()
@@ -265,7 +288,12 @@ unsigned int Renderer::addPointLight(float x, float y, float z, float r, float g
     PointLight* light = new PointLight(pos,color,intensity,attenuation);
 
     light->setID(currentID++);
+    
     _lights.push_back(light);
+
+    LightOverlay* overlay = new LightOverlay(light);
+    _lightOverlays.push_back(overlay);
+
     return light->getID();
 }
 
@@ -280,6 +308,13 @@ unsigned int Renderer::addDirectionalLight(float dx, float dy, float dz, float r
     _lights.push_back(light);
     return light->getID();
 }
+
+// LightOverlay* Renderer::attachLightOverlay(Light* parent)
+// {
+//     LightOverlay* overlay = new LightOverlay(parent);
+//     _lightOverlays.push_back(overlay);
+//     return overlay;
+// }
 
 Button* Renderer::addButton(GUI* parent, float x, float y, float sx, float sy, std::string filePath, std::string description, bool relativePos, unsigned int* id)
 {
@@ -322,10 +357,16 @@ Panel* Renderer::addPanel(float x, float y, float sx, float sy, std::string file
 
 GUILabel* Renderer::attachLabel(GUI* parent, const char* text, float size, glm::vec2 offset, glm::vec4 color)
 {
-    // TODO: ADD OFFSET IN HERE AND FIGURE OUT ISSUES
     GUILabel* label = new GUILabel(parent, text, size, offset, color);
     _labels.push_back(label);
     return label;
+}
+
+void Renderer::updateOverlays(Camera* camera)
+{
+    for(LightOverlay* overlay : _lightOverlays) {
+        overlay->update(camera);
+    }
 }
 
 unsigned int Renderer::getNumPrimitivesSelected()

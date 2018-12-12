@@ -124,8 +124,11 @@ void MainEditor::init()
 
     textShader.init("Shaders/textShader.vert", "Shaders/textShader.frag");
     textShader.bindAttributes();
+
+    lightOverlayShader.init("Shaders/lightOverlayShader.vert", "Shaders/lightOverlayShader.frag");
+    lightOverlayShader.bindAttributes();
     
-    renderer.init(&staticShader, &outlineShader, &guiShader, &textShader, screenWidth, screenHeight);
+    renderer.init(&staticShader, &outlineShader, &guiShader, &textShader, &lightOverlayShader, screenWidth, screenHeight);
 
     camera.init(screenWidth, screenHeight);
     camera.setPosition(0.0f, 0.0f, 3.0f);
@@ -134,10 +137,10 @@ void MainEditor::init()
 
     transformController = new TransformController;
     
-    light = renderer.addPointLight(1.2f,1.0f,2.0f,  0.15f,0.5f,1.0f,  1.0f,  1.0f,0.09f,0.032f);
-    light1 = renderer.addPointLight(-1.2f,-0.5,-0.8f,  0.0f,0.0f,1.0f,  0.6f,  1.0f,0.09f,0.032f);
-    light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
-    light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
+    light = renderer.addPointLight(0.0f,0.0f,0.0f,  1.0f, 1.0f,1.0f,  1.0f,  1.0f,0.09f,0.032f);
+    // light1 = renderer.addPointLight(-1.2f,-0.5,-0.8f,  0.0f,0.0f,1.0f,  0.6f,  1.0f,0.09f,0.032f);
+    // light2 = renderer.addPointLight(0.0,1.5f,-1.0f,  0.0f,1.0f,0.0f,  0.4f,  1.0f,0.09f,0.032f);
+    // light3 = renderer.addDirectionalLight(1.0f,0.0f,-0.3f,   1.0f,1.0f,1.0f,   intensity);
 
     float aspect = (float)screenWidth/(float)screenHeight;
 
@@ -160,7 +163,7 @@ void MainEditor::init()
 
     Panel* sidePanel = renderer.addPanel(0.8f, 0.0f, 0.2f, 1.0f, "Textures/panel.png", &panel);
     sidePanel->setAlpha(0.8f);
-    renderer.attachLabel(sidePanel, "Properties", 1.5f, glm::vec2(-0.015, 0.85f), glm::vec4(1.0f));
+    renderer.attachLabel(sidePanel, "Attributes", 1.5f, glm::vec2(-0.015, 0.85f), glm::vec4(1.0f));
     //Transform properties
     positionValues = renderer.attachLabel(sidePanel, std::string().c_str(), 1.2f, glm::vec2(-0.015f, 0.7f), glm::vec4(1.0f));
     rotationValues = renderer.attachLabel(sidePanel, std::string().c_str(), 1.2f, glm::vec2(-0.015f, 0.6f), glm::vec4(1.0f));
@@ -618,6 +621,8 @@ void MainEditor::update()
         else if(_tMode == SCALE)
             updateScaleAdjustments(origin, direction);
     }
+
+    renderer.updateOverlays(&camera);
 }
 
 void MainEditor::render()
@@ -633,6 +638,8 @@ void MainEditor::render()
     glDepthRange(0.0, 0.01);
     transformController->render(camera, transformShader);
     glDepthRange(0,1);
+
+    renderer.renderLightOverlays(camera);
 
     renderer.renderGUIs();
 

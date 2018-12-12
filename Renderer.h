@@ -13,6 +13,8 @@
 #include "TextRenderer.h"
 #include "TextShader.h"
 #include "GUILabel.h"
+#include "LightOverlayShader.h"
+#include "LightOverlay.h"
 
 #include <SDL2/SDL.h>
 #include <vector>
@@ -23,10 +25,11 @@ public:
     Renderer();
     ~Renderer();
 
-    void init(StaticShader* shader, OutlineShader* outline, GUIShader* gui, TextShader* text, int width, int height);
+    void init(StaticShader* shader, OutlineShader* outline, GUIShader* gui, TextShader* text, LightOverlayShader* light, int width, int height);
     void beginObjectRender();
     void renderObjects(Camera& camera);
     void endObjectRender();
+    void renderLightOverlays(Camera& camera);
     void renderGUIs();
     void endRender(SDL_Window* window);
     std::vector<unsigned int> getSelectedIDs();
@@ -45,6 +48,7 @@ public:
     unsigned int addPointLight(float x, float y, float z, float r, float g, float b,
                           float intensity, float constant, float linear, float quadratic);
 
+
     unsigned int addDirectionalLight(float dx, float dy, float dz, float r, float g, float b, float instensity);
 
     Button* addButton(GUI* parent, float x, float y, float sx, float sy, std::string filePath, std::string description, bool relativePos=true,unsigned int* id=nullptr);
@@ -54,6 +58,8 @@ public:
     Panel* addPanel(float x, float y, float sx, float sy, std::string filePath, unsigned int* id=nullptr);
 
     GUILabel* attachLabel(GUI* parent, const char* text, float size, glm::vec2 offset, glm::vec4 color);
+
+    void updateOverlays(Camera* camera);
 
     unsigned int getNumPrimitivesSelected();
 
@@ -68,11 +74,13 @@ private:
     std::vector<Light*> _lights;
     std::vector<GUI*> _guis;
     std::vector<GUILabel*> _labels;
+    std::vector<LightOverlay*> _lightOverlays;
 
     StaticShader* _staticShader;
     OutlineShader* _outlineShader;
     GUIShader* _guiShader;
     TextShader* _textShader;
+    LightOverlayShader* _lightOverlayShader;
 
     TextRenderer _textRenderer;
 
@@ -81,6 +89,7 @@ private:
     unsigned int currentID = 0;
 
     void renderGUILabels();
+    // LightOverlay* attachLightOverlay(Light* parent);
 };
 
 #endif
