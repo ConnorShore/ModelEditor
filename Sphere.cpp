@@ -1,6 +1,7 @@
 #include "Sphere.h"
 #include <stdio.h>
 
+//Sin and Cos from class examples
 #define Cos(th) cos(3.1415926f/180*(th))
 #define Sin(th) sin(3.1415926f/180*(th))
 
@@ -17,6 +18,8 @@ Sphere::Sphere(float x, float y, float z, float rx, float ry, float rz,
     rotation = glm::vec3(rx,ry,rz);
     scale = glm::vec3(sx,sy,sz);
     material = mat;
+
+    //Sphere calculation code modified from class examples; modified to fit my model
 
     int d = 10;
     for(int ph = -90; ph < 90; ph += d) {
@@ -55,7 +58,6 @@ Sphere::~Sphere()
 
 void Sphere::render()
 {
-    printf("rendering sphere\n");
     bindVertexArray();
     glDrawArrays(GL_QUAD_STRIP, 0, (int)faceCount);
     unbindVertexArray();

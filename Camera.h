@@ -21,6 +21,7 @@ public:
     void rotateDown(float speed);
     void rotateLeft(float speed);
     void rotateRight(float speed);
+    
     glm::vec3 screenToWorldCoords(float mouseX, float mouseY);
     glm::vec2 screenToNDC();
 

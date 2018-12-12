@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <GL/glew.h>
 #include <sstream>
+#include <time.h>
+#include <stdlib.h>
 
 #include "DirectionalLight.h"
 #include "Math.h"
@@ -17,6 +19,59 @@ std::string truncate(const T val, const int truncVal = 2)
     out.precision(truncVal);
     out << std::fixed << val;
     return out.str();
+}
+
+void MainEditor::generateMaterials()
+{
+
+    Material mat;
+    mat.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
+    mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
+    mat.specular = glm::vec3(0.5f);
+    mat.shininess = 32.0f;
+    materials.push_back(mat);
+
+    Material mat2;
+    mat2.ambient = glm::vec3(0.2f, 0.95f, 0.45f);
+    mat2.diffuse = glm::vec3(0.2f, 0.95f, 0.45f);
+    mat2.specular = glm::vec3(1.0f);
+    mat2.shininess = 13.0f;
+    materials.push_back(mat2);
+
+    Material mat3;
+    mat3.ambient = glm::vec3(0.5, 0.5f, 0.5f);
+    mat3.diffuse = glm::vec3(0.5, 0.5f, 0.5f);
+    mat3.specular = glm::vec3(0.5f);
+    mat3.shininess = 15.0f;
+    materials.push_back(mat3);
+
+    Material mat4;
+    mat4.ambient = glm::vec3(1.0f, 0.0f, 0.0f);
+    mat4.diffuse = glm::vec3(1.0f, 0.0f, 0.0f);
+    mat4.specular = glm::vec3(1.0f);
+    mat4.shininess = 21.0f;
+    materials.push_back(mat4);
+
+    Material mat5;
+    mat5.ambient = glm::vec3(0.0f, 1.0f, 0.0f);
+    mat5.diffuse = glm::vec3(0.0f, 1.0f, 0.0f);
+    mat5.specular = glm::vec3(1.0f);
+    mat5.shininess = 21.0f;
+    materials.push_back(mat5);
+
+    Material mat6;
+    mat6.ambient = glm::vec3(0.0f, 0.0f, 1.0f);
+    mat6.diffuse = glm::vec3(0.0f, 0.0f, 1.0f);
+    mat6.specular = glm::vec3(1.0f);
+    mat6.shininess = 21.0f;
+    materials.push_back(mat6);
+
+    Material mat7;
+    mat7.ambient = glm::vec3(0.3f, 0.7f, 0.05f);
+    mat7.diffuse = glm::vec3(0.3f, 0.7f, 0.05f);
+    mat7.specular = glm::vec3(0.6f);
+    mat7.shininess = 50.0f;
+    materials.push_back(mat7);
 }
 
 void MainEditor::init()
@@ -55,9 +110,6 @@ void MainEditor::init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_TEXTURE_2D);
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-
     staticShader.init("Shaders/shader.vert", "Shaders/shader.frag");
     staticShader.bindAttributes();
 
@@ -81,21 +133,6 @@ void MainEditor::init()
     picker = Picker(&camera);
 
     transformController = new TransformController;
-
-    Material mat;
-    mat.ambient = glm::vec3(1.0f, 0.5f, 0.31f);
-    mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
-    mat.specular = glm::vec3(0.5f);
-    mat.shininess = 32.0f;
-    // cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1,  mat);
-    renderer.addSphere(0,0,0, 1, mat);
-
-    // Material mat2;
-    // mat2.ambient = glm::vec3(0.2f, 0.95f, 0.45f);
-    // mat2.diffuse = glm::vec3(0.2f, 0.95f, 0.45f);
-    // mat2.specular = glm::vec3(1.0f);
-    // mat2.shininess = 13.0f;
-    // renderer.addCube(2,-0.75,-3,  0,25,56,  1.25,1.75,1.25,  mat2);
     
     light = renderer.addPointLight(1.2f,1.0f,2.0f,  0.15f,0.5f,1.0f,  1.0f,  1.0f,0.09f,0.032f);
     light1 = renderer.addPointLight(-1.2f,-0.5,-0.8f,  0.0f,0.0f,1.0f,  0.6f,  1.0f,0.09f,0.032f);
@@ -109,26 +146,31 @@ void MainEditor::init()
     Button* addCubeButton = renderer.addButton(topBar, -0.95f, 0.0, 0.035f, 0.035f * aspect, "Textures/addCube.png", "Add Cube", true, &addCube);
     addCubeButton->subscribeEvent(this, &MainEditor::createCube);
 
-    Button* deleteCubeButton = renderer.addButton(topBar, -0.85f, 0.0, 0.035f, 0.035f * aspect, "Textures/deleteCube.png", "Delete Cube", true, &addCube);
+    Button* addSphereButton = renderer.addButton(topBar, -0.85f, 0.0, 0.035f, 0.035f * aspect, "Textures/addSphere.png", "Add Sphere", true, &addSphere);
+    addSphereButton->subscribeEvent(this, &MainEditor::createSphere);
+
+    Button* deleteCubeButton = renderer.addButton(topBar, -0.75f, 0.0, 0.035f, 0.035f * aspect, "Textures/deleteCube.png", "Delete Selected Objects", true, &addCube);
     deleteCubeButton->subscribeEvent(this, &MainEditor::deleteCubes);
 
-    Button* positionButton = renderer.addButton(topBar, -0.73f, 0.0f, 0.06f ,0.035f * aspect, "Textures/addCube.png", "Position", true, &position);
+    Button* positionButton = renderer.addButton(topBar, -0.55f, 0.0f, 0.035f ,0.035f * aspect, "Textures/position.png", "Position", true, &position);
     positionButton->subscribeEvent(this, &MainEditor::setTransfromMode, POSITION);
 
-    Button* sizeButton = renderer.addButton(topBar, -0.585f, 0.0f, 0.06f ,0.035f * aspect, "Textures/deleteCube.png", "Scale", true, &size);
+    Button* sizeButton = renderer.addButton(topBar, -0.45f, 0.0f, 0.035f ,0.035f * aspect, "Textures/scale.png", "Scale", true, &size);
     sizeButton->subscribeEvent(this, &MainEditor::setTransfromMode, SCALE);
 
-    Panel* sidePanel = renderer.addPanel(0.7f, 0.0f, 0.3f, 1.0f, "Textures/panel.png", &panel);
+    Panel* sidePanel = renderer.addPanel(0.8f, 0.0f, 0.2f, 1.0f, "Textures/panel.png", &panel);
     sidePanel->setAlpha(0.8f);
+    renderer.attachLabel(sidePanel, "Properties", 1.5f, glm::vec2(-0.015, 0.85f), glm::vec4(1.0f));
+    //Transform properties
+    positionValues = renderer.attachLabel(sidePanel, std::string().c_str(), 1.2f, glm::vec2(-0.015f, 0.7f), glm::vec4(1.0f));
+    rotationValues = renderer.attachLabel(sidePanel, std::string().c_str(), 1.2f, glm::vec2(-0.015f, 0.6f), glm::vec4(1.0f));
+    scaleValues = renderer.attachLabel(sidePanel, std::string().c_str(), 1.2f, glm::vec2(-0.015f, 0.5f), glm::vec4(1.0f));
 
-    Panel* statusPanel = renderer.addPanel(0.7, -0.925, 0.3, 0.125, "Textures/panel.png");
+    Panel* statusPanel = renderer.addPanel(0.8f, -0.925f, 0.2f, 0.125f, "Textures/panel.png");
     transformMode = renderer.attachLabel(statusPanel, "Mode: Position", 1.25f, glm::vec2(0.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
     description = renderer.attachLabel(statusPanel, std::string().c_str(), 1.25f, glm::vec2(0.0f, -0.05f), glm::vec4(1.0f));
 
-    //Transform properties
-    positionValues = renderer.attachLabel(statusPanel, std::string().c_str(), 1.2f, glm::vec2(0.0f, 0.8f), glm::vec4(1.0f));
-    rotationValues = renderer.attachLabel(statusPanel, std::string().c_str(), 1.2f, glm::vec2(0.0f, 0.7f), glm::vec4(1.0f));
-    scaleValues = renderer.attachLabel(statusPanel, std::string().c_str(), 1.2f, glm::vec2(0.0f, 0.6f), glm::vec4(1.0f));
+    generateMaterials();
 }
 
 bool MainEditor::updateTransformSelection()
@@ -227,7 +269,6 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
         
         unsigned int ct = 0;
         for(Primitive* obj : renderer.getPrimitives()) {
-
             if(obj->isInSelectRange) {
                 obj->selectedLocation = obj->getPosition();
                 obj->isSelected = true;
@@ -480,7 +521,6 @@ void MainEditor::updatePositionAdjustments(glm::vec3& origin, glm::vec3& directi
                 glm::vec3 offset(0.0f);
                 offset = obj->selectedLocation - transformSelectLoc;
                 obj->setPosition(transformController->getPosition() + offset);
-                // obj->setPosition(glm::vec3(transformController->getPosition().x + offset.x, obj->getPosition().y, obj->getPosition().z));
             }
         }
     } 
@@ -628,7 +668,11 @@ void MainEditor::run()
 
 void MainEditor::createCube()
 {
-    renderer.addCube(0,0,0, 0,0,0, 1,1,1);
+    srand(time(NULL));
+    int num = rand() % materials.size();
+    printf("Random num: %d\n", num);
+    Material mat = materials[num];
+    renderer.addCube(0,0,0, 0,0,0, 1,1,1, mat);
     renderer.unselectAllObjects();
 }
 
@@ -640,6 +684,17 @@ void MainEditor::deleteCubes()
     }
     transformController->setControlling(false);
     transformController->setVisible(false);
+}
+
+void MainEditor::createSphere()
+{
+    srand(time(NULL));
+    int num = rand() % materials.size();
+    printf("Random num: %d\n", num);
+    Material mat = materials[num];
+
+    renderer.addSphere(0,0,0,1,mat);
+    renderer.unselectAllObjects();
 }
 
 void MainEditor::setTransfromMode(TransformMode mode)

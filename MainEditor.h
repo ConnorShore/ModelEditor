@@ -63,7 +63,7 @@ private:
 
     std::string modeString;
 
-    unsigned int cube1, cube2, light, light1, light2, light3, panel, top, addCube, deleteCube, position, size;
+    unsigned int cube1, cube2, light, light1, light2, light3, panel, top, addCube, addSphere, deleteCube, position, size;
 
     float cameraSpeed = 0.015f;
     float intensity = 0.1f;
@@ -78,6 +78,9 @@ private:
     glm::vec3 scaleTransformLoc;
     bool scaleTransformSet;
 
+    std::vector<Material> materials;
+
+    void generateMaterials();
     void init();
     void updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction);
     void updatePositionAdjustments(glm::vec3& origin, glm::vec3& direction);
@@ -93,6 +96,8 @@ private:
     //Callbacks
     void createCube();
     void deleteCubes();
+    void createSphere();
+    void deleteSpheres();
     void setTransfromMode(TransformMode mode);
 };
 
