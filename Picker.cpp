@@ -1,8 +1,12 @@
 #include "Picker.h"
 #include "Physics.h"
 #include "Math.h"
+#include "Sphere.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/intersect.hpp>
 #include <stdio.h>
 
 Picker::Picker(Camera* camera)
@@ -81,9 +85,16 @@ void Picker::update(std::vector<Primitive*> primitives, TransformController* con
     for(Primitive* obj : primitives) {
         glm::mat4 modelMatrix = Math::createTransformationMatrix(obj->getPosition(), obj->getRotation(), obj->getScale());
         obj->setModelMatrix(modelMatrix);
-        float intersectDist;
-        bool isColliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, obj->getBoundingBox().aabbMin,
-                                         obj->getBoundingBox().aabbMax, modelMatrix, intersectDist);
+        bool isColliding;
+        if(dynamic_cast<Sphere*>(obj) != nullptr) {
+            isColliding = raySphereIntersection(rayOrigin, rayDirection, obj->getPosition(), obj->getScale());
+        }
+        else {
+            float intersectDist;
+            isColliding = Physics::TestIntersectionRayAABB(rayOrigin, rayDirection, obj->getBoundingBox().aabbMin,
+                                            obj->getBoundingBox().aabbMax, modelMatrix, intersectDist);
+        }
+
         obj->isInSelectRange = isColliding;
     }
 }
@@ -97,6 +108,20 @@ bool Picker::rayPlaneIntersection(glm::vec3 vectorOrigin, glm::vec3 vectorNormal
     glm::vec3 intersect = vectorOrigin + (vectorNormal * distance);
     *location = intersect;
     return true;
+}
+
+bool Picker::raySphereIntersection(glm::vec3 vectorOrigin, glm::vec3 vectorNormal, glm::vec3 sphereOrigin, glm::vec3 sphereRadius)
+{
+    float min = sphereRadius.x;
+    if(sphereRadius.y <= sphereRadius.x && sphereRadius.y <= sphereRadius.z)
+        min = sphereRadius.y;
+    if(sphereRadius.z <= sphereRadius.y && sphereRadius.z <= sphereRadius.x)
+        min = sphereRadius.z;
+
+    float radiusSquared = min*min;
+    float dist;
+    bool result = glm::intersectRaySphere(vectorOrigin, vectorNormal, sphereOrigin, radiusSquared, dist);
+    return result;
 }
 
 void Picker::calculateRay(glm::vec3* rayOrigin, glm::vec3* rayDirection, glm::vec2 mouseCoords)

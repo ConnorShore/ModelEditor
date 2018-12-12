@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "Math.h"
 #include "Cube.h"
+#include "Sphere.h"
 #include "PointLight.h"
 #include "DirectionalLight.h"
 
@@ -244,6 +245,15 @@ unsigned int Renderer::addCube(float x, float y, float z, float rx, float ry, fl
     unsigned int id = addCube(x,y,z,rx,ry,rz,sx,sy,sz,matDefault);
 
     return id;
+}
+
+unsigned int Renderer::addSphere(float x, float y, float z, float radius, Material& material)
+{
+    Sphere* sphere = new Sphere(x,y,z,0,0,0,radius,radius,radius,material);
+    sphere->setID(currentID++);
+    _objects.push_back(sphere);
+
+    return sphere->getID();
 }
 
 unsigned int Renderer::addPointLight(float x, float y, float z, float r, float g, float b, float intensity,

@@ -40,6 +40,8 @@ public:
     unsigned int addCube(float x, float y, float z, float rx, float ry, float rz, 
                          float sx, float sy, float sz);
 
+    unsigned int addSphere(float x, float y, float z, float radius, Material& material);
+
     unsigned int addPointLight(float x, float y, float z, float r, float g, float b,
                           float intensity, float constant, float linear, float quadratic);
 

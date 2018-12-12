@@ -8,6 +8,7 @@
 #include "DirectionalLight.h"
 #include "Math.h"
 #include "Button.h"
+#include "Sphere.h"
 
 template<typename T>
 std::string truncate(const T val, const int truncVal = 2)
@@ -86,14 +87,15 @@ void MainEditor::init()
     mat.diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
     mat.specular = glm::vec3(0.5f);
     mat.shininess = 32.0f;
-    cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1,  mat);
+    // cube1 = renderer.addCube(0,0,0,  0,0,0,  1,1,1,  mat);
+    renderer.addSphere(0,0,0, 1, mat);
 
-    Material mat2;
-    mat2.ambient = glm::vec3(0.2f, 0.95f, 0.45f);
-    mat2.diffuse = glm::vec3(0.2f, 0.95f, 0.45f);
-    mat2.specular = glm::vec3(1.0f);
-    mat2.shininess = 13.0f;
-    renderer.addCube(2,-0.75,-3,  0,25,56,  1.25,1.75,1.25,  mat2);
+    // Material mat2;
+    // mat2.ambient = glm::vec3(0.2f, 0.95f, 0.45f);
+    // mat2.diffuse = glm::vec3(0.2f, 0.95f, 0.45f);
+    // mat2.specular = glm::vec3(1.0f);
+    // mat2.shininess = 13.0f;
+    // renderer.addCube(2,-0.75,-3,  0,25,56,  1.25,1.75,1.25,  mat2);
     
     light = renderer.addPointLight(1.2f,1.0f,2.0f,  0.15f,0.5f,1.0f,  1.0f,  1.0f,0.09f,0.032f);
     light1 = renderer.addPointLight(-1.2f,-0.5,-0.8f,  0.0f,0.0f,1.0f,  0.6f,  1.0f,0.09f,0.032f);
@@ -113,9 +115,8 @@ void MainEditor::init()
     Button* positionButton = renderer.addButton(topBar, -0.73f, 0.0f, 0.06f ,0.035f * aspect, "Textures/addCube.png", "Position", true, &position);
     positionButton->subscribeEvent(this, &MainEditor::setTransfromMode, POSITION);
 
-    Button* sizeButton = renderer.addButton(topBar, -0.585f, 0.0f, 0.06f ,0.035f * aspect, "Textures/deleteCube.png", "Size", true, &size);
+    Button* sizeButton = renderer.addButton(topBar, -0.585f, 0.0f, 0.06f ,0.035f * aspect, "Textures/deleteCube.png", "Scale", true, &size);
     sizeButton->subscribeEvent(this, &MainEditor::setTransfromMode, SCALE);
-
 
     Panel* sidePanel = renderer.addPanel(0.7f, 0.0f, 0.3f, 1.0f, "Textures/panel.png", &panel);
     sidePanel->setAlpha(0.8f);
@@ -191,7 +192,6 @@ bool MainEditor::updateTransformSelection()
 
 void MainEditor::updateSelections(std::vector<int>& selectedIds)
 {   
-    bool selections = false;
     selectedIds.clear();
 
     if(renderer.getNumPrimitivesSelected() > 0) {
@@ -218,7 +218,6 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
     }
 
     if(inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
-
         std::vector<glm::vec3> positions;
         std::vector<glm::vec3> rotations;
         std::vector<glm::vec3> scales;
@@ -236,7 +235,6 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
                 rotations.push_back(obj->getRotation());
                 scales.push_back(obj->getScale());
                 selectedIds.push_back(ct);
-                selections = true;
             } 
             else if((inputManager.isKeyDown(SDLK_LSHIFT) || inputManager.isKeyDown(SDLK_RSHIFT)) && obj->isSelected){
                 positions.push_back(obj->getPosition());
@@ -244,7 +242,6 @@ void MainEditor::updateSelections(std::vector<int>& selectedIds)
                 scales.push_back(obj->getScale());
                 selectedIds.push_back(ct);
                 obj->selectedLocation = obj->getPosition();
-                selections = true;
             }
             else {
                 obj->isSelected = false;
@@ -417,6 +414,8 @@ void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
             if(obj->isSelected) {
                 glm::vec3 offset(0.0f);
                 obj->setScale(obj->getBaseScale() + glm::vec3(size, 0.0f, 0.0f));
+                if(dynamic_cast<Sphere*>(obj) != nullptr)
+                    obj->setScale(obj->getBaseScale() + glm::vec3(size));
             }
         }
     }
@@ -434,6 +433,8 @@ void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
             if(obj->isSelected) {
                 glm::vec3 offset(0.0f);
                 obj->setScale(obj->getBaseScale() + glm::vec3(0.0f, size, 0.0f));
+                if(dynamic_cast<Sphere*>(obj) != nullptr)
+                    obj->setScale(obj->getBaseScale() + glm::vec3(size));
             }
         }
     }
@@ -451,6 +452,8 @@ void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
             if(obj->isSelected) {
                 glm::vec3 offset(0.0f);
                 obj->setScale(obj->getBaseScale() + glm::vec3(0.0f, 0.0f, size));
+                if(dynamic_cast<Sphere*>(obj) != nullptr)
+                    obj->setScale(obj->getBaseScale() + glm::vec3(size));
             }
         }
     } 
@@ -458,6 +461,7 @@ void MainEditor::updateScaleAdjustments(glm::vec3& origin, glm::vec3& direction)
     else {
         printf("In control however no axis selected\n");
     }
+    
 }
 
 void MainEditor::updatePositionAdjustments(glm::vec3& origin, glm::vec3& direction)

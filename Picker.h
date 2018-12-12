@@ -20,6 +20,7 @@ public:
 
     void update(std::vector<Primitive*> primitives, TransformController* controller);
     bool rayPlaneIntersection(glm::vec3 vectorOrigin, glm::vec3 vectorNormal, Plane plane, glm::vec3* location);
+    bool raySphereIntersection(glm::vec3 vectorOrigin, glm::vec3 vectorNormal, glm::vec3 sphereOrigin, glm::vec3 sphereRadius);
     glm::vec3 screenToWorldCoords(float mouseX, float mouseY);
     void calculateRay(glm::vec3* rayOrigin, glm::vec3* rayDirection, glm::vec2 mouseCoords);
     void calculateRay(glm::vec3* rayOrigin, glm::vec3* rayDirection);
